@@ -1,0 +1,18 @@
+classdef Data
+    
+    properties
+        
+        PolygonArray;
+        
+        factors;
+        
+    end
+    
+    methods
+        function obj = Data(polygons, factorFile)
+            factors = Table.Read(factorFile);
+            obj.PolygonArray = polygons;
+            obj.factors = factors
+        end
+    end
+end

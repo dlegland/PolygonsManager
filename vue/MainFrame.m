@@ -85,9 +85,13 @@ classdef MainFrame < handle
                 uimenu(foncMenu, 'label', '&Convert to Mm', ...
                               'callback', {@contoursConvertPxMm, obj});
                 uimenu(foncMenu, 'label', '&Align axis', ...
-                              'callback', {@contoursRotate, obj});
+                              'callback', {@contoursRotate, obj}, ...
+                             'separator', 'on');
+                uimenu(foncMenu, 'label', '&Signature', ...
+                              'callback', {@contoursToSignature, obj});
                           
-                fc1 = uimenu(foncMenu, 'label', '&Rotate');
+                fc1 = uimenu(foncMenu, 'label', '&Rotate', ...
+                             'separator', 'on');
                 uimenu(fc1, 'label', '&90° droite', ...
                          'callback', {@rotate, obj, 1});
                 uimenu(fc1, 'label', '&90° gauche', ...
@@ -115,7 +119,7 @@ classdef MainFrame < handle
                 end
                 
                 function dispContours(~,~)
-                    showContours(obj);
+                    showContours(obj, getAllPolygons(obj.model.PolygonArray));
                 end
             end
             

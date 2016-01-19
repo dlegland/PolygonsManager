@@ -23,6 +23,6 @@ if iscell(ud)
     polygonList = getPolygonsFromFactors(obj.model, ud{1});
     showContoursFactor(obj, polygonList, ud{2}, ud{3});
 else
-    showContours(obj);
+    showContours(obj, getAllPolygons(obj.model.PolygonArray));
 end
 end

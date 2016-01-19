@@ -13,7 +13,7 @@ if dname ~= 0
         end
         h = waitbar(0,'Début de l''import', 'name', 'Chargement des contours');
         for i = 1:length(files)
-            name = files(i).name(1:5);
+            name = files(i).name(1:end-4);
             nameArray{i} = name;
 
             polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
@@ -24,12 +24,12 @@ if dname ~= 0
         polygons = BasicPolygonArray(polygonArray);
         obj.model = Model(polygons, nameArray);
         if isempty(obj.handles.panels);
-            createPanel(obj,obj.handles.tabs.Selection + 1);
+            createPanel(obj,obj.handles.tabs.Selection + 1, 1);
         end
         set(obj.handles.list, 'string', nameArray);
         set([obj.handles.menus{:}], 'enable', 'on');
         set(obj.handles.submenus{1}, 'enable', 'on');
-        showContours(obj);
+        showContours(obj, getAllPolygons(obj.model.PolygonArray));
     else
         msgbox('The selected folder is empty');
     end

@@ -2,8 +2,6 @@ classdef BasicPolygonArray < PolygonArray
     
     properties
         polygons;
-        
-        status;
     end
     
     methods
@@ -15,13 +13,12 @@ classdef BasicPolygonArray < PolygonArray
             arraySize = length(obj.polygons);
         end
         
-%         function nameList = getPolygonNames(obj)
-%             size =  getPolygonNumber(obj);
-%             nameList(1:size) = obj.polygons(1:size);
-%         end
-        
         function polygon = getPolygon(obj, row)
             polygon = obj.polygons{row};
+        end
+        
+        function polygons = getAllPolygons(obj)
+            polygons = obj.polygons;
         end
         
         function addPolygon(obj, polygon)

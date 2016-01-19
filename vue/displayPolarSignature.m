@@ -1,20 +1,20 @@
-function showContours(obj, files)
-index = obj.handles.tabs.Selection;
-% files = obj.model.PolygonArray.polygons;
-% updatePanel(obj, index);
-set(obj.handles.axes{index}, 'colororderindex', 1);
+function displayPolarSignature(obj, files)
+index = obj.handles.tabs.Selection;  
 
+set(obj.handles.axes{index}, 'colororderindex', 1);
+xlim(obj.handles.axes{index}, [files.angleList(1), files.angleList(end)]);
 obj.handles.axes{index}.UserData = 0;
-delete([obj.handles.lines{:}]);
+% delete([obj.handles.lines{index, :}]);
 legend('off');
 
 hold on;
-for i = 1:length(files)
-    obj.handles.lines{i} = drawPolygon(files{i}, 'parent', obj.handles.axes{index}, ...
+for i = 1:getPolygonNumber(files)
+    signature = getSignature(files, i);
+    plot(obj.model.PolygonArray.angleList, signature, 'parent', obj.handles.axes{index}, ...
                                           'ButtonDownFcn', @mouseClicker, ...
                                                     'tag', obj.model.nameList{i});
 end
-
+hold off;
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);
 end

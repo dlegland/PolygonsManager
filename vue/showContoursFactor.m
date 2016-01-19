@@ -16,7 +16,8 @@ for i = 1:length(files)
                                              'tag', obj.model.nameList{i}, ...
                                            'color', obj.handles.axes{index}.ColorOrder(files{i, 1}, :));
     if cellfun('isempty',lineHandles(files{i, 1}))
-        lineHandles{files{i, 1}} = obj.handles.lines{i};
+        test = obj.handles.lines{i};
+        lineHandles{files{i, 1}} = test;
     end
 end
 hold off;
@@ -24,7 +25,7 @@ if ~isempty(obj.model.selectedPolygons)
     selection(obj);
 end
 if display == 0
-    legend([lineHandles{:}], legends, 'location', 'eastoutside');
+    [~, objh] = legend([lineHandles{:}], legends, 'location', 'eastoutside');
 end
 
     function mouseClicker(h,~)
@@ -49,5 +50,7 @@ end
         end
         selection(obj);
         set(obj.handles.list, 'value', find(ismember(obj.model.nameList, obj.model.selectedPolygons)));
+        lineh = findobj(objh,'type','line');
+        set(lineh, 'linewidth', .5);
     end
 end

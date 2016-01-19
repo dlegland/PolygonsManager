@@ -1,4 +1,4 @@
-function createPanel(obj, index)
+function createPanel(obj, index, equal)
 
 co = [0.28 0.44 0.91;
       0.93 0.04 0.25;
@@ -6,7 +6,7 @@ co = [0.28 0.44 0.91;
       0.23 0.66 0.34;
       0.40 0.18 0.76;
       0.76 0.33 0.76;
-      0.73 0.30 0.30;
+      0.80 0.25 0.50;
       0.69 0.35 0.25;
       0.91 0.74 0.37;
       0.74 0.71 0.69;
@@ -18,7 +18,9 @@ co = [0.28 0.44 0.91;
 
 %     set(myAxe, 'userdata', {});
 
-    axis equal;
+    if equal == 1
+        axis equal;
+    end
 
     obj.handles.panels{index} = myPanel;
     obj.handles.axes{index} = myAxe;

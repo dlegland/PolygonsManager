@@ -12,12 +12,7 @@ for i = 1:length(polygonList)
     poly = getPolygonFromName(obj.model, name);
 
     polyMm = poly * resol;
-
-%     % also point upwards instead of downwards
-%     if inver == 1
-%         polyMm(:,2) = -polyMm(:,2);
-%     end
-
+    
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
@@ -27,7 +22,7 @@ if iscell(ud)
     polygonList = getPolygonsFromFactors(obj.model, ud{1});
     showContoursFactor(obj, polygonList, ud{2}, ud{3});
 else
-    showContours(obj);
+    showContours(obj, getAllPolygons(obj.model.PolygonArray));
 end
 catch
 end

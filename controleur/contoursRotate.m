@@ -56,6 +56,7 @@ for i = 1:length(obj.model.nameList)
 end
 close(h) 
 fen = MainFrame;
-setPolygonArray(fen, obj.model.nameList, polygonArray);
+polygons = BasicPolygonArray(polygonArray);
+setPolygonArray(fen, obj.model.nameList, polygons);
 
 end

@@ -15,6 +15,7 @@ co = [0.28 0.44 0.91;
 
     myPanel = uipanel('parent', obj.handles.tabs, 'bordertype', 'none');
     myAxe = axes('parent', myPanel, 'ButtonDownFcn', @reset, 'colororder', co);
+                               
 
 %     set(myAxe, 'userdata', {});
 
@@ -25,7 +26,8 @@ co = [0.28 0.44 0.91;
     obj.handles.panels{index} = myPanel;
     obj.handles.axes{index} = myAxe;
 
-    set(obj.handles.tabs, 'selection', index);
+    set(obj.handles.tabs, 'selection', index, ...
+                'SelectionChangedFcn', @select );
 
     function reset(~,~)
         modifiers = get(obj.handles.figure,'currentModifier');
@@ -35,5 +37,9 @@ co = [0.28 0.44 0.91;
             set(obj.handles.list, 'value', []);
             selection(obj);
         end
+    end
+
+    function select(~,~)
+        selection(obj);
     end
 end

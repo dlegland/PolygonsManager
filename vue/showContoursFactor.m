@@ -28,7 +28,6 @@ end
 if display == 0
     legend(obj.handles.axes{index}, [lineHandles{:}], legends, 'location', 'eastoutside');
 end
-disp(get(obj.handles.axes{index}));
 
     function mouseClicker(h,~)
         modifiers = get(obj.handles.figure,'currentModifier');

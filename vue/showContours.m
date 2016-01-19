@@ -8,12 +8,13 @@ obj.handles.axes{index}.UserData = 0;
 delete([obj.handles.lines{:}]);
 legend('off');
 
-hold on;
+hold(obj.handles.axes{index}, 'on');
 for i = 1:length(files)
     obj.handles.lines{i} = drawPolygon(files{i}, 'parent', obj.handles.axes{index}, ...
                                           'ButtonDownFcn', @mouseClicker, ...
                                                     'tag', obj.model.nameList{i});
 end
+hold(obj.handles.axes{index}, 'off');
 
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);

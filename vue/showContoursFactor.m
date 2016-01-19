@@ -9,7 +9,7 @@ lineHandles = cell(1, length(legends));
 delete([obj.handles.lines{:}]);
 legend('off');
 
-hold on;
+hold(obj.handles.axes{index}, 'on');
 for i = 1:length(files)
     obj.handles.lines{i} = drawPolygon(files{i, 2}, 'parent', obj.handles.axes{index}, ...
                                    'ButtonDownFcn', @mouseClicker, ...
@@ -20,13 +20,15 @@ for i = 1:length(files)
         lineHandles{files{i, 1}} = test;
     end
 end
-hold off;
+
+hold(obj.handles.axes{index}, 'off');
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);
 end
 if display == 0
-    [~, objh] = legend([lineHandles{:}], legends, 'location', 'eastoutside');
+    legend(obj.handles.axes{index}, [lineHandles{:}], legends, 'location', 'eastoutside');
 end
+disp(get(obj.handles.axes{index}));
 
     function mouseClicker(h,~)
         modifiers = get(obj.handles.figure,'currentModifier');
@@ -50,7 +52,5 @@ end
         end
         selection(obj);
         set(obj.handles.list, 'value', find(ismember(obj.model.nameList, obj.model.selectedPolygons)));
-        lineh = findobj(objh,'type','line');
-        set(lineh, 'linewidth', .5);
     end
 end

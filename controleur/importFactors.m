@@ -7,8 +7,23 @@ while loop == 0
     end
     fFile = fullfile(fPath, fName);
 
-    factorTbl = Table.read(fFile);
-    if rowNumber(factorTbl) == length(obj.model.nameList)
+    import = Table.read(fFile);
+    factorTbl = zeros(rowNumber(import), columnNumber(import));
+    if rowNumber(import) == length(obj.model.nameList)
+        for i = 1:rowNumber(import)
+            index = not(cellfun('isempty', ...
+                    strfind(obj.model.nameList, import.rowNames{i})));
+            if exist('index', 'var')
+                factorTbl(index, :) = getRow(import, i);
+            else
+                return;
+            end
+        end
+        factorTbl = Table.create(factorTbl, 'rowNames', obj.model.nameList, 'colNames', import.colNames);
+        for i = 1:columnNumber(factorTbl)
+            setFactorLevels(factorTbl, i, factorLevels(import, i));
+        end
+        show(factorTbl);
         obj.model.factorTable = factorTbl;
         set([obj.handles.submenus{:}], 'enable', 'on');
         loop = 1;

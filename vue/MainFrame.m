@@ -37,7 +37,8 @@ classdef MainFrame < handle
             
 %             set(function_box, 'heights', [-30 -1]);
             
-            tab_pan = uix.TabPanel('parent', main_box);
+            tab_pan = uix.TabPanel('parent', main_box, ...
+                      'SelectionChangedFcn', @select );
             
             set(main_box, 'widths', [-1 -8]);
             

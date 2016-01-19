@@ -3,6 +3,7 @@ index = obj.handles.tabs.Selection;
 
 set(obj.handles.axes{index}, 'colororderindex', 1);
 xlim(obj.handles.axes{index}, [files.angleList(1), files.angleList(end)]);
+ylim(obj.handles.axes{index}, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
 obj.handles.axes{index}.UserData = 0;
 % delete([obj.handles.lines{index, :}]);
 legend('off');

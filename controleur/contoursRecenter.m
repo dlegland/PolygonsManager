@@ -1,4 +1,10 @@
 function contoursRecenter(~,~, obj)
+%CONTOURSRECENTER  Recenter the polygons
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
 polygonList = cell(1, length(obj.model.nameList));
 
@@ -20,9 +26,9 @@ close(h)
 ud = obj.handles.axes{1}.UserData;
 if iscell(ud)
     polygonList = getPolygonsFromFactor(obj.model, ud{1});
-    showContoursFactor(obj, polygonList);
+    displayPolygonsFactor(obj, polygonList);
 else
-    showContours(obj, getAllPolygons(obj.model.PolygonArray));
+    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
         displayPolarSignature(obj, obj.model.PolygonArray);
     end

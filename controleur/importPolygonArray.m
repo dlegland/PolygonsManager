@@ -1,4 +1,11 @@
 function importPolygonArray(~,~, obj)
+%IMPORTPOLYGONARRAY  Imports a folder containing polygons coordinates files (.txt) and make it the current polygon array
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
+
 dname = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\images');
 
 files = dir(fullfile(dname, '*txt'));
@@ -29,7 +36,7 @@ if dname ~= 0
         set(obj.handles.list, 'string', nameArray);
         set([obj.handles.menus{:}], 'enable', 'on');
         set(obj.handles.submenus{1}, 'enable', 'on');
-        showContours(obj, getAllPolygons(obj.model.PolygonArray));
+        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
     else
         msgbox('The selected folder is empty');
     end

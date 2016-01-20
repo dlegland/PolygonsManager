@@ -1,20 +1,23 @@
 function saveContours(~,~, obj)
-try
 [dname, fileName] = savePrompt;
-if ~isempty(dname)
+if ~strcmp(dname, '?')
     for i = 1:length(obj.model.nameList)
         name = obj.model.nameList{i};
         filename = sprintf(fileName, name);
         tab = Table.create(getPolygonFromName(obj.model, name), {'x', 'y'});
         write(tab, fullfile(dname, [filename '.txt']));
+        msgbox('success');
     end
-end
-catch
 end
 
     function [dname, fileName] = savePrompt
+        
+        dname = '?';
+        fileName = '?';
+        
+        pos = getMiddle(gcf, 500, 165);
 
-        d = dialog('position', [300 500 500 165], ...
+        d = dialog('position', pos, ...
                        'name', 'Select save options');
         movegui(d,'center');
 

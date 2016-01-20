@@ -15,35 +15,29 @@ classdef MainFrame < handle
                        'menubar', 'none', ...
                    'numbertitle', 'off');
             set(fen, 'units', 'pixel');
-               
+            
             obj.handles.figure = fen;            
             
             main_box = uix.HBox('parent', fen, ...
                                'padding', 5);
             
-            function_box = uix.VBox('parent', main_box, ...
+            selection_box = uix.VBox('parent', main_box, ...
                                    'padding', 5);
             
-            list_box = uicontrol('parent', function_box, ...
+            list_box = uicontrol('parent', selection_box, ...
                                   'style', 'listbox', ...
                                     'max', 100, ...
                                     'min', 0, ...
                                'callback', @select);
                            
-             
-%             uicontrol('parent', function_box, ...
-%                       'string', 'Clear selection', ...
-%                     'callback', @reset); 
-            
-%             set(function_box, 'heights', [-30 -1]);
-            
-            tab_pan = uix.TabPanel('parent', main_box);
+            tab_pan = uix.TabPanel('parent', main_box, ...
+                       'selectionchangedfcn', @test);
             
             set(main_box, 'widths', [-1 -8]);
             
             obj.handles.main = main_box;
             obj.handles.tabs = tab_pan;
-            obj.handles.functions = function_box;
+            obj.handles.selection = selection_box;
             obj.handles.list = list_box;
             obj.handles.panels = {};
             obj.handles.axes = {};
@@ -67,6 +61,10 @@ classdef MainFrame < handle
                 f1 = uimenu(fileMenu, 'label', '&Save polygons', ...
                                    'callback', {@saveContours, obj}, ...
                                      'enable', 'off');
+                f2 = uimenu(fileMenu, 'label', '&Save signatures', ...
+                                   'callback', {@savePolarSignature, obj}, ...
+                                     'enable', 'off');
+                                 
                 uimenu(fileMenu, 'label', '&Close', ...
                               'callback', {@closef, gcf}, ...
                              'separator', 'on');
@@ -82,24 +80,34 @@ classdef MainFrame < handle
                 
 %               -----------------------------------------------------------            
                           
+                          
+                fc1 = uimenu(foncMenu, 'label', '&Rotate all');
+                uimenu(fc1, 'label', '&90° droite', ...
+                         'callback', {@contoursRotate, obj, 1, 1});
+                uimenu(fc1, 'label', '&90° gauche', ...
+                         'callback', {@contoursRotate, obj, 2, 1});
+                uimenu(fc1, 'label', '&180°', ...
+                         'callback', {@contoursRotate, obj, 3, 1});
+                     
+                fc2 = uimenu(foncMenu, 'label', '&Rotate selected');
+                uimenu(fc2, 'label', '&90° droite', ...
+                         'callback', {@contoursRotate, obj, 1, 2});
+                uimenu(fc2, 'label', '&90° gauche', ...
+                         'callback', {@contoursRotate, obj, 2, 2});
+                uimenu(fc2, 'label', '&180°', ...
+                         'callback', {@contoursRotate, obj, 3, 2});
+                     
                 uimenu(foncMenu, 'label', '&Recenter polygons', ...
-                              'callback', {@contoursRecenter, obj});
+                              'callback', {@contoursRecenter, obj}, ...
+                             'separator', 'on');
                 uimenu(foncMenu, 'label', '&Convert to Mm', ...
                               'callback', {@contoursConvertPxMm, obj});
+                          
                 uimenu(foncMenu, 'label', '&Align axis', ...
-                              'callback', {@contoursRotate, obj}, ...
+                              'callback', {@contoursAlign, obj}, ...
                              'separator', 'on');
                 uimenu(foncMenu, 'label', '&Signature', ...
                               'callback', {@contoursToSignature, obj});
-                          
-                fc1 = uimenu(foncMenu, 'label', '&Rotate', ...
-                             'separator', 'on');
-                uimenu(fc1, 'label', '&90° droite', ...
-                         'callback', {@rotate, obj, 1});
-                uimenu(fc1, 'label', '&90° gauche', ...
-                         'callback', {@rotate, obj, 2});
-                uimenu(fc1, 'label', '&180°', ...
-                         'callback', {@rotate, obj, 3});
                           
                           
 %               -----------------------------------------------------------   
@@ -109,8 +117,10 @@ classdef MainFrame < handle
                 v1 = uimenu(viewMenu, 'label', '&Coloration factor', ...
                               'callback', @dispContoursFactors, ...
                                 'enable', 'off');
+                v2 = uimenu(viewMenu, 'label', '&Grid', ...
+                              'callback', @showGrid);
                             
-                obj.handles.submenus = {f1, v1, e1};
+                obj.handles.submenus = {f1, v1, e1, v2, f2};
                           
                 function closef(~,~,h)
                     close(h);
@@ -118,6 +128,18 @@ classdef MainFrame < handle
             
                 function showFactors(~,~)
                     show(obj.model.factorTable);
+                end
+                
+                function showGrid(~,~)
+                    if strcmp(v2.Checked, 'off');
+                        set(v2, 'checked', 'on');
+                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'on');
+                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'on');
+                    else
+                        set(v2, 'checked', 'off');
+                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'off');
+                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'off');
+                    end
                 end
                 
                 function dispContoursFactors(~,~)
@@ -128,17 +150,19 @@ classdef MainFrame < handle
                 end
                 
                 function dispContours(~,~)
-                    showContours(obj, getAllPolygons(obj.model.PolygonArray));
+                    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
                     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
                         displayPolarSignature(obj, obj.model.PolygonArray);
                     end
                 end
             end
-            
-%             function reset(~,~)
-%                 obj.model.selectedPolygons = {};
-%                 selection(obj);
-%             end
+                
+            function test(~,~)
+                if exist('obj.handles.axes', 'var');
+                    disp(get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+                    set(obj.handles.submenus{4}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+                end
+            end
             
             function select(~,~)
                 list = cellstr(get(obj.handles.list, 'String'));
@@ -147,9 +171,7 @@ classdef MainFrame < handle
                 selection(obj);
             end
         end
-    end
-    
-    methods (Static)
+        
         function pos = getMiddle(obj, height, width)
             pos = get(obj, 'outerposition');
 
@@ -158,6 +180,33 @@ classdef MainFrame < handle
             pos(3) = height;
             pos(4) = width;
 
+        end
+        
+        function setPolygonArray(obj, nameArray, polygonArray)
+            obj.model = Model(polygonArray, nameArray);
+            if isempty(obj.handles.panels);
+                createPanel(obj,length(obj.handles.tabs.Children) + 1, 1);
+            end
+            set(obj.handles.list, 'string', nameArray);
+            set([obj.handles.menus{:}], 'enable', 'on');
+            set(obj.handles.submenus{1}, 'enable', 'on');
+            displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
+            if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+                createPanel(obj,obj.handles.tabs.Selection + 1, 0);
+                displayPolarSignature(obj, obj.model.PolygonArray);
+            end
+        end
+        
+        function updateSelectedPolygonsDisplay(obj)
+            selected = obj.model.selectedPolygons;
+            allHandleList = get(obj.handles.axes{obj.handles.tabs.Selection}, 'Children'); 
+            set(allHandleList, 'LineWidth', .5);
+            allTagList = get(allHandleList, 'tag');
+            if ~isempty(allTagList)
+                neededHandle = allHandleList(ismember(allTagList, selected));
+                set(neededHandle, 'LineWidth', 3.5);
+                uistack(neededHandle, 'top');
+            end
         end
     end
 end

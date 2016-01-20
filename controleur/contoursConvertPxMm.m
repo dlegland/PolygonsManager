@@ -1,4 +1,11 @@
 function contoursConvertPxMm(~,~, obj)
+%CONTOURSCONVERTPXMM  Converts contours units to user untis (millimeters)
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
+
 
 polygonList = cell(1, length(obj.model.nameList));
 resol = contoursConvertPxMmPrompt;
@@ -20,9 +27,9 @@ if ~strcmp(resol, '?')
     ud = obj.handles.axes{1}.UserData;
     if iscell(ud)
         polygonList = getPolygonsFromFactor(obj.model, ud{1});
-        showContoursFactor(obj, polygonList);
+        displayPolygonsFactor(obj, polygonList);
     else
-        showContours(obj, getAllPolygons(obj.model.PolygonArray));
+        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
         if isa(obj.model.PolygonArray, 'PolarSignatureArray')
             displayPolarSignature(obj, obj.model.PolygonArray);
         end
@@ -33,7 +40,7 @@ end
         
         resol = '?';
         
-        pos = MainFrame.getMiddle(gcf, 250, 130);
+        pos = getMiddle(gcf, 250, 130);
 
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');

@@ -1,33 +1,41 @@
-function displayPolarSignature(obj, signatureArray)
-%DISPLAYPOLARSIGNATURE  Display the current signatures
+function displayPolarSignatureFactor(obj, signatureArray)
+%DISPLAYPOLARSIGNATUREFACTOR  Display the current signatures colored by factors
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %       - signatureArray : a N-by-M cell array containing the polar signatures
 %   Outputs : none
 
-angles = signatureArray.angleList;
+angles = obj.model.PolygonArray.angleList;
 angles(end+1) = angles(end) + angles(2) - angles(1);
 
-set(obj.handles.axes{2}, 'colororderindex', 1);
-xlim(obj.handles.axes{2}, [angles(1), angles(end)]);
-ylim(obj.handles.axes{2}, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
 
-obj.handles.axes{2}.UserData = 0;
+set(obj.handles.axes{2}, 'colororderindex', 1);
+
+lineHandles = cell(1, length(obj.handles.axes{2}.UserData{2}));
 delete([obj.handles.lines{2}{:}]);
 
 hold(obj.handles.axes{2}, 'on');
-for i = 1:getPolygonNumber(signatureArray)
-    signature = getSignature(signatureArray, i);
+for i = 1:length(signatureArray)
+    signature = signatureArray{i, 2};
     signature(end+1) = signature(1);
     obj.handles.lines{2}{i} = plot(angles, signature, 'parent', obj.handles.axes{2}, ...
-                                                                         'ButtonDownFcn', @mouseClicker, ...
-                                                                                   'tag', obj.model.nameList{i});
+                                                                           'ButtonDownFcn', @mouseClicker, ...
+                                                                                     'tag', obj.model.nameList{i}, ...
+                                                                                   'color', obj.handles.axes{2}.ColorOrder(signatureArray{i, 1}, :));
+                                         
+    if cellfun('isempty',lineHandles(signatureArray{i, 1}))
+        line = obj.handles.lines{2}{i};
+        lineHandles{signatureArray{i, 1}} = line;
+    end
 end
 hold(obj.handles.axes{2}, 'off');
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
+end
+if obj.handles.axes{2}.UserData{3} == 0
+    obj.handles.legends{2} = legend(obj.handles.axes{2}, [lineHandles{:}], obj.handles.axes{2}.UserData{2}, 'location', 'eastoutside');
 end
 
     function mouseClicker(h,~)

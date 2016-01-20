@@ -1,4 +1,11 @@
 function importFactors(~,~, obj)
+%IMPORTFACTORS  Imports a factor file (.sel.txt) and sets the current factors
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
+
 loop = 0;
 while loop == 0
     [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\images\*sel.txt','Select a factor file');

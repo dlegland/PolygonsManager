@@ -1,4 +1,16 @@
 function createPanel(obj, index, equal)
+%CREATEPANEL  Create a new panel and every elements needed to display an axis
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%       - index : the index at which the panel handle will be saved in the
+%       MainFrame
+%       - equal : defines if the axis created must have the "equal"
+%       parameter -> Values :
+%                   - 1 : on
+%                   - 2 : off
+%   Outputs : none
+
 
 co = [0.28 0.44 0.91;
       0.93 0.04 0.25;
@@ -35,11 +47,11 @@ co = [0.28 0.44 0.91;
         if ~ctrlIsPressed
             obj.model.selectedPolygons = {};
             set(obj.handles.list, 'value', []);
-            selection(obj);
+            updateSelectedPolygonsDisplay(obj);
         end
     end
 
     function select(~,~)
-        selection(obj);
+        updateSelectedPolygonsDisplay(obj);
     end
 end

@@ -1,8 +1,16 @@
 function contoursToSignature(~,~, obj)
+%CONTOURSTOSIGNATURE  Converts polygons in polar signatures
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
 [startAngle, angleNumber] = contoursToSignaturePrompt;
 if ~strcmp(startAngle, '?')
-    angles = startAngle:angleNumber+startAngle-1;
+    pas = 360/angleNumber;
+    angles = startAngle:pas:360+startAngle-pas;
+    disp(angles);
     dat = zeros(length(obj.model.nameList), angleNumber);
 
     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
@@ -11,7 +19,7 @@ if ~strcmp(startAngle, '?')
         name = obj.model.nameList{i};
 
         obj.model.selectedPolygons = name;
-        selection(obj);
+        updateSelectedPolygonsDisplay(obj);
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
         waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
@@ -33,7 +41,7 @@ end
         start = '?';
         number = '?';
         
-        pos = MainFrame.getMiddle(gcf, 250, 130);
+        pos = getMiddle(gcf, 250, 165);
 
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');

@@ -1,4 +1,9 @@
 function loadContoursFactor(obj)
+%LOADCONTOURSFACTOR  Prepare the datas to display the polygons colored by factors
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
 [factor, leg] = colorFactorPrompt(obj);
 if ~strcmp(factor, '?')
@@ -9,14 +14,14 @@ if ~strcmp(factor, '?')
 
     set(obj.handles.axes{1}, 'userdata', {factor levels leg});
 
-    showContoursFactor(obj, polygonList);
+    displayPolygonsFactor(obj, polygonList);
 end
 
     function [factor, leg] = colorFactorPrompt(obj)
         
         factor = '?';
         leg = '?';
-        pos = MainFrame.getMiddle(gcf, 250, 130);
+        pos = getMiddle(gcf, 250, 165);
 
         d = dialog('Position', pos, ...
                        'Name', 'Select one factor');

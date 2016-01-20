@@ -31,6 +31,10 @@ classdef PolarSignatureArray < PolygonArray
             signature = obj.signatures(row, :);
         end
         
+        function updatePolygon(obj, row, polygon)
+            obj.signatures(row, :) = polygonSignature(polygon, obj.angleList);
+        end
+        
 %         function [ymax, ymin] = getLimits(obj)
 %             ymin = min(obj.signatures(:));
 %             ymax = max(obj.signatures(:));

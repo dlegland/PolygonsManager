@@ -1,32 +1,30 @@
-function showContoursFactor(obj, files, legends, display)
-index = obj.handles.tabs.Selection;
+function showContoursFactor(obj, files)
 
-% updatePanel(obj, index);
-set(obj.handles.axes{index}, 'colororderindex', 1);
+set(obj.handles.axes{1}, 'colororderindex', 1);
 
-lineHandles = cell(1, length(legends));
+lineHandles = cell(1, length(obj.handles.axes{1}.UserData{2}));
+delete([obj.handles.lines{1}{:}]);
+delete([obj.handles.legends{:}]);
 
-delete([obj.handles.lines{:}]);
-legend('off');
-
-hold(obj.handles.axes{index}, 'on');
+hold(obj.handles.axes{1}, 'on');
 for i = 1:length(files)
-    obj.handles.lines{i} = drawPolygon(files{i, 2}, 'parent', obj.handles.axes{index}, ...
-                                   'ButtonDownFcn', @mouseClicker, ...
-                                             'tag', obj.model.nameList{i}, ...
-                                           'color', obj.handles.axes{index}.ColorOrder(files{i, 1}, :));
+    obj.handles.lines{1}{i} = drawPolygon(files{i, 2}, 'parent', obj.handles.axes{1}, ...
+                                      'ButtonDownFcn', @mouseClicker, ...
+                                                'tag', obj.model.nameList{i}, ...
+                                              'color', obj.handles.axes{1}.ColorOrder(files{i, 1}, :));
+                                         
     if cellfun('isempty',lineHandles(files{i, 1}))
-        test = obj.handles.lines{i};
-        lineHandles{files{i, 1}} = test;
+        line = obj.handles.lines{1}{i};
+        lineHandles{files{i, 1}} = line;
     end
 end
+hold(obj.handles.axes{1}, 'off');
 
-hold(obj.handles.axes{index}, 'off');
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);
 end
-if display == 0
-    legend(obj.handles.axes{index}, [lineHandles{:}], legends, 'location', 'eastoutside');
+if obj.handles.axes{1}.UserData{3} == 0
+    obj.handles.legends{1} = legend(obj.handles.axes{1}, [lineHandles{:}], obj.handles.axes{1}.UserData{2}, 'location', 'eastoutside');
 end
 
     function mouseClicker(h,~)

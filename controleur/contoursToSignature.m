@@ -33,7 +33,7 @@ end
         start = '?';
         number = '?';
         
-        pos = getMiddle(gcf, 250, 165);
+        pos = MainFrame.getMiddle(gcf, 250, 130);
 
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');

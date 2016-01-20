@@ -1,22 +1,22 @@
-function loadContoursFactor(~,~,obj)
+function loadContoursFactor(obj)
 
 [factor, leg] = colorFactorPrompt(obj);
 if ~strcmp(factor, '?')
-    polygonList = getPolygonsFromFactors(obj.model, factor);
+    polygonList = getPolygonsFromFactor(obj.model, factor);
 
     x = columnIndex(obj.model.factorTable, factor);
     levels = obj.model.factorTable.levels{x};
 
-    set(obj.handles.axes{obj.handles.tabs.Selection}, 'userdata', {factor levels leg});
+    set(obj.handles.axes{1}, 'userdata', {factor levels leg});
 
-    showContoursFactor(obj, polygonList, levels, leg);
+    showContoursFactor(obj, polygonList);
 end
 
     function [factor, leg] = colorFactorPrompt(obj)
         
         factor = '?';
         leg = '?';
-        pos = getMiddle(gcf, 250, 165);
+        pos = MainFrame.getMiddle(gcf, 250, 130);
 
         d = dialog('Position', pos, ...
                        'Name', 'Select one factor');

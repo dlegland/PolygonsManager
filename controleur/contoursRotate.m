@@ -63,7 +63,7 @@ end
         
         axe = '?';
         
-        pos = getMiddle(gcf, 250, 130);
+        pos = MainFrame.getMiddle(gcf, 250, 130);
 
         d = dialog('position', pos, ...
                        'name', 'Select axis of rotation');

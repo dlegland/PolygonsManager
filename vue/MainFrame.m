@@ -33,7 +33,7 @@ classdef MainFrame < handle
              
 %             uicontrol('parent', function_box, ...
 %                       'string', 'Clear selection', ...
-%                     'callback', @reset);
+%                     'callback', @reset); 
             
 %             set(function_box, 'heights', [-30 -1]);
             
@@ -48,6 +48,8 @@ classdef MainFrame < handle
             obj.handles.panels = {};
             obj.handles.axes = {};
             obj.handles.lines = {};
+            obj.handles.legends = {};
+            
             
             setupMenu(fen);
             
@@ -105,7 +107,7 @@ classdef MainFrame < handle
                 uimenu(viewMenu, 'label', '&No Coloration', ...
                               'callback', @dispContours);
                 v1 = uimenu(viewMenu, 'label', '&Coloration factor', ...
-                              'callback', {@loadContoursFactor, obj}, ...
+                              'callback', @dispContoursFactors, ...
                                 'enable', 'off');
                             
                 obj.handles.submenus = {f1, v1, e1};
@@ -118,8 +120,18 @@ classdef MainFrame < handle
                     show(obj.model.factorTable);
                 end
                 
+                function dispContoursFactors(~,~)
+                    loadContoursFactor(obj);
+                    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+                        loadSignatureFactor(obj);
+                    end
+                end
+                
                 function dispContours(~,~)
                     showContours(obj, getAllPolygons(obj.model.PolygonArray));
+                    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+                        displayPolarSignature(obj, obj.model.PolygonArray);
+                    end
                 end
             end
             
@@ -134,6 +146,18 @@ classdef MainFrame < handle
                 obj.model.selectedPolygons = list(sel_val);
                 selection(obj);
             end
+        end
+    end
+    
+    methods (Static)
+        function pos = getMiddle(obj, height, width)
+            pos = get(obj, 'outerposition');
+
+            pos(1) = pos(1) + (pos(3)/2) - (height/2);
+            pos(2) = pos(2) + (pos(4)/2) - (width/2);
+            pos(3) = height;
+            pos(4) = width;
+
         end
     end
 end

@@ -17,12 +17,15 @@ for i = 1:length(polygonList)
     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
 close(h) 
-ud = obj.handles.axes{obj.handles.tabs.Selection}.UserData;
+ud = obj.handles.axes{1}.UserData;
 if iscell(ud)
-    polygonList = getPolygonsFromFactors(obj.model, ud{1});
-    showContoursFactor(obj, polygonList, ud{2}, ud{3});
+    polygonList = getPolygonsFromFactor(obj.model, ud{1});
+    showContoursFactor(obj, polygonList);
 else
     showContours(obj, getAllPolygons(obj.model.PolygonArray));
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        displayPolarSignature(obj, obj.model.PolygonArray);
+    end
 end
 
 end

@@ -17,12 +17,15 @@ if ~strcmp(resol, '?')
         waitbar(i / length(polygonList), h, ['process : ' name]);
     end
     close(h) 
-    ud = obj.handles.axes{obj.handles.tabs.Selection}.UserData;
+    ud = obj.handles.axes{1}.UserData;
     if iscell(ud)
-        polygonList = getPolygonsFromFactors(obj.model, ud{1});
-        showContoursFactor(obj, polygonList, ud{2}, ud{3});
+        polygonList = getPolygonsFromFactor(obj.model, ud{1});
+        showContoursFactor(obj, polygonList);
     else
         showContours(obj, getAllPolygons(obj.model.PolygonArray));
+        if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+            displayPolarSignature(obj, obj.model.PolygonArray);
+        end
     end
 end
 
@@ -30,7 +33,7 @@ end
         
         resol = '?';
         
-        pos = getMiddle(gcf, 250, 130);
+        pos = MainFrame.getMiddle(gcf, 250, 130);
 
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');

@@ -20,9 +20,12 @@ end
 close(h) 
 ud = obj.handles.axes{obj.handles.tabs.Selection}.UserData;
 if iscell(ud)
-    polygonList = getPolygonsFromFactors(obj.model, ud{1});
+    polygonList = getPolygonsFromFactor(obj.model, ud{1});
     showContoursFactor(obj, polygonList, ud{2}, ud{3});
 else
     showContours(obj, getAllPolygons(obj.model.PolygonArray));
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        displayPolarSignature(obj, obj.model.PolygonArray);
+    end
 end
 end

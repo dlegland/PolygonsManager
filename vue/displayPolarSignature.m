@@ -1,21 +1,21 @@
 function displayPolarSignature(obj, files)
-index = obj.handles.tabs.Selection;  
 
-set(obj.handles.axes{index}, 'colororderindex', 1);
-xlim(obj.handles.axes{index}, [files.angleList(1), files.angleList(end)]);
-ylim(obj.handles.axes{index}, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
-obj.handles.axes{index}.UserData = 0;
-% delete([obj.handles.lines{index, :}]);
-legend('off');
+set(obj.handles.axes{2}, 'colororderindex', 1);
+xlim(obj.handles.axes{2}, [files.angleList(1), files.angleList(end)]);
+ylim(obj.handles.axes{2}, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
 
-hold on;
+obj.handles.axes{2}.UserData = 0;
+delete([obj.handles.lines{2}{:}]);
+
+hold(obj.handles.axes{2}, 'on');
 for i = 1:getPolygonNumber(files)
     signature = getSignature(files, i);
-    plot(obj.model.PolygonArray.angleList, signature, 'parent', obj.handles.axes{index}, ...
-                                          'ButtonDownFcn', @mouseClicker, ...
-                                                    'tag', obj.model.nameList{i});
+    obj.handles.lines{2}{i} = plot(obj.model.PolygonArray.angleList, signature, 'parent', obj.handles.axes{2}, ...
+                                                                         'ButtonDownFcn', @mouseClicker, ...
+                                                                                   'tag', obj.model.nameList{i});
 end
-hold off;
+hold(obj.handles.axes{2}, 'off');
+
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);
 end

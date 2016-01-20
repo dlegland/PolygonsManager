@@ -15,14 +15,14 @@ co = [0.28 0.44 0.91;
 
     myPanel = uipanel('parent', obj.handles.tabs, 'bordertype', 'none');
     myAxe = axes('parent', myPanel, 'ButtonDownFcn', @reset, 'colororder', co);
-                               
-
+         
 %     set(myAxe, 'userdata', {});
 
     if equal == 1
         axis equal;
     end
 
+    obj.handles.lines{index} = cell(length(obj.model.nameList), 1);
     obj.handles.panels{index} = myPanel;
     obj.handles.axes{index} = myAxe;
 

@@ -1,20 +1,18 @@
 function showContours(obj, files)
-index = obj.handles.tabs.Selection;
-% files = obj.model.PolygonArray.polygons;
-% updatePanel(obj, index);
-set(obj.handles.axes{index}, 'colororderindex', 1);
 
-obj.handles.axes{index}.UserData = 0;
-delete([obj.handles.lines{:}]);
-legend('off');
+set(obj.handles.axes{1}, 'colororderindex', 1);
 
-hold(obj.handles.axes{index}, 'on');
+obj.handles.axes{1}.UserData = 0;
+delete([obj.handles.lines{1}{:}]);
+delete([obj.handles.legends{:}]);
+
+hold(obj.handles.axes{1}, 'on');
 for i = 1:length(files)
-    obj.handles.lines{i} = drawPolygon(files{i}, 'parent', obj.handles.axes{index}, ...
-                                          'ButtonDownFcn', @mouseClicker, ...
-                                                    'tag', obj.model.nameList{i});
+    obj.handles.lines{1}{i} = drawPolygon(files{i}, 'parent', obj.handles.axes{1}, ...
+                                             'ButtonDownFcn', @mouseClicker, ...
+                                                       'tag', obj.model.nameList{i});
 end
-hold(obj.handles.axes{index}, 'off');
+hold(obj.handles.axes{1}, 'off');
 
 if ~isempty(obj.model.selectedPolygons)
     selection(obj);

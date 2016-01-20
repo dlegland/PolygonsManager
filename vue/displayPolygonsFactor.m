@@ -9,7 +9,7 @@ function displayPolygonsFactor(obj, polygonArray)
 
 set(obj.handles.axes{1}, 'colororderindex', 1);
 
-lineHandles = cell(1, length(obj.handles.axes{1}.UserData{2}));
+lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{1}{:}]);
 delete([obj.handles.legends{:}]);
 
@@ -30,8 +30,8 @@ hold(obj.handles.axes{1}, 'off');
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
 end
-if obj.handles.axes{1}.UserData{3} == 0
-    obj.handles.legends{1} = legend(obj.handles.axes{1}, [lineHandles{:}], obj.handles.axes{1}.UserData{2}, 'location', 'eastoutside');
+if obj.model.selectedFactor{3} == 0
+    obj.handles.legends{1} = legend(obj.handles.axes{1}, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
 end
 
     function mouseClicker(h,~)

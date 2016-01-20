@@ -10,7 +10,7 @@ function contoursToSignature(~,~, obj)
 if ~strcmp(startAngle, '?')
     pas = 360/angleNumber;
     angles = startAngle:pas:360+startAngle-pas;
-    disp(angles);
+    
     dat = zeros(length(obj.model.nameList), angleNumber);
 
     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');

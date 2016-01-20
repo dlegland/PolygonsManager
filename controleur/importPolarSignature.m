@@ -13,5 +13,5 @@ startAngle = str2double(import.colNames{1});
 angles = startAngle:pas:360+startAngle-pas;
 polygons = PolarSignatureArray(import.data, angles);
 
-setPolygonArray(obj, import.rowNames, polygons)
+setPolygonArray(obj, import.rowNames', polygons)
 end

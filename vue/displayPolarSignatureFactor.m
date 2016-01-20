@@ -12,7 +12,7 @@ angles(end+1) = angles(end) + angles(2) - angles(1);
 
 set(obj.handles.axes{2}, 'colororderindex', 1);
 
-lineHandles = cell(1, length(obj.handles.axes{2}.UserData{2}));
+lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{2}{:}]);
 
 hold(obj.handles.axes{2}, 'on');
@@ -34,8 +34,8 @@ hold(obj.handles.axes{2}, 'off');
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
 end
-if obj.handles.axes{2}.UserData{3} == 0
-    obj.handles.legends{2} = legend(obj.handles.axes{2}, [lineHandles{:}], obj.handles.axes{2}.UserData{2}, 'location', 'eastoutside');
+if obj.model.selectedFactor{3} == 0
+    obj.handles.legends{2} = legend(obj.handles.axes{2}, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
 end
 
     function mouseClicker(h,~)

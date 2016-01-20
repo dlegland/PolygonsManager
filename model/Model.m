@@ -6,7 +6,7 @@ classdef Model
         factorTable;
         nameList;
         selectedPolygons = {};
-        selectedFactors;
+        selectedFactor;
         
     end
     

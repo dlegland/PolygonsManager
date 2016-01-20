@@ -39,7 +39,7 @@ co = [0.28 0.44 0.91;
     obj.handles.axes{index} = myAxe;
 
     set(obj.handles.tabs, 'selection', index, ...
-                'SelectionChangedFcn', @select );
+                'SelectionChangedFcn', @select);
 
     function reset(~,~)
         modifiers = get(obj.handles.figure,'currentModifier');
@@ -53,5 +53,6 @@ co = [0.28 0.44 0.91;
 
     function select(~,~)
         updateSelectedPolygonsDisplay(obj);
+        set(obj.handles.submenus{4}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
     end
 end

@@ -1,5 +1,5 @@
-function loadContoursFactor(obj)
-%LOADCONTOURSFACTOR  Prepare the datas to display the polygons colored by factors
+function selectFactor(~,~, obj)
+%LOADCONTOURSFACTOR  Prepare the datas to display the axes' lines colored by factors
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -7,14 +7,16 @@ function loadContoursFactor(obj)
 
 [factor, leg] = colorFactorPrompt(obj);
 if ~strcmp(factor, '?')
-    polygonList = getPolygonsFromFactor(obj.model, factor);
 
     x = columnIndex(obj.model.factorTable, factor);
     levels = obj.model.factorTable.levels{x};
-
-    set(obj.handles.axes{1}, 'userdata', {factor levels leg});
-
-    displayPolygonsFactor(obj, polygonList);
+    
+    obj.model.selectedFactor = {factor levels leg};
+    
+    displayPolygonsFactor(obj, getPolygonsFromFactor(obj.model, factor));
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        displayPolarSignatureFactor(obj, getSignatureFromFactor(obj.model, factor));
+    end
 end
 
     function [factor, leg] = colorFactorPrompt(obj)
@@ -86,5 +88,6 @@ end
             end
         end
     end
+
 
 end

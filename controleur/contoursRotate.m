@@ -33,13 +33,11 @@ for i = 1:length(polygonArray)
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
     waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
 end
-disp(pi/4);
-disp(45*pi/180);
 close(h) 
-ud = obj.handles.axes{obj.handles.tabs.Selection}.UserData;
+ud = obj.model.selectedFactor;
 if iscell(ud)
     polygonList = getPolygonsFromFactor(obj.model, ud{1});
-    displayPolygonsFactor(obj, polygonList, ud{2}, ud{3});
+    displayPolygonsFactor(obj, polygonList);
 else
     displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
 end

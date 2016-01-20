@@ -21,23 +21,18 @@ classdef MainFrame < handle
             main_box = uix.HBox('parent', fen, ...
                                'padding', 5);
             
-            selection_box = uix.VBox('parent', main_box, ...
-                                   'padding', 5);
-            
-            list_box = uicontrol('parent', selection_box, ...
+            list_box = uicontrol('parent', main_box, ...
                                   'style', 'listbox', ...
                                     'max', 100, ...
                                     'min', 0, ...
                                'callback', @select);
                            
-            tab_pan = uix.TabPanel('parent', main_box, ...
-                       'selectionchangedfcn', @test);
+            tab_pan = uix.TabPanel('parent', main_box);
             
             set(main_box, 'widths', [-1 -8]);
             
             obj.handles.main = main_box;
             obj.handles.tabs = tab_pan;
-            obj.handles.selection = selection_box;
             obj.handles.list = list_box;
             obj.handles.panels = {};
             obj.handles.axes = {};
@@ -73,8 +68,8 @@ classdef MainFrame < handle
                               'callback', {@closef, gcf}, ...
                              'separator', 'on');
                           
-%               -----------------------------------------------------------            
-                          
+%               ----------------------------------------------------------- 
+
                 uimenu(editMenu, 'label', '&Import factors', ...
                               'callback', {@importFactors, obj});
                           
@@ -82,8 +77,7 @@ classdef MainFrame < handle
                                    'callback', @showFactors, ...
                                      'enable', 'off');
                 
-%               -----------------------------------------------------------            
-                          
+%               -----------------------------------------------------------  
                           
                 fc1 = uimenu(foncMenu, 'label', '&Rotate all');
                 uimenu(fc1, 'label', '&90° droite', ...
@@ -113,13 +107,12 @@ classdef MainFrame < handle
                 uimenu(foncMenu, 'label', '&Signature', ...
                               'callback', {@contoursToSignature, obj});
                           
-                          
 %               -----------------------------------------------------------   
 
                 uimenu(viewMenu, 'label', '&No Coloration', ...
-                              'callback', @dispContours);
+                              'callback', @dispAxes);
                 v1 = uimenu(viewMenu, 'label', '&Coloration factor', ...
-                              'callback', @dispContoursFactors, ...
+                              'callback', {@selectFactor, obj}, ...
                                 'enable', 'off');
                 v2 = uimenu(viewMenu, 'label', '&Grid', ...
                               'callback', @showGrid);
@@ -146,14 +139,7 @@ classdef MainFrame < handle
                     end
                 end
                 
-                function dispContoursFactors(~,~)
-                    loadContoursFactor(obj);
-                    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-                        loadSignatureFactor(obj);
-                    end
-                end
-                
-                function dispContours(~,~)
+                function dispAxes(~,~)
                     displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
                     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
                         displayPolarSignature(obj, obj.model.PolygonArray);
@@ -161,18 +147,11 @@ classdef MainFrame < handle
                 end
             end
                 
-            function test(~,~)
-                if exist('obj.handles.axes', 'var');
-                    disp(get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
-                    set(obj.handles.submenus{4}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
-                end
-            end
-            
             function select(~,~)
                 list = cellstr(get(obj.handles.list, 'String'));
                 sel_val = get(obj.handles.list, 'value');
                 obj.model.selectedPolygons = list(sel_val);
-                selection(obj);
+                updateSelectedPolygonsDisplay(obj);
             end
         end
         

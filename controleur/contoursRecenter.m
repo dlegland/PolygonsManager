@@ -23,7 +23,7 @@ for i = 1:length(polygonList)
     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
 close(h) 
-ud = obj.handles.axes{1}.UserData;
+ud = obj.model.selectedFactor;
 if iscell(ud)
     polygonList = getPolygonsFromFactor(obj.model, ud{1});
     displayPolygonsFactor(obj, polygonList);

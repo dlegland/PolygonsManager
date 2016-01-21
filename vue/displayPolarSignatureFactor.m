@@ -9,6 +9,8 @@ function displayPolarSignatureFactor(obj, signatureArray)
 angles = obj.model.PolygonArray.angleList;
 angles(end+1) = angles(end) + angles(2) - angles(1);
 
+co = obj.handles.axes{2}.ColorOrder;
+set(obj.handles.axes{2}, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})-1)-1:length(co)), :));
 
 set(obj.handles.axes{2}, 'colororderindex', 1);
 
@@ -30,6 +32,8 @@ for i = 1:length(signatureArray)
     end
 end
 hold(obj.handles.axes{2}, 'off');
+
+set(obj.handles.axes{2}, 'colororder', co);
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);

@@ -1,5 +1,5 @@
 function contoursToSignature(~,~, obj)
-%CONTOURSTOSIGNATURE  Converts polygons in polar signatures
+%CONTOURSTOSIGNATURE  Converts contour in polar signatures
 %
 %   Inputs :
 %       - ~ (not used) : inputs automatically send by matlab during a callback
@@ -34,7 +34,11 @@ if ~strcmp(startAngle, '?')
 
     fen = MainFrame;
     polygons = PolarSignatureArray(dat, angles);
-    setPolygonArray(fen, obj.model.nameList, polygons);
+    if isa(obj.model.factorTable, 'Table')
+        setPolygonArray(fen, obj.model.nameList, polygons, obj.model.factorTable);
+    else
+        setPolygonArray(fen, obj.model.nameList, polygons);
+    end
 end
     function [start, number] = contoursToSignaturePrompt
         

@@ -1,7 +1,8 @@
 function selectFactor(~,~, obj)
-%LOADCONTOURSFACTOR  Prepare the datas to display the axes' lines colored by factors
+%SELECTFACTOR  Prepare the datas to display the axes' lines colored by factors
 %
 %   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 

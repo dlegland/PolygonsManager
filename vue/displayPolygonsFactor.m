@@ -1,13 +1,17 @@
 function displayPolygonsFactor(obj, polygonArray)
-%DISPLAYPOLARSIGNATURE  Display the current polygons colored by factors
+%DISPLAYPOLYGONSFACTOR  Display the current polygons colored by factors
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %       - polygonArray : a N-by-1 cell array containing the polygons
 %   Outputs : none
 
-
+set(obj.handles.submenus{4}{2}, 'checked', 'on');
+set(obj.handles.submenus{4}{1}, 'checked', 'off');
 set(obj.handles.axes{1}, 'colororderindex', 1);
+
+co = obj.handles.axes{1}.ColorOrder;
+set(obj.handles.axes{1}, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})-1)-1:length(co)), :));
 
 lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{1}{:}]);
@@ -26,6 +30,8 @@ for i = 1:length(polygonArray)
     end
 end
 hold(obj.handles.axes{1}, 'off');
+
+set(obj.handles.axes{1}, 'colororder', co);
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);

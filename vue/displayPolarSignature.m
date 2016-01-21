@@ -9,7 +9,13 @@ function displayPolarSignature(obj, signatureArray)
 angles = signatureArray.angleList;
 angles(end+1) = angles(end) + angles(2) - angles(1);
 
+co = obj.handles.axes{1}.ColorOrder;
+    
+if length(co) > length(obj.model.nameList)
+    set(obj.handles.axes{2}, 'colororder', co(floor(1:length(co)/(length(obj.model.nameList)-1)-1:length(co)), :));
+end
 set(obj.handles.axes{2}, 'colororderindex', 1);
+
 xlim(obj.handles.axes{2}, [angles(1), angles(end)]);
 ylim(obj.handles.axes{2}, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
 
@@ -25,6 +31,8 @@ for i = 1:getPolygonNumber(signatureArray)
                                                                                    'tag', obj.model.nameList{i});
 end
 hold(obj.handles.axes{2}, 'off');
+
+set(obj.handles.axes{2}, 'colororder', co);
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);

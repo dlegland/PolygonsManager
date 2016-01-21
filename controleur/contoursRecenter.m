@@ -1,5 +1,5 @@
 function contoursRecenter(~,~, obj)
-%CONTOURSRECENTER  Recenter the polygons
+%CONTOURSRECENTER  Recenter the contour
 %
 %   Inputs :
 %       - ~ (not used) : inputs automatically send by matlab during a callback

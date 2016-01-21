@@ -1,5 +1,5 @@
 function contoursRotate(~,~, obj, angle, type)
-%CONTOURSROTATE  Rotate the polygons 
+%CONTOURSROTATE  Rotate the contour 
 %
 %   Inputs :
 %       - ~ (not used) : inputs automatically send by matlab during a callback

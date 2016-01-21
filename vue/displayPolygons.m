@@ -1,11 +1,18 @@
 function displayPolygons(obj, polygonArray)
-%DISPLAYPOLARSIGNATURE  Display the current polygons
+%DISPLAYPOLYGONS  Display the current polygons
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %       - polygonArray : a N-by-1 cell array containing the polygons
 %   Outputs : none
 
+set(obj.handles.submenus{4}{1}, 'checked', 'on');
+set(obj.handles.submenus{4}{2}, 'checked', 'off');
+
+co = obj.handles.axes{1}.ColorOrder;
+if length(co) > length(obj.model.nameList)
+    set(obj.handles.axes{1}, 'colororder', co(floor(1:length(co)/(length(obj.model.nameList)-1)-1:length(co)), :));
+end
 set(obj.handles.axes{1}, 'colororderindex', 1);
 
 obj.handles.axes{1}.UserData = 0;
@@ -19,6 +26,8 @@ for i = 1:length(polygonArray)
                                                        'tag', obj.model.nameList{i});
 end
 hold(obj.handles.axes{1}, 'off');
+
+set(obj.handles.axes{1}, 'colororder', co);
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);

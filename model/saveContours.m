@@ -1,4 +1,11 @@
 function saveContours(~,~, obj)
+%SAVECONTOURS  Saves the current polygons as separated text files in a folder
+%
+%   Inputs :
+%       - ~ (not used) : inputs automatically send by matlab during a callback
+%       - obj : handle of the MainFrame
+%   Outputs : none
+
 [dname, fileName] = savePrompt;
 if ~strcmp(dname, '?')
     for i = 1:length(obj.model.nameList)
@@ -6,8 +13,8 @@ if ~strcmp(dname, '?')
         filename = sprintf(fileName, name);
         tab = Table.create(getPolygonFromName(obj.model, name), {'x', 'y'});
         write(tab, fullfile(dname, [filename '.txt']));
-        msgbox('success');
     end
+    msgbox('success');
 end
 
     function [dname, fileName] = savePrompt

@@ -29,14 +29,8 @@ if dname ~= 0
         end
         close(h)
         polygons = BasicPolygonArray(polygonArray);
-        obj.model = Model(polygons, nameArray);
-        if isempty(obj.handles.panels);
-            createPanel(obj,length(obj.handles.tabs.Children) + 1, 1);
-        end
         set(obj.handles.list, 'string', nameArray);
-        set([obj.handles.menus{:}], 'enable', 'on');
-        set(obj.handles.submenus{1}, 'enable', 'on');
-        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
+        setPolygonArray(obj, nameArray, polygons);
     else
         msgbox('The selected folder is empty');
     end

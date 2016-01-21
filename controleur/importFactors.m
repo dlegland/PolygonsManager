@@ -1,5 +1,5 @@
 function importFactors(~,~, obj)
-%IMPORTFACTORS  Imports a factor file (.sel.txt) and sets the current factors
+%IMPORTFACTORS  Imports a factor file (.txt) and defines it as the current factors
 %
 %   Inputs :
 %       - ~ (not used) : inputs automatically send by matlab during a callback
@@ -8,12 +8,12 @@ function importFactors(~,~, obj)
 
 loop = 0;
 while loop == 0
-    [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\images\*sel.txt','Select a factor file');
+    [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\images\*.txt','Select a factor file');
     if fPath == 0
         return;
     end
     fFile = fullfile(fPath, fName);
-
+        
     import = Table.read(fFile);
     factorTbl = zeros(length(obj.model.nameList), columnNumber(import));
     levels = cell(columnNumber(import), 1);
@@ -26,10 +26,12 @@ while loop == 0
         if any(index, 2) ~= 0
             factorTbl(index, :) = getRow(import, i);
             for j = 1:columnNumber(import)
-                 if any(strcmp(levels{j}, getLevel(import, i, j))) == 0
-                     ind = strcmp(import.levels{j}, getLevel(import, i, j));
-                     levels{j}{ind} = getLevel(import, i, j);
-                 end
+                if isFactor(import, j)
+                    if any(strcmp(levels{j}, getLevel(import, i, j))) == 0
+                        ind = strcmp(import.levels{j}, getLevel(import, i, j));
+                        levels{j}{ind} = getLevel(import, i, j);
+                    end
+                end
             end
         end
     end
@@ -52,13 +54,17 @@ while loop == 0
             end
         end
         factorTbl = Table.create(factorTbl, 'rowNames', obj.model.nameList, 'colNames', import.colNames);
-        for i = 1:columnNumber(factorTbl)
-            setFactorLevels(factorTbl, i, levels{i});
+        for i = 1:length(levels)
+            if isFactor(import, i)
+                setFactorLevels(factorTbl, i, levels{i});
+            else
+                setAsFactor(factorTbl, i);
+            end
         end
         obj.model.factorTable = factorTbl;
-        set([obj.handles.submenus{:}], 'enable', 'on');
+        obj.model.factorTable.name = fName;
+        updateMenus(obj);
         loop = 1;
-        set(obj.handles.figure, 'name', ['factors : ' fName]);
     else
         loop = importFactorsPrompt;
     end

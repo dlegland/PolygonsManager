@@ -49,7 +49,11 @@ if ~strcmp(axis, '?')
     close(h) 
     fen = MainFrame;    
     polygons = BasicPolygonArray(polygonArray);
-    setPolygonArray(fen, obj.model.nameList, polygons);
+    if isa(obj.model.factorTable, 'Table')
+        setPolygonArray(fen, obj.model.nameList, polygons, obj.model.factorTable);
+    else
+        setPolygonArray(fen, obj.model.nameList, polygons);
+    end
 end
 
     function axe = contoursRotatePrompt

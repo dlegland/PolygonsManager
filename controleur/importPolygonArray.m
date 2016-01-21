@@ -6,7 +6,7 @@ function importPolygonArray(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-dname = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\images');
+dname = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\Tests');
 
 files = dir(fullfile(dname, '*txt'));
 

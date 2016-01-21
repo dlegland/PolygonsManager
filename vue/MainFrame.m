@@ -43,7 +43,7 @@ classdef MainFrame < handle
             
             function setupMenu(fen)
                 fileMenu = uimenu(fen, 'label', '&File');
-                editMenu = uimenu(fen, 'label', '&Edit', 'enable', 'off');
+                editMenu = uimenu(fen, 'label', '&Factors', 'enable', 'off');
                 foncMenu = uimenu(fen, 'label', '&Process', 'enable', 'off');
                 viewMenu = uimenu(fen, 'label', '&View', 'enable', 'off');
                 
@@ -74,12 +74,20 @@ classdef MainFrame < handle
 
                 e1 = uimenu(editMenu, 'label', '&Import factors', ...
                               'callback', {@importFactors, obj});
+                e2 = uimenu(editMenu, 'label', '&Create factors', ...
+                              'callback', {@createFactors, obj});
                           
-                e2 = uimenu(editMenu, 'label', '&Display factors', ...
+                e3 = uimenu(editMenu, 'label', '&Save factors', ...
+                                   'callback', {@saveFactors, obj}, ...
+                                     'enable', 'off', ...
+                                  'separator', 'on');
+                          
+                e4 = uimenu(editMenu, 'label', '&Display factors', ...
                                    'callback', @showFactors, ...
-                                     'enable', 'off');
-                
-                obj.handles.submenus{2} = {e1, e2};
+                                     'enable', 'off', ...
+                                  'separator', 'on');
+                          
+                obj.handles.submenus{2} = {e1, e2, e3, e4};
                           
 %               -----------------------------------------------------------  
                           
@@ -215,9 +223,9 @@ classdef MainFrame < handle
                 end
                 if isa(obj.model.factorTable, 'Table')
                     set(obj.handles.submenus{2}{1}, 'checked', 'on');
-                    set(obj.handles.submenus{2}{2}, 'enable', 'on');
+                    set([obj.handles.submenus{2}{:}], 'enable', 'on');
                     set(obj.handles.submenus{4}{2}, 'enable', 'on');
-                    set(obj.handles.figure, 'name', [get(obj.handles.figure, 'name') ' | factors : ' obj.model.factorTable.name]);
+                    set(obj.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name]);
                 end
             end
         end

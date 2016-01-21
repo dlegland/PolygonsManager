@@ -6,7 +6,7 @@ function importPolarSignature(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-[fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\images\*.txt');
+[fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\TestsS*.txt');
 fFile = fullfile(fPath, fName);
 
 if fName ~= 0

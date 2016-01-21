@@ -8,7 +8,7 @@ function importFactors(~,~, obj)
 
 loop = 0;
 while loop == 0
-    [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\images\*.txt','Select a factor file');
+    [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt','Select a factor file');
     if fPath == 0
         return;
     end

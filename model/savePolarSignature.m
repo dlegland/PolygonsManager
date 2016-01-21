@@ -6,7 +6,7 @@ function savePolarSignature(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-[fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\images\*.txt');
+[fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 colnames = cellstr(num2str(obj.model.PolygonArray.angleList'));
 tab = Table.create(obj.model.PolygonArray.signatures, ...
                     'rowNames', obj.model.nameList, ...

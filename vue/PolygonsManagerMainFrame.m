@@ -1,4 +1,4 @@
-classdef MainFrame < handle
+classdef PolygonsManagerMainFrame < handle
     
     properties
         
@@ -9,12 +9,12 @@ classdef MainFrame < handle
     end
     
     methods
-        function obj = MainFrame
+        function obj = PolygonsManagerMainFrame
             fen = figure('units', 'normalized', ...
                  'outerposition', [0.25 0.25 0.5 0.5], ...
                        'menubar', 'none', ...
                    'numbertitle', 'off', ...
-                   'name', 'Polygons Manager');
+                          'name', 'Polygons Manager');
             set(fen, 'units', 'pixel');
             
             obj.handles.figure = fen;            
@@ -156,9 +156,9 @@ classdef MainFrame < handle
                 end
                 
                 function dispAxes(~,~)
-                    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
+                    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
                     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-                        displayPolarSignature(obj, obj.model.PolygonArray);
+                        displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
                     end
                 end
             end
@@ -175,8 +175,8 @@ classdef MainFrame < handle
 
         end
         
-        function setPolygonArray(obj, nameArray, polygonArray, varargin)
-            obj.model = Model(polygonArray, nameArray);
+        function setupNewFrame(obj, nameArray, polygonArray, varargin)
+            obj.model = PolygonsManagerData(polygonArray, nameArray);
             if isempty(obj.handles.panels);
                 createPanel(obj,length(obj.handles.tabs.Children) + 1, 1);
             end
@@ -185,10 +185,10 @@ classdef MainFrame < handle
             end
             set(obj.handles.list, 'string', nameArray, 'callback', @select);
             updateMenus(obj);
-            displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
+            displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
             if isa(obj.model.PolygonArray, 'PolarSignatureArray')
                 createPanel(obj,obj.handles.tabs.Selection + 1, 0);
-                displayPolarSignature(obj, obj.model.PolygonArray);
+                displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
             end
         
             function select(~,~)
@@ -212,7 +212,7 @@ classdef MainFrame < handle
         end
         
         function updateMenus(obj)
-            if isa(obj.model, 'Model')
+            if isa(obj.model, 'PolygonsManagerData')
                 set(obj.handles.menus{2}, 'enable', 'on');
                 set(obj.handles.menus{4}, 'enable', 'on');
                 if isa(obj.model.PolygonArray, 'BasicPolygonArray')

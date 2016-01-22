@@ -6,50 +6,77 @@ function contoursToSignature(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
+% enter the starting angle and the number of angle that will be used during
+% the transformation
 [startAngle, angleNumber] = contoursToSignaturePrompt;
 if ~strcmp(startAngle, '?')
+    % determine the angles that will be used for the transformation
     pas = 360/angleNumber;
     angles = startAngle:pas:360+startAngle-pas;
     
+    % preallocating memory
     dat = zeros(length(obj.model.nameList), angleNumber);
-
+    
+    %create waitbar
     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
     for i = 1:length(obj.model.nameList)
 
+        % get the name of the polygon that will be transformed
         name = obj.model.nameList{i};
 
+        % update the waitbar and the contours selection (purely cosmetic)
         obj.model.selectedPolygons = name;
         updateSelectedPolygonsDisplay(obj);
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
         waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
 
+        % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
 
+        % calculate the polar signature of the polygon
         sign = polygonSignature(poly, angles);
 
+        % save all the polar signatures in a numeric array 
         dat(i, 1:length(sign)) = sign(:);
     end
-    close(h);
-
-    fen = MainFrame;
+    % close waitbar
+    close(h) 
+    % create a new figure and display the results of the rotation on this
+    % new figure
+    fen = PolygonsManagerMainFrame;    
     polygons = PolarSignatureArray(dat, angles);
+    % if factors were imported in the last figure, transfer them
     if isa(obj.model.factorTable, 'Table')
-        setPolygonArray(fen, obj.model.nameList, polygons, obj.model.factorTable);
+        setupNewFrame(fen, obj.model.nameList, polygons, obj.model.factorTable);
     else
-        setPolygonArray(fen, obj.model.nameList, polygons);
+        setupNewFrame(fen, obj.model.nameList, polygons);
     end
 end
+
     function [start, number] = contoursToSignaturePrompt
+    %CONTOURSTOSIGNATUREPROMPT  A dialog figure on which the user can select
+    %which axis will be aligned with the contours
+    %
+    %   Inputs : none
+    %   Outputs : 
+    %       - start : the starting angle
+    %       - number : the number of angles
+
         
+        % default value of the ouput to prevent errors
         start = '?';
         number = '?';
         
+        % get the position where the prompt will at the center of the
+        % current figure
         pos = getMiddle(gcf, 250, 165);
 
+        % create the dialog box
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');
 
+        % create the inputs of the dialog box
         uicontrol('parent', d,...
                 'position', [30 115 90 20], ...
                    'style', 'text',...
@@ -83,6 +110,7 @@ end
                          'visible', 'off', ...
                         'fontsize', 8);
 
+        % create the two button to cancel or validate the inputs
         uicontrol('parent', d, ...
                 'position', [30 30 85 25], ...
                   'string', 'Validate', ...
@@ -98,7 +126,9 @@ end
 
         function callback(~,~)
             try
-                if ~isnan(str2double(get(edit,'String')))
+                if ~isnan(str2double(get(edit,'String'))) && ~isnan(str2double(get(edit,'String')))
+                    % if both inputs are numeri, get them and close the
+                    % dialog box
                     start = str2double(get(edit,'String'));
                     number = str2double(get(edit2,'String'));
                     delete(gcf);

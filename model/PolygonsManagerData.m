@@ -1,4 +1,4 @@
-classdef Model
+classdef PolygonsManagerData
     
     properties
         
@@ -11,7 +11,7 @@ classdef Model
     end
     
     methods
-        function obj = Model(polygons, nameArray)
+        function obj = PolygonsManagerData(polygons, nameArray)
             obj.PolygonArray = polygons;
             obj.nameList = nameArray;
         end

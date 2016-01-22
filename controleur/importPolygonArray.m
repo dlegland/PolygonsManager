@@ -16,7 +16,7 @@ nameArray = cell(1, length(files));
 if dname ~= 0
     if ~isempty(files)
         if ~isempty(obj.handles.panels)
-            obj = MainFrame;
+            obj = PolygonsManagerMainFrame;
         end
         h = waitbar(0,'Début de l''import', 'name', 'Chargement des contours');
         for i = 1:length(files)
@@ -30,7 +30,7 @@ if dname ~= 0
         close(h)
         polygons = BasicPolygonArray(polygonArray);
         set(obj.handles.list, 'string', nameArray);
-        setPolygonArray(obj, nameArray, polygons);
+        setupNewFrame(obj, nameArray, polygons);
     else
         msgbox('The selected folder is empty');
     end

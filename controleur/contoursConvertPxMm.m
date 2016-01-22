@@ -6,45 +6,63 @@ function contoursConvertPxMm(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-
-polygonList = cell(1, length(obj.model.nameList));
+% enter the resolution of the image to make the conversion
 resol = contoursConvertPxMmPrompt;
-
 if ~strcmp(resol, '?')
+    
+    % preallocating memory
+    polygonList = cell(1, length(obj.model.nameList));
+
+    % create waitbar
     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
     for i = 1:length(polygonList)
-
+        % get the name of the contours that will be converted
         name = obj.model.nameList{i};
 
+        % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
-
+        
+        % convert the polygon
         polyMm = poly * resol;
 
+        %update the polygon and the waitbar
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
         waitbar(i / length(polygonList), h, ['process : ' name]);
     end
+    % close waitbar
     close(h) 
+    % get the selected factor
     ud = obj.model.selectedFactor;
+    % if a factor was selected prior to the conversion
     if iscell(ud)
+        % display the contours colored depending on the selected factor
         polygonList = getPolygonsFromFactor(obj.model, ud{1});
-        displayPolygonsFactor(obj, polygonList);
+        displayPolygonsFactor(obj, polygonList, obj.handles.axes{1});
     else
-        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray));
-        if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-            displayPolarSignature(obj, obj.model.PolygonArray);
-        end
+        % display the contours without special coloration
+        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
     end
 end
 
     function resol = contoursConvertPxMmPrompt
+    %CONTOURSALIGNPROMPT  A dialog figure on which the user can select type
+    %the resolution of the image
+    %
+    %   Inputs : none
+    %   Outputs : resolution of the image
         
+        % default value of the ouput to prevent errors
         resol = '?';
         
+        % get the position where the prompt will at the center of the
+        % current figure
         pos = getMiddle(gcf, 250, 130);
 
+        % create the dialog
         d = dialog('position', pos, ...
                        'name', 'Enter image resolution');
 
+        % create the inputs of the dialog box
         uicontrol('parent', d,...
                 'position', [30 80 90 20], ...
                    'style', 'text',...
@@ -64,6 +82,7 @@ end
                          'visible', 'off', ...
                         'fontsize', 8);
 
+        % create the two button to cancel or validate the inputs
         uicontrol('parent', d, ...
                 'position', [30 30 85 25], ...
                   'string', 'Validate', ...
@@ -79,11 +98,17 @@ end
 
         function callback(~,~)
             try
+                % check if the input is numeric
                 if ~isnan(str2double(get(edit,'String')))
+                    % if it's numeric then get its value and close the
+                    % dialog box
                     resol = str2double(get(edit,'String'));
                     delete(gcf);
                 else
+                    % if it's not numeric, check if the input is an operation 
                     if find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
+                        % if it contains an operation, get the result and
+                        % close the dialog box
                         resol = eval(get(edit,'String'));
                         delete(gcf);
                     else
@@ -95,5 +120,4 @@ end
             end
         end
     end
-
 end

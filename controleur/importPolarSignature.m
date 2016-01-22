@@ -6,12 +6,12 @@ function importPolarSignature(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-[fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\TestsS*.txt');
+[fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 fFile = fullfile(fPath, fName);
 
 if fName ~= 0
     if ~isempty(obj.handles.panels)
-        obj = MainFrame;
+        obj = PolygonsManagerMainFrame;
     end
 
     import = Table.read(fFile);
@@ -21,6 +21,6 @@ if fName ~= 0
     angles = startAngle:pas:360+startAngle-pas;
     polygons = PolarSignatureArray(import.data, angles);
 
-    setPolygonArray(obj, import.rowNames', polygons)
+    setupNewFrame(obj, import.rowNames', polygons)
 end
 end

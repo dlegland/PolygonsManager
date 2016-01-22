@@ -14,9 +14,9 @@ if ~strcmp(factor, '?')
     
     obj.model.selectedFactor = {factor levels leg};
     
-    displayPolygonsFactor(obj, getPolygonsFromFactor(obj.model, factor));
+    displayPolygonsFactor(obj, getPolygonsFromFactor(obj.model, factor), obj.handles.axes{1});
     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        displayPolarSignatureFactor(obj, getSignatureFromFactor(obj.model, factor));
+        displayPolarSignatureFactor(obj, getSignatureFromFactor(obj.model, factor), obj.handles.axes{2});
     end
 end
 

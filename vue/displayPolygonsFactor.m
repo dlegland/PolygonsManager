@@ -1,4 +1,4 @@
-function displayPolygonsFactor(obj, polygonArray)
+function displayPolygonsFactor(obj, polygonArray, axis)
 %DISPLAYPOLYGONSFACTOR  Display the current polygons colored by factors
 %
 %   Inputs :
@@ -8,59 +8,36 @@ function displayPolygonsFactor(obj, polygonArray)
 
 set(obj.handles.submenus{4}{2}, 'checked', 'on');
 set(obj.handles.submenus{4}{1}, 'checked', 'off');
-set(obj.handles.axes{1}, 'colororderindex', 1);
+set(axis, 'colororderindex', 1);
 
-co = obj.handles.axes{1}.ColorOrder;
-set(obj.handles.axes{1}, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})-1)-1:length(co)), :));
+co = axis.ColorOrder;
+
+set(axis, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})):length(co)), :));
 
 lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{1}{:}]);
 delete([obj.handles.legends{:}]);
 
-hold(obj.handles.axes{1}, 'on');
+hold(axis, 'on');
 for i = 1:length(polygonArray)
-    obj.handles.lines{1}{i} = drawPolygon(polygonArray{i, 2}, 'parent', obj.handles.axes{1}, ...
-                                      'ButtonDownFcn', @mouseClicker, ...
+    obj.handles.lines{1}{i} = drawPolygon(polygonArray{i, 2}, 'parent', axis, ...
+                                      'ButtonDownFcn', {@detectLineClick, obj}, ...
                                                 'tag', obj.model.nameList{i}, ...
-                                              'color', obj.handles.axes{1}.ColorOrder(polygonArray{i, 1}, :));
+                                              'color', axis.ColorOrder(polygonArray{i, 1}, :));
                                          
     if cellfun('isempty',lineHandles(polygonArray{i, 1}))
         line = obj.handles.lines{1}{i};
         lineHandles{polygonArray{i, 1}} = line;
     end
 end
-hold(obj.handles.axes{1}, 'off');
+hold(axis, 'off');
 
-set(obj.handles.axes{1}, 'colororder', co);
+set(axis, 'colororder', co);
 
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
 end
 if obj.model.selectedFactor{3} == 0
-    obj.handles.legends{1} = legend(obj.handles.axes{1}, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
+    obj.handles.legends{1} = legend(axis, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
 end
-
-    function mouseClicker(h,~)
-        modifiers = get(obj.handles.figure,'currentModifier');
-        ctrlIsPressed = ismember('control',modifiers);
-        if ~ctrlIsPressed
-            if find(strcmp(get(h,'tag'), obj.model.selectedPolygons))
-                if length(obj.model.selectedPolygons) == 1
-                    obj.model.selectedPolygons(strcmp(get(h,'tag'), obj.model.selectedPolygons)) = [];
-                else
-                    obj.model.selectedPolygons = obj.model.nameList(strcmp(get(h,'tag'), obj.model.nameList));
-                end
-            else
-                obj.model.selectedPolygons = obj.model.nameList(strcmp(get(h,'tag'), obj.model.nameList));
-            end
-        else
-            if find(strcmp(get(h,'tag'), obj.model.selectedPolygons))
-                obj.model.selectedPolygons(strcmp(get(h,'tag'), obj.model.selectedPolygons)) = [];
-            else
-                obj.model.selectedPolygons{end+1} = obj.model.nameList{strcmp(get(h,'tag'), obj.model.nameList)};
-            end
-        end
-        updateSelectedPolygonsDisplay(obj);
-        set(obj.handles.list, 'value', find(ismember(obj.model.nameList, obj.model.selectedPolygons)));
-    end
 end

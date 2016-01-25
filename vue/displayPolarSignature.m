@@ -23,6 +23,8 @@ ylim(axis, [0 max(obj.model.PolygonArray.signatures(:))+.5]);
 axis.UserData = 0;
 delete([obj.handles.lines{2}{:}]);
 
+obj.handles.tabs.TabTitles{2} = 'Signatures';
+
 hold(axis, 'on');
 for i = 1:getPolygonNumber(signatureArray)
     signature = getSignature(signatureArray, i);

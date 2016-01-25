@@ -20,6 +20,8 @@ axis.UserData = 0;
 delete([obj.handles.lines{1}{:}]);
 delete([obj.handles.legends{:}]);
 
+obj.handles.tabs.TabTitles{1} = 'Polygons';
+
 hold(axis, 'on');
 for i = 1:length(polygonArray)
     obj.handles.lines{1}{i} = drawPolygon(polygonArray{i}, 'parent', axis, ...

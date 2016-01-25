@@ -17,6 +17,8 @@ set(axis, 'colororderindex', 1);
 lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{2}{:}]);
 
+obj.handles.tabs.TabTitles{2} = 'Signatures';
+
 hold(axis, 'on');
 for i = 1:length(signatureArray)
     signature = signatureArray{i, 2};

@@ -11,6 +11,7 @@ polygonList = cell(1, length(obj.model.nameList));
 
 % create waitbar
 h = waitbar(0,'Début de la conversion');
+
 for i = 1:length(polygonList)
     % get the name of the contours that will be centered
     name = obj.model.nameList{i};
@@ -22,14 +23,16 @@ for i = 1:length(polygonList)
     center  = polygonCentroid(poly);
     poly = bsxfun(@minus, poly, center);
     
-    %update the polygon and the waitbar
+    % update the polygon and the waitbar
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), poly);
     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
 % close waitbar
 close(h) 
+
 % get the selected factor
 ud = obj.model.selectedFactor;
+
 % if a factor was selected prior to the conversion
 if iscell(ud)
     % display the contours colored depending on the selected factor

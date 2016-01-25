@@ -8,15 +8,17 @@ function contoursConvertPxMm(~,~, obj)
 
 % enter the resolution of the image to make the conversion
 resol = contoursConvertPxMmPrompt;
+
 if ~strcmp(resol, '?')
     
-    % preallocating memory
+    % memory allocation
     polygonList = cell(1, length(obj.model.nameList));
 
     % create waitbar
     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
+    
     for i = 1:length(polygonList)
-        % get the name of the contours that will be converted
+        % get the name of the polygon that will be converted
         name = obj.model.nameList{i};
 
         % get the polygon from its name
@@ -30,9 +32,11 @@ if ~strcmp(resol, '?')
         waitbar(i / length(polygonList), h, ['process : ' name]);
     end
     % close waitbar
-    close(h) 
+    close(h)
+    
     % get the selected factor
     ud = obj.model.selectedFactor;
+    
     % if a factor was selected prior to the conversion
     if iscell(ud)
         % display the contours colored depending on the selected factor
@@ -98,22 +102,16 @@ end
 
         function callback(~,~)
             try
-                % check if the input is numeric
+                % if the input numeric then get its value and close the dialog box
                 if ~isnan(str2double(get(edit,'String')))
-                    % if it's numeric then get its value and close the
-                    % dialog box
                     resol = str2double(get(edit,'String'));
                     delete(gcf);
+                % if the input contains an operation get the result and close the dialog box
+                elseif find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
+                    resol = eval(get(edit,'String'));
+                    delete(gcf);
                 else
-                    % if it's not numeric, check if the input is an operation 
-                    if find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
-                        % if it contains an operation, get the result and
-                        % close the dialog box
-                        resol = eval(get(edit,'String'));
-                        delete(gcf);
-                    else
-                        set(error, 'visible', 'on');
-                    end
+                    set(error, 'visible', 'on');
                 end
             catch
                 set(error, 'visible', 'on');

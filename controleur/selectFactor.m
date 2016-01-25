@@ -6,29 +6,50 @@ function selectFactor(~,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
+% select the factor that will determine the coloration and if the legend of
+% the axis must be displayed
 [factor, leg] = colorFactorPrompt(obj);
-if ~strcmp(factor, '?')
 
+if ~strcmp(factor, '?')
+    % get the levels of the selected factor
     x = columnIndex(obj.model.factorTable, factor);
     levels = obj.model.factorTable.levels{x};
     
+    % save the selected factor, it's levels, and the legend display option
     obj.model.selectedFactor = {factor levels leg};
     
+    % display the colored polygons
     displayPolygonsFactor(obj, getPolygonsFromFactor(obj.model, factor), obj.handles.axes{1});
     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        % if the polygon array is a signature array, also display the
+        % colored polar signatures
         displayPolarSignatureFactor(obj, getSignatureFromFactor(obj.model, factor), obj.handles.axes{2});
     end
 end
 
     function [factor, leg] = colorFactorPrompt(obj)
+    %COLORFACTORPROMPT  A dialog figure on which the user can select
+    %which factor he wants to see colored and if he wants to display the
+    %legend or not
+    %
+    %   Inputs : none
+    %   Outputs : 
+    %       - factor : selected factor
+    %       - leg : display option of the legend
         
+        % default value of the ouput to prevent errors
         factor = '?';
         leg = '?';
+        
+        % get the position where the prompt will at the center of the
+        % current figure
         pos = getMiddle(gcf, 250, 165);
 
+        % create the dialog box
         d = dialog('Position', pos, ...
                        'Name', 'Select one factor');
 
+        % create the inputs of the dialog box
         uicontrol('parent', d, ...
                 'position', [30 115 90 20], ...
                    'style', 'text', ...
@@ -54,6 +75,7 @@ end
                          'string', 'Yes', ...
                        'callback', @toggle);
 
+        % create the two button to cancel or validate the inputs
         uicontrol('parent', d, ...
                 'position', [30 30 85 25], ...
                   'string', 'Validate',...

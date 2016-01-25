@@ -26,8 +26,9 @@ classdef PolygonsManagerMainFrame < handle
                                   'style', 'listbox', ...
                                     'max', 100, ...
                                     'min', 0);
-                           
-            tab_pan = uix.TabPanel('parent', main_box);
+    
+            tab_pan = uix.TabPanel('parent', main_box, ...
+                                 'tabwidth', 75);
             
             set(main_box, 'widths', [-1 -8]);
             
@@ -38,6 +39,7 @@ classdef PolygonsManagerMainFrame < handle
             obj.handles.axes = {};
             obj.handles.lines = {};
             obj.handles.legends = {};
+            obj.handles.contextMenus = {};
             
             setupMenu(fen);
             
@@ -93,19 +95,19 @@ classdef PolygonsManagerMainFrame < handle
                           
                 fc1 = uimenu(foncMenu, 'label', '&Rotate all');
                 uimenu(fc1, 'label', '&90° droite', ...
-                         'callback', {@contoursRotate, obj, 1, 1});
+                         'callback', {@contoursRotate, obj, 1, 'all'});
                 uimenu(fc1, 'label', '&90° gauche', ...
-                         'callback', {@contoursRotate, obj, 2, 1});
+                         'callback', {@contoursRotate, obj, 2, 'all'});
                 uimenu(fc1, 'label', '&180°', ...
-                         'callback', {@contoursRotate, obj, 3, 1});
+                         'callback', {@contoursRotate, obj, 3, 'all'});
                      
                 fc2 = uimenu(foncMenu, 'label', '&Rotate selected');
                 uimenu(fc2, 'label', '&90° droite', ...
-                         'callback', {@contoursRotate, obj, 1, 2});
+                         'callback', {@contoursRotate, obj, 1, 'selected'});
                 uimenu(fc2, 'label', '&90° gauche', ...
-                         'callback', {@contoursRotate, obj, 2, 2});
+                         'callback', {@contoursRotate, obj, 2, 'selected'});
                 uimenu(fc2, 'label', '&180°', ...
-                         'callback', {@contoursRotate, obj, 3, 2});
+                         'callback', {@contoursRotate, obj, 3, 'selected'});
                      
                 fc3 = uimenu(foncMenu, 'label', '&Recenter polygons', ...
                               'callback', {@contoursRecenter, obj}, ...
@@ -118,8 +120,14 @@ classdef PolygonsManagerMainFrame < handle
                              'separator', 'on');
                 fc6 = uimenu(foncMenu, 'label', '&Signature', ...
                               'callback', {@contoursToSignature, obj});
+                fc7 = uimenu(foncMenu, 'label', '&Concatenate', ...
+                              'callback', {@contoursConcatenate, obj});
                           
-                obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6};
+                fc8 = uimenu(foncMenu, 'label', '&PCA', ...
+                              'callback', {@testPCA, obj}, ...
+                             'separator', 'on');
+                          
+                obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7, fc8};
                           
 %               -----------------------------------------------------------   
 
@@ -215,10 +223,13 @@ classdef PolygonsManagerMainFrame < handle
             if isa(obj.model, 'PolygonsManagerData')
                 set(obj.handles.menus{2}, 'enable', 'on');
                 set(obj.handles.menus{4}, 'enable', 'on');
-                if isa(obj.model.PolygonArray, 'BasicPolygonArray')
                     set(obj.handles.menus{3}, 'enable', 'on');
+                if isa(obj.model.PolygonArray, 'BasicPolygonArray')
+%                     set(obj.handles.menus{3}, 'enable', 'on');
                     set(obj.handles.submenus{1}{3}, 'enable', 'on');
+                    set(obj.handles.submenus{3}{8}, 'enable', 'off');
                 elseif isa(obj.model.PolygonArray, 'PolarSignatureArray')
+                    set([obj.handles.submenus{3}{1:7}], 'enable', 'off');
                     set(obj.handles.submenus{1}{4}, 'enable', 'on');
                 end
                 if isa(obj.model.factorTable, 'Table')

@@ -8,26 +8,23 @@ function contoursRotate(~,~, obj, angle, type)
 %                   - 1 : 90°
 %                   - 2 : 270°
 %                   - 3 : 180°
-%       - type : determines if the range of the rotation -> Values :
-%                   - 1 : All polygons
-%                   - 2 : Selected polygons
+%       - type : determines which polygons must be rotated
 %   Outputs : none
 
 % determine which polygons will be rotated
 switch type
-    case 1
+    case 'all'
         % all the polygons
         polygonArray = obj.model.nameList;
-    case 2
+    case 'selected'
         % only the polygons selected by the user
-        if ~isempty(obj.model.selectedPolygons)
-            polygonArray = obj.model.selectedPolygons;
-        end
+        polygonArray = obj.model.selectedPolygons;
 end 
 
 if ~isempty(polygonArray)
     % create waitbar
     h = waitbar(0,'Début de la conversion');
+    
     for i = 1:length(polygonArray)
         % get the name of the contours that will be rotated
         name = polygonArray{i};
@@ -54,8 +51,10 @@ if ~isempty(polygonArray)
     end
     % close waitbar
     close(h) 
+    
     % get the selected factor
     ud = obj.model.selectedFactor;
+    
     % if a factor was selected prior to the conversion
     if iscell(ud)
         % display the contours colored depending on the selected factor

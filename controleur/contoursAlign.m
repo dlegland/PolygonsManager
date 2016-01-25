@@ -8,29 +8,35 @@ function contoursAlign(~,~,obj)
 %   Outputs : none
 
 % select which axis the contours will be aligned with
+finish = 0;
 axis = contoursAlignPrompt;
-if ~strcmp(axis, '?')
 
+if ~strcmp(axis, '?')
     % preallocating memory
     polygonArray = cell(1,length(obj.model.nameList));
 
     % create waitbar
     h = waitbar(0,'Please wait...', 'name', 'Alignement des contours');
+    set(h, 'CreateCancelBtn', 'close(h)');
+    
     for i = 1:length(obj.model.nameList)
         % get the name of the polygon that will be rotated
         name = obj.model.nameList{i};
         
         % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = name;
-        updateSelectedPolygonsDisplay(obj);
-        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
+        if isvalid(h)
+            obj.model.selectedPolygons = name;
+            updateSelectedPolygonsDisplay(obj);
+            set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
-        waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
-
+            waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
+        else
+            return;
+        end
+        
         % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
 
-        
         if strcmp(axis, 'x-axis')
             % compute symmetric wrt the horizontal axis
             polySym = [poly(:,1) -poly(:,2)];
@@ -45,19 +51,24 @@ if ~strcmp(axis, '?')
         @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
         -pi/4, pi/4);
 
-        % divide angle by 2 for aligning polygon with vertical axis
+        % divide angle by 2 for aligning polygon with axis
         rot     = createRotation(-thetaMin/2);
         polyRot = transformPoint(poly, rot);
 
         polygonArray{i} = polyRot;
         
+        if finish == 1
+            return;
+        end
     end
     % close waitbar
-    close(h) 
+    delete(h) 
+    
     % create a new figure and display the results of the rotation on this
     % new figure
     fen = PolygonsManagerMainFrame;    
     polygons = BasicPolygonArray(polygonArray);
+    
     % if factors were imported in the last figure, transfer them
     if isa(obj.model.factorTable, 'Table')
         setupNewFrame(fen, obj.model.nameList, polygons, obj.model.factorTable);

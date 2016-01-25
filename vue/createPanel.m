@@ -1,4 +1,4 @@
-function createPanel(obj, index, equal)
+function createPanel(obj, index, equal, varargin)
 %CREATEPANEL  Create a new panel and every elements needed to display an axis
 %
 %   Inputs :
@@ -92,7 +92,20 @@ co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253;
 
     set(obj.handles.tabs, 'selection', index, ...
                 'SelectionChangedFcn', @select);
-
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        condition = 'index > 2';
+    else
+        condition = 'index > 1';
+    end
+            
+    if eval(condition);
+        obj.handles.contextMenus{index} = uicontextmenu;
+        uimenu(obj.handles.contextMenus{index},'Label','Close','Callback', @deletePanel);
+    else
+        obj.handles.contextMenus{index} = [];
+    end
+    set(obj.handles.tabs, 'TabContextMenus', obj.handles.contextMenus);
+    
     function reset(~,~)
         modifiers = get(obj.handles.figure,'currentModifier');
         ctrlIsPressed = ismember('control',modifiers);
@@ -106,5 +119,11 @@ co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253;
     function select(~,~)
         updateSelectedPolygonsDisplay(obj);
         set(obj.handles.submenus{4}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+    end
+
+    function deletePanel(~,~)
+        obj.handles.axes(obj.handles.tabs.Selection) = [];
+        delete(obj.handles.panels{obj.handles.tabs.Selection});
+        obj.handles.panels(obj.handles.tabs.Selection) = [];
     end
 end

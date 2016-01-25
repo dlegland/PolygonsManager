@@ -18,6 +18,8 @@ lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{1}{:}]);
 delete([obj.handles.legends{:}]);
 
+obj.handles.tabs.TabTitles{1} = 'Polygons';
+
 hold(axis, 'on');
 for i = 1:length(polygonArray)
     obj.handles.lines{1}{i} = drawPolygon(polygonArray{i, 2}, 'parent', axis, ...
@@ -38,6 +40,8 @@ if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
 end
 if obj.model.selectedFactor{3} == 0
-    obj.handles.legends{1} = legend(axis, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
+    obj.handles.legends{1} = legend(axis, [lineHandles{:}], obj.model.selectedFactor{2}, ...
+                                                'location', 'eastoutside', ...
+                                           'uicontextmenu', []);
 end
 end

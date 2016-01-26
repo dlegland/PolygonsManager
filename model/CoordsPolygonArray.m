@@ -42,7 +42,7 @@ classdef CoordsPolygonArray < PolygonArray
         
         function updatePolygon(obj, row, polygon)
             % replace the polygon found at the index row by a new polygon
-            obj.polygons(row, :) = rowToPolygon(polygon, 'packed');
+            obj.polygons(row, :) = polygonToRow(polygon, 'packed');
         end
     end
 end

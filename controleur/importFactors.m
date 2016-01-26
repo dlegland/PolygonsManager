@@ -1,8 +1,7 @@
-function importFactors(~,~, obj)
+function importFactors(obj)
 %IMPORTFACTORS  Imports a factor file (.txt) and defines it as the current factor Table
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 

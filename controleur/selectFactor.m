@@ -1,8 +1,7 @@
-function selectFactor(~,~, obj)
+function selectFactor(obj)
 %SELECTFACTOR  Prepare the datas to display the axes' lines colored by factors
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
@@ -27,85 +26,84 @@ if ~strcmp(factor, '?')
     end
 end
 
-    function [factor, leg] = colorFactorPrompt(obj)
-    %COLORFACTORPROMPT  A dialog figure on which the user can select
-    %which factor he wants to see colored and if he wants to display the
-    %legend or not
-    %
-    %   Inputs : none
-    %   Outputs : 
-    %       - factor : selected factor
-    %       - leg : display option of the legend
-        
-        % default value of the ouput to prevent errors
-        factor = '?';
-        leg = '?';
-        
-        % get the position where the prompt will at the center of the
-        % current figure
-        pos = getMiddle(gcf, 250, 165);
+function [factor, leg] = colorFactorPrompt(obj)
+%COLORFACTORPROMPT  A dialog figure on which the user can select
+%which factor he wants to see colored and if he wants to display the
+%legend or not
+%
+%   Inputs : none
+%   Outputs : 
+%       - factor : selected factor
+%       - leg : display option of the legend
 
-        % create the dialog box
-        d = dialog('Position', pos, ...
-                       'Name', 'Select one factor');
+    % default value of the ouput to prevent errors
+    factor = '?';
+    leg = '?';
 
-        % create the inputs of the dialog box
-        uicontrol('parent', d, ...
-                'position', [30 115 90 20], ...
-                   'style', 'text', ...
-                  'string', 'Factor :', ...
-                'fontsize', 10, ...
-     'horizontalalignment', 'right');
+    % get the position where the prompt will at the center of the
+    % current figure
+    pos = getMiddle(gcf, 250, 165);
 
-        popup = uicontrol('Parent', d, ...
-                        'Position', [130 117 90 20], ...
-                           'Style', 'popup', ...
-                          'string', obj.model.factorTable.colNames);
+    % create the dialog box
+    d = dialog('Position', pos, ...
+                   'Name', 'Select one factor');
 
-        uicontrol('parent', d, ...
-                'position', [30 80 90 20], ...
-                   'style', 'text', ...
-                  'string', 'Show legend :', ...
-                'fontsize', 10, ...
-     'horizontalalignment', 'right');
+    % create the inputs of the dialog box
+    uicontrol('parent', d, ...
+            'position', [30 115 90 20], ...
+               'style', 'text', ...
+              'string', 'Factor :', ...
+            'fontsize', 10, ...
+ 'horizontalalignment', 'right');
 
-        toggleB = uicontrol('parent', d, ...
-                       'position', [130 81 90 20], ...
-                          'style', 'toggleButton', ...
-                         'string', 'Yes', ...
-                       'callback', @toggle);
+    popup = uicontrol('Parent', d, ...
+                    'Position', [130 117 90 20], ...
+                       'Style', 'popup', ...
+                      'string', obj.model.factorTable.colNames);
 
-        % create the two button to cancel or validate the inputs
-        uicontrol('parent', d, ...
-                'position', [30 30 85 25], ...
-                  'string', 'Validate',...
-                'callback', @callback);
+    uicontrol('parent', d, ...
+            'position', [30 80 90 20], ...
+               'style', 'text', ...
+              'string', 'Show legend :', ...
+            'fontsize', 10, ...
+ 'horizontalalignment', 'right');
 
-        uicontrol('parent', d, ...
-                'position', [135 30 85 25], ...
-                  'string', 'Cancel',...
-                'callback', 'delete(gcf)');
+    toggleB = uicontrol('parent', d, ...
+                   'position', [130 81 90 20], ...
+                      'style', 'toggleButton', ...
+                     'string', 'Yes', ...
+                   'callback', @toggle);
 
-        % Wait for d to close before running to completion
-        uiwait(d);
+    % create the two button to cancel or validate the inputs
+    uicontrol('parent', d, ...
+            'position', [30 30 85 25], ...
+              'string', 'Validate',...
+            'callback', @callback);
 
-        function callback(~,~)
-            val = popup.Value;
-            maps = popup.String;
-            factor = maps{val};
-            leg = get(toggleB,'Value');
+    uicontrol('parent', d, ...
+            'position', [135 30 85 25], ...
+              'string', 'Cancel',...
+            'callback', 'delete(gcf)');
 
-            delete(gcf);
-        end
+    % Wait for d to close before running to completion
+    uiwait(d);
 
-        function toggle(~,~)
-            if get(toggleB,'Value') == 1
-                set(toggleB, 'string', 'No');
-            else 
-                set(toggleB, 'string', 'Yes');
-            end
-        end
+    function callback(~,~)
+        val = popup.Value;
+        maps = popup.String;
+        factor = maps{val};
+        leg = get(toggleB,'Value');
+
+        delete(gcf);
     end
 
+    function toggle(~,~)
+        if get(toggleB,'Value') == 1
+            set(toggleB, 'string', 'No');
+        else 
+            set(toggleB, 'string', 'Yes');
+        end
+    end
+end
 
 end

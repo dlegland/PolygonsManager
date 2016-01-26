@@ -1,8 +1,7 @@
-function saveContours(~,~, obj)
+function saveContours(obj)
 %SAVECONTOURS  Saves the current polygons as separated text files in a folder
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 

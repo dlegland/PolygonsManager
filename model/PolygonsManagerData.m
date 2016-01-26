@@ -59,14 +59,14 @@ classdef PolygonsManagerData
             
             % memory allocation
             polygons = cell(length(names), 2);
-            h = waitbar(0,'Début de l''affichage...', 'name', 'Affichage des contours');
+%             h = waitbar(0,'Starting ...', 'name', 'Loading polygons');
             for i = 1:length(names)
                 polygons{i, 1} = factors(i);
                 polygons{i, 2} = getPolygonFromName(obj, names{i});
                 
-                waitbar(i / length(names), h, ['process : ' names{i}]);
+%                 waitbar(i / length(names), h, ['process : ' names{i}]);
             end
-            close(h)
+%             close(h)
         end
         
         function signature = getSignatureFromName(obj, name)
@@ -88,7 +88,7 @@ classdef PolygonsManagerData
             
             % memory allocation
             signatures = cell(length(names), 2);
-            h = waitbar(0,'Début de l''affichage...', 'name', 'Affichage des contours');
+            h = waitbar(0,'Starting ...', 'name', 'Loading polygons');
             for i = 1:length(names)
                 signatures{i, 1} = factors(i);
                 signatures{i, 2} = getSignatureFromName(obj, names{i});

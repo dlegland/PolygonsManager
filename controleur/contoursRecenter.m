@@ -1,8 +1,7 @@
-function contoursRecenter(~,~, obj)
+function contoursRecenter(obj)
 %CONTOURSRECENTER  Recenter the contour
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
@@ -10,7 +9,7 @@ function contoursRecenter(~,~, obj)
 polygonList = cell(1, length(obj.model.nameList));
 
 % create waitbar
-h = waitbar(0,'Début de la conversion');
+% h = waitbar(0,'Début de la conversion');
 
 for i = 1:length(polygonList)
     % get the name of the contours that will be centered
@@ -25,10 +24,10 @@ for i = 1:length(polygonList)
     
     % update the polygon and the waitbar
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), poly);
-    waitbar(i / length(polygonList), h, ['process : ' name]);
+%     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
 % close waitbar
-close(h) 
+% close(h) 
 
 % get the selected factor
 ud = obj.model.selectedFactor;

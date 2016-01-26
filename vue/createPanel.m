@@ -11,33 +11,6 @@ function createPanel(obj, index, equal, varargin)
 %                   - 2 : off
 %   Outputs : none
 
-
-% co = [0.3255    0.4275    0.7961; %6
-%       0.8627    0.2392    0.1961; %16
-%       0.3059    0.6471    0.1961; %2
-%       0.8824    0.3804    0.0784; %3
-%       0.4941    0.3686    0.8235; %25
-%       0.8000    0.6196    0.2000; %9
-%       0.8235    0.3373    0.7686; %7
-%       0.6902    0.3569    0.2118; %1
-%       0.2863    0.7569    0.8353; %14
-%       0.8980    0.8667    0.2275; %18
-%       0.6549    0.2157    0.1255; %23
-%       0.3647    0.8196    0.2941; %19
-%       0.8392    0.4549    0.6588; %21
-%       0.9059    0.2157    0.4275; %15
-%       0.2157    0.2902    0.4824; %5
-%       0.7765    0.5961    0.7098; %8
-%       0.1843    0.5686    0.5725; %10
-%       0.5137    0.3098    0.5294; %11
-%       0.3412    0.4627    0.1569; %12
-%       0.9529    0.7176    0.1922; %13
-%       0.9059    0.2745    0.6314; %17
-%       0.3804    0.5059    0.7020; %20
-%       0.7490    0.6157    0.8510; %22
-%       0.8745    0.3922    0.3922; %24
-%       0.6549    0.4196    0.9451];%4
-
 %      R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |
 co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252;
       78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
@@ -77,53 +50,55 @@ co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253;
       146, 245, 106; 144, 246, 108; 142, 247, 109; 140, 248, 111; 138, 249, 113; 136, 250, 115; 134, 251, 117;
       132, 253, 119; 130, 254, 121; 128, 255, 123; 126, 255, 125];
     
-    co = co/255;
-    
-    myPanel = uipanel('parent', obj.handles.tabs, 'bordertype', 'none');
-    myAxe = axes('parent', myPanel, 'ButtonDownFcn', @reset, 'colororder', co);
-    
-    if equal == 1
-        axis equal;
-    end
+myPanel = uipanel('parent', obj.handles.tabs, ...
+              'bordertype', 'none', ...
+           'uicontextmenu', obj.handles.menus{5});
+myAxe = axes('parent', myPanel, ...
+      'ButtonDownFcn', @(src, event) reset, ...
+         'colororder', co/255, ...
+      'uicontextmenu', obj.handles.menus{5});
 
-    obj.handles.lines{index} = cell(length(obj.model.nameList), 1);
-    obj.handles.panels{index} = myPanel;
-    obj.handles.axes{index} = myAxe;
+if equal == 1
+    axis equal;
+end
 
-    set(obj.handles.tabs, 'selection', index, ...
-                'SelectionChangedFcn', @select);
-    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        condition = 'index > 2';
-    else
-        condition = 'index > 1';
-    end
-            
-    if eval(condition);
-        obj.handles.contextMenus{index} = uicontextmenu;
-        uimenu(obj.handles.contextMenus{index},'Label','Close','Callback', @deletePanel);
-    else
-        obj.handles.contextMenus{index} = [];
-    end
-    set(obj.handles.tabs, 'TabContextMenus', obj.handles.contextMenus);
-    
-    function reset(~,~)
-        modifiers = get(obj.handles.figure,'currentModifier');
-        ctrlIsPressed = ismember('control',modifiers);
-        if ~ctrlIsPressed
-            obj.model.selectedPolygons = {};
-            set(obj.handles.list, 'value', []);
-            updateSelectedPolygonsDisplay(obj);
-        end
-    end
+obj.handles.lines{index} = cell(length(obj.model.nameList), 1);
+obj.handles.panels{index} = myPanel;
+obj.handles.axes{index} = myAxe;
 
-    function select(~,~)
+set(obj.handles.tabs, 'selection', index, ...
+            'SelectionChangedFcn', @(src, event) select);
+if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+    condition = 'index > 2';
+else
+    condition = 'index > 1';
+end
+
+if eval(condition);
+    obj.handles.contextMenus{index} = uicontextmenu;
+    uimenu(obj.handles.contextMenus{index},'Label','Close','Callback', @(src, event) deletePanel);
+else
+    obj.handles.contextMenus{index} = [];
+end
+set(obj.handles.tabs, 'TabContextMenus', obj.handles.contextMenus);
+
+function reset
+    if ~strcmp(obj.handles.figure.SelectionType, 'alt')
+        obj.model.selectedPolygons = {};
+        set(obj.handles.list, 'value', []);
         updateSelectedPolygonsDisplay(obj);
-        set(obj.handles.submenus{4}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
     end
+end
 
-    function deletePanel(~,~)
-        obj.handles.axes(obj.handles.tabs.Selection) = [];
-        delete(obj.handles.panels{obj.handles.tabs.Selection});
-        obj.handles.panels(obj.handles.tabs.Selection) = [];
-    end
+function select
+    updateSelectedPolygonsDisplay(obj);
+    set(obj.handles.submenus{4}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+    set(obj.handles.submenus{5}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+end
+
+function deletePanel
+    obj.handles.axes(obj.handles.tabs.Selection) = [];
+    delete(obj.handles.panels{obj.handles.tabs.Selection});
+    obj.handles.panels(obj.handles.tabs.Selection) = [];
+end
 end

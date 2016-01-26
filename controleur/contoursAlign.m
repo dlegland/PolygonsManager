@@ -1,14 +1,12 @@
-function contoursAlign(~,~,obj)
+function contoursAlign(obj)
 %CONTOURSALIGN  Rotate all slab contours such that they are aligned with
 %one of the axis
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
 % select which axis the contours will be aligned with
-finish = 0;
 axis = contoursAlignPrompt;
 
 if ~strcmp(axis, '?')
@@ -17,22 +15,16 @@ if ~strcmp(axis, '?')
 
     % create waitbar
     h = waitbar(0,'Please wait...', 'name', 'Alignement des contours');
-    set(h, 'CreateCancelBtn', 'close(h)');
-    
     for i = 1:length(obj.model.nameList)
         % get the name of the polygon that will be rotated
         name = obj.model.nameList{i};
         
         % update the waitbar and the contours selection (purely cosmetic)
-        if isvalid(h)
-            obj.model.selectedPolygons = name;
-            updateSelectedPolygonsDisplay(obj);
-            set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
+        obj.model.selectedPolygons = name;
+        updateSelectedPolygonsDisplay(obj);
+        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
-            waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
-        else
-            return;
-        end
+        waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
         
         % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
@@ -56,13 +48,11 @@ if ~strcmp(axis, '?')
         polyRot = transformPoint(poly, rot);
 
         polygonArray{i} = polyRot;
-        
-        if finish == 1
-            return;
-        end
     end
+    waitbar(length(obj.model.nameList), h);
+        
     % close waitbar
-    delete(h) 
+    close(h) 
     
     % create a new figure and display the results of the rotation on this
     % new figure
@@ -77,57 +67,57 @@ if ~strcmp(axis, '?')
     end
 end
 
-    function axe = contoursAlignPrompt
-    %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
-    %which axis will be aligned with the contours
-    %
-    %   Inputs : none
-    %   Outputs : selected axis
+function axe = contoursAlignPrompt
+%CONTOURSALIGNPROMPT  A dialog figure on which the user can select
+%which axis will be aligned with the contours
+%
+%   Inputs : none
+%   Outputs : selected axis
 
-        % default value of the ouput to prevent errors
-        axe = '?';
-        
-        % get the position where the prompt will at the center of the
-        % current figure
-        pos = getMiddle(gcf, 250, 130);
-        
-        % create the dialog box
-        d = dialog('position', pos, ...
-                       'name', 'Select axis of rotation');
+    % default value of the ouput to prevent errors
+    axe = '?';
 
-        % create the inputs of the dialog box
-        group = uibuttongroup('visible', 'on');
+    % get the position where the prompt will at the center of the
+    % current figure
+    pos = getMiddle(gcf, 250, 130);
 
-        uicontrol('parent', group, ...
-                'position', [45 80 90 20], ...
-                   'style', 'radiobutton', ...
-                  'string', 'x-axis');
+    % create the dialog box
+    d = dialog('position', pos, ...
+                   'name', 'Select axis of rotation');
 
-        uicontrol('parent', group, ...
-                'position', [145 82 90 20], ...
-                   'style', 'radiobutton', ...
-                  'string', 'y-axis');
+    % create the inputs of the dialog box
+    group = uibuttongroup('visible', 'on');
 
-        % create the two button to cancel or validate the inputs
-        uicontrol('parent', d, ...
-                'position', [30 30 85 25], ...
-                  'string', 'Validate', ...
-                'callback', @callback);
+    uicontrol('parent', group, ...
+            'position', [45 80 90 20], ...
+               'style', 'radiobutton', ...
+              'string', 'x-axis');
 
-        uicontrol('parent', d, ...
-                'position', [135 30 85 25], ...
-                  'string', 'Cancel', ...
-                'callback', 'delete(gcf)');
+    uicontrol('parent', group, ...
+            'position', [145 82 90 20], ...
+               'style', 'radiobutton', ...
+              'string', 'y-axis');
 
-        % Wait for d to close before running to completion
-        uiwait(d);
+    % create the two button to cancel or validate the inputs
+    uicontrol('parent', d, ...
+            'position', [30 30 85 25], ...
+              'string', 'Validate', ...
+            'callback', @callback);
 
-        function callback(~,~)
-            % get the value of the selected radio button and close the
-            % dialog box
-            axe = group.SelectedObject.String;
-            delete(gcf);
-        end
+    uicontrol('parent', d, ...
+            'position', [135 30 85 25], ...
+              'string', 'Cancel', ...
+            'callback', 'delete(gcf)');
+
+    % Wait for d to close before running to completion
+    uiwait(d);
+
+    function callback(~,~)
+        % get the value of the selected radio button and close the
+        % dialog box
+        axe = group.SelectedObject.String;
+        delete(gcf);
     end
+end
 
 end

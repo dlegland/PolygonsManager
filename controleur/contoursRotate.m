@@ -1,8 +1,7 @@
-function contoursRotate(~,~, obj, angle, type)
+function contoursRotate(obj, angle, type)
 %CONTOURSROTATE  Rotate the contour 
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %       - angle : variable that defines the rotation angle (clockwise) -> Values : 
 %                   - 1 : 90°
@@ -23,7 +22,7 @@ end
 
 if ~isempty(polygonArray)
     % create waitbar
-    h = waitbar(0,'Début de la conversion');
+%     h = waitbar(0,'Début de la conversion');
     
     for i = 1:length(polygonArray)
         % get the name of the contours that will be rotated
@@ -47,10 +46,10 @@ if ~isempty(polygonArray)
         
         %update the polygon and the waitbar
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
-        waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
+%         waitbar(i / length(obj.model.nameList), h, ['process : ' name]);
     end
     % close waitbar
-    close(h) 
+%     close(h) 
     
     % get the selected factor
     ud = obj.model.selectedFactor;

@@ -1,8 +1,7 @@
-function importPolygonArray(~,~, obj)
+function importPolygonArray(obj)
 %IMPORTPOLYGONARRAY  Imports a folder containing polygons coordinates files (.txt) and make it the current polygon array
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
@@ -24,7 +23,7 @@ if dname ~= 0
         end
         
         % create waitbar
-        h = waitbar(0,'Début de l''import', 'name', 'Chargement des contours');
+%         h = waitbar(0,'Début de l''import', 'name', 'Chargement des contours');
         for i = 1:length(files)
             % get the name of the polygon without the '.txt' at the end
             name = files(i).name(1:end-4);
@@ -36,10 +35,10 @@ if dname ~= 0
             polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
 
             % update the waitbar
-            waitbar(i / length(files), h, ['process : ' name]);
+%             waitbar(i / length(files), h, ['process : ' name]);
         end
         %close the waitbar
-        close(h)
+%         close(h)
         
         % set the new polygon array as the current polygon array
         polygons = BasicPolygonArray(polygonArray);

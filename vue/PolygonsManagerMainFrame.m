@@ -26,7 +26,7 @@ classdef PolygonsManagerMainFrame < handle
                                   'style', 'listbox', ...
                                     'max', 100, ...
                                     'min', 0);
-    
+            
             tab_pan = uix.TabPanel('parent', main_box, ...
                                  'tabwidth', 75);
             
@@ -41,136 +41,148 @@ classdef PolygonsManagerMainFrame < handle
             obj.handles.legends = {};
             obj.handles.contextMenus = {};
             
-            setupMenu(fen);
+            setupMenu;
             
-            function setupMenu(fen)
+            function setupMenu
                 fileMenu = uimenu(fen, 'label', '&File');
                 editMenu = uimenu(fen, 'label', '&Factors', 'enable', 'off');
                 foncMenu = uimenu(fen, 'label', '&Process', 'enable', 'off');
                 viewMenu = uimenu(fen, 'label', '&View', 'enable', 'off');
+                contmenu = uicontextmenu; 
                 
-                obj.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu};
+                obj.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu, contmenu};
                 obj.handles.submenus = {};
                 
                 f1 = uimenu(fileMenu, 'label', '&Import polygons', ...
-                              'callback', {@importPolygonArray, obj});
-                          
+                              'callback', @(src, event) importPolygonArray(obj));
+                
                 f2 = uimenu(fileMenu, 'label', '&Import signatures', ...
-                              'callback', {@importPolarSignature, obj});
-                          
+                              'callback', @(src, event) importPolarSignature(obj));
+                
                 f3 = uimenu(fileMenu, 'label', '&Save polygons', ...
-                                   'callback', {@saveContours, obj}, ...
+                                   'callback', @(src, event) saveContours(obj), ...
                                      'enable', 'off', ...
                              'separator', 'on');
                 f4 = uimenu(fileMenu, 'label', '&Save signatures', ...
-                                   'callback', {@savePolarSignature, obj}, ...
+                                   'callback', @(src, event) savePolarSignature(obj), ...
                                      'enable', 'off');
-                                 
+                
                 f5 = uimenu(fileMenu, 'label', '&Close', ...
-                              'callback', {@closef, gcf}, ...
+                              'callback', @(src, event) closef(gcf), ...
                              'separator', 'on');
-                         
+                
                 obj.handles.submenus{1} = {f1, f2, f3, f4, f5};
-                          
+                
 %               ----------------------------------------------------------- 
-
+                
                 e1 = uimenu(editMenu, 'label', '&Import factors', ...
-                              'callback', {@importFactors, obj});
+                              'callback', @(src, event) importFactors(obj));
                 e2 = uimenu(editMenu, 'label', '&Create factors', ...
-                              'callback', {@createFactors, obj});
-                          
+                              'callback', @(src, event) createFactors(obj));
+                
                 e3 = uimenu(editMenu, 'label', '&Save factors', ...
-                                   'callback', {@saveFactors, obj}, ...
+                                   'callback', @(src, event) saveFactors(obj), ...
                                      'enable', 'off', ...
                                   'separator', 'on');
-                          
+                
                 e4 = uimenu(editMenu, 'label', '&Display factors', ...
-                                   'callback', @showFactors, ...
+                                   'callback', @(src, event) showFactors, ...
                                      'enable', 'off', ...
                                   'separator', 'on');
-                          
+                
                 obj.handles.submenus{2} = {e1, e2, e3, e4};
-                          
+                
 %               -----------------------------------------------------------  
-                          
+                
                 fc1 = uimenu(foncMenu, 'label', '&Rotate all');
-                uimenu(fc1, 'label', '&90° droite', ...
-                         'callback', {@contoursRotate, obj, 1, 'all'});
-                uimenu(fc1, 'label', '&90° gauche', ...
-                         'callback', {@contoursRotate, obj, 2, 'all'});
+                uimenu(fc1, 'label', '&90° right', ...
+                         'callback', @(src, event) contoursRotate(obj, 1, 'all'));
+                uimenu(fc1, 'label', '&90° left', ...
+                         'callback', @(src, event) contoursRotate(obj, 2, 'all'));
                 uimenu(fc1, 'label', '&180°', ...
-                         'callback', {@contoursRotate, obj, 3, 'all'});
-                     
+                         'callback', @(src, event) contoursRotate(obj, 3, 'all'));
+                
                 fc2 = uimenu(foncMenu, 'label', '&Rotate selected');
-                uimenu(fc2, 'label', '&90° droite', ...
-                         'callback', {@contoursRotate, obj, 1, 'selected'});
-                uimenu(fc2, 'label', '&90° gauche', ...
-                         'callback', {@contoursRotate, obj, 2, 'selected'});
+                uimenu(fc2, 'label', '&90° right', ...
+                         'callback', @(src, event) contoursRotate(obj, 1, 'selected'));
+                uimenu(fc2, 'label', '&90° left', ...
+                         'callback', @(src, event) contoursRotate(obj, 2, 'selected'));
                 uimenu(fc2, 'label', '&180°', ...
-                         'callback', {@contoursRotate, obj, 3, 'selected'});
-                     
+                         'callback', @(src, event) contoursRotate(obj, 3, 'selected'));
+                
                 fc3 = uimenu(foncMenu, 'label', '&Recenter polygons', ...
-                              'callback', {@contoursRecenter, obj}, ...
+                              'callback', @(src, event) contoursRecenter(obj), ...
                              'separator', 'on');
-                fc4 = uimenu(foncMenu, 'label', '&Convert to Mm', ...
-                              'callback', {@contoursConvertPxMm, obj});
-                          
+                fc4 = uimenu(foncMenu, 'label', '&Resize polygons', ...
+                              'callback', @(src, event) contoursResize(obj));
+                
                 fc5 = uimenu(foncMenu, 'label', '&Align axis', ...
-                              'callback', {@contoursAlign, obj}, ...
+                              'callback', @(src, event) contoursAlign(obj), ...
                              'separator', 'on');
                 fc6 = uimenu(foncMenu, 'label', '&Signature', ...
-                              'callback', {@contoursToSignature, obj});
+                              'callback', @(src, event) contoursToSignature(obj));
                 fc7 = uimenu(foncMenu, 'label', '&Concatenate', ...
-                              'callback', {@contoursConcatenate, obj});
-                          
+                              'callback', @(src, event) contoursConcatenate(obj));
+                
                 fc8 = uimenu(foncMenu, 'label', '&PCA', ...
-                              'callback', {@testPCA, obj}, ...
+                              'callback', @(src, event) testPCA(obj), ...
                              'separator', 'on');
-                          
+                
                 obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7, fc8};
-                          
+                
 %               -----------------------------------------------------------   
-
+                
                 v1 = uimenu(viewMenu, 'label', '&No Coloration', ...
-                              'callback', @dispAxes);
+                              'callback', @(src, event) dispAxes);
                 v2 = uimenu(viewMenu, 'label', '&Coloration factor', ...
-                              'callback', {@selectFactor, obj}, ...
+                              'callback', @(src, event) selectFactor(obj), ...
                                 'enable', 'off');
                 v3 = uimenu(viewMenu, 'label', '&Grid', ...
-                              'callback', @showGrid);
-                            
+                              'callback', @(src, event) showGrid);
+                
                 obj.handles.submenus{4} = {v1, v2, v3};
-                          
-%               -----------------------------------------------------------   
+                
+%               ----------------------------------------------------------- 
 
-                function closef(~,~,h)
+                c1 = uimenu(contmenu, 'label', '&No Coloration', ...
+                              'callback', @(src, event) dispAxes);
+                c2 = uimenu(contmenu, 'label', '&Coloration factor', ...
+                              'callback', @(src, event) selectFactor(obj), ...
+                                'enable', 'off');
+                c3 = uimenu(contmenu, 'label', '&Grid', ...
+                              'callback', @(src, event) showGrid);
+                
+                obj.handles.submenus{5} = {c1, c2, c3};
+                
+                function closef(h)
                     close(h);
                 end
-            
-                function showFactors(~,~)
+                
+                function showFactors
                     show(obj.model.factorTable);
                 end
                 
-                function showGrid(~,~)
+                function showGrid
                     if strcmp(v3.Checked, 'off');
                         set(v3, 'checked', 'on');
+                        set(c3, 'checked', 'on');
                         set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'on');
                         set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'on');
                     else
                         set(v3, 'checked', 'off');
+                        set(c3, 'checked', 'off');
                         set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'off');
                         set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'off');
                     end
                 end
                 
-                function dispAxes(~,~)
+                function dispAxes
                     displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
                     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
                         displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
                     end
                 end
             end
-                
         end
         
         function pos = getMiddle(obj, height, width)
@@ -180,7 +192,6 @@ classdef PolygonsManagerMainFrame < handle
             pos(2) = pos(2) + (pos(4)/2) - (width/2);
             pos(3) = height;
             pos(4) = width;
-
         end
         
         function setupNewFrame(obj, nameArray, polygonArray, varargin)
@@ -191,7 +202,7 @@ classdef PolygonsManagerMainFrame < handle
             if ~isempty(varargin)
                 obj.model.factorTable = varargin{1};
             end
-            set(obj.handles.list, 'string', nameArray, 'callback', @select);
+            set(obj.handles.list, 'string', nameArray, 'callback', @(src, event) select);
             updateMenus(obj);
             displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
             if isa(obj.model.PolygonArray, 'PolarSignatureArray')
@@ -199,7 +210,7 @@ classdef PolygonsManagerMainFrame < handle
                 displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
             end
         
-            function select(~,~)
+            function select
                 list = cellstr(get(obj.handles.list, 'String'));
                 sel_val = get(obj.handles.list, 'value');
                 obj.model.selectedPolygons = list(sel_val);
@@ -236,6 +247,7 @@ classdef PolygonsManagerMainFrame < handle
                     set(obj.handles.submenus{2}{1}, 'checked', 'on');
                     set([obj.handles.submenus{2}{:}], 'enable', 'on');
                     set(obj.handles.submenus{4}{2}, 'enable', 'on');
+                    set(obj.handles.submenus{5}{2}, 'enable', 'on');
                     set(obj.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name]);
                 end
             end

@@ -4,20 +4,22 @@ function displayPolarSignatureFactor(obj, signatureArray, axis)
 %   Inputs :
 %       - obj : handle of the MainFrame
 %       - signatureArray : a N-by-M cell array containing the polar signatures
+%       - axis : handle of the axis on which the lines will be drawn
 %   Outputs : none
+
+obj.handles.tabs.TabTitles{2} = 'Signatures';
 
 angles = obj.model.PolygonArray.angleList;
 angles(end+1) = angles(end) + angles(2) - angles(1);
 
-co = axis.ColorOrder;
-set(axis, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})):length(co)), :));
-
 set(axis, 'colororderindex', 1);
+
+co = axis.ColorOrder;
+
+set(axis, 'colororder', co(floor(1:length(co)/(length(obj.model.selectedFactor{2})):length(co)), :));
 
 lineHandles = cell(1, length(obj.model.selectedFactor{2}));
 delete([obj.handles.lines{2}{:}]);
-
-obj.handles.tabs.TabTitles{2} = 'Signatures';
 
 hold(axis, 'on');
 for i = 1:length(signatureArray)
@@ -40,7 +42,10 @@ set(axis, 'colororder', co);
 if ~isempty(obj.model.selectedPolygons)
     updateSelectedPolygonsDisplay(obj);
 end
+
 if obj.model.selectedFactor{3} == 0
-    obj.handles.legends{2} = legend(axis, [lineHandles{:}], obj.model.selectedFactor{2}, 'location', 'eastoutside');
+    obj.handles.legends{2} = legend(axis, [lineHandles{:}], obj.model.selectedFactor{2}, ...
+                                                'location', 'best', ...
+                                           'uicontextmenu', []);
 end
 end

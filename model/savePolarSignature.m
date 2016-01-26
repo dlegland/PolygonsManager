@@ -1,8 +1,7 @@
-function savePolarSignature(~,~, obj)
+function savePolarSignature(obj)
 %SAVEPOLARSIGNATURE  Saves the current polar signature in a text file
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 

@@ -1,9 +1,8 @@
-function contoursConcatenate(~,~,obj)
+function contoursConcatenate(obj)
 %CONTOURSALIGN  Rotate all slab contours such that they are aligned with
 %one of the axis
 %
 %   Inputs :
-%       - ~ (not used) : inputs automatically send by matlab during a callback
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
@@ -29,7 +28,7 @@ if ~strcmp(number, '?')
         updateSelectedPolygonsDisplay(obj);
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
         
-        waitbar(i / Nf, h, ['process : ' name]);
+        waitbar(i / (Nf+1), h, ['process : ' name]);
 
         % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
@@ -76,6 +75,7 @@ if ~strcmp(number, '?')
         dat(i, 1:number)        = poly2(:,1);
         dat(i, number+1:2*number)    = poly2(:,2);    
     end
+    waitbar(Nf, h);
     % close waitbar
     close(h) 
     
@@ -92,71 +92,71 @@ if ~strcmp(number, '?')
     end
 end
 
-    function number = contoursConcatPrompt
-    %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
-    %which axis will be aligned with the contours
-    %
-    %   Inputs : none
-    %   Outputs : selected axis
+function number = contoursConcatPrompt
+%CONTOURSALIGNPROMPT  A dialog figure on which the user can select
+%which axis will be aligned with the contours
+%
+%   Inputs : none
+%   Outputs : selected axis
 
-        % default value of the ouput to prevent errors
-        number = '?';
-        
-        % get the position where the prompt will at the center of the
-        % current figure
-        pos = getMiddle(gcf, 250, 130);
-        
-        % create the dialog box
-        d = dialog('position', pos, ...
-                       'name', 'Enter nb of points');
+    % default value of the ouput to prevent errors
+    number = '?';
 
-        % create the inputs of the dialog box
-        uicontrol('parent', d,...
-                'position', [30 80 90 20], ...
-                   'style', 'text',...
-                  'string', 'Nb of points :', ...
-                'fontsize', 10, ...
-     'horizontalalignment', 'right');
+    % get the position where the prompt will at the center of the
+    % current figure
+    pos = getMiddle(gcf, 250, 130);
 
-        edit = uicontrol('parent', d,...
-                       'position', [130 81 90 20], ...
-                          'style', 'edit');
+    % create the dialog box
+    d = dialog('position', pos, ...
+                   'name', 'Enter nb of points');
 
-        error = uicontrol('parent', d,...
-                        'position', [135 46 85 25], ...
-                           'style', 'text',...
-                          'string', 'Invalid value', ...
-                 'foregroundcolor', 'r', ...
-                         'visible', 'off', ...
-                        'fontsize', 8);
+    % create the inputs of the dialog box
+    uicontrol('parent', d,...
+            'position', [30 80 90 20], ...
+               'style', 'text',...
+              'string', 'Nb of points :', ...
+            'fontsize', 10, ...
+ 'horizontalalignment', 'right');
 
-        % create the two button to cancel or validate the inputs
-        uicontrol('parent', d, ...
-                'position', [30 30 85 25], ...
-                  'string', 'Validate', ...
-                'callback', @callback);
+    edit = uicontrol('parent', d,...
+                   'position', [130 81 90 20], ...
+                      'style', 'edit');
 
-        uicontrol('parent', d, ...
-                'position', [135 30 85 25], ...
-                  'string', 'Cancel', ...
-                'callback', 'delete(gcf)');
+    error = uicontrol('parent', d,...
+                    'position', [135 46 85 25], ...
+                       'style', 'text',...
+                      'string', 'Invalid value', ...
+             'foregroundcolor', 'r', ...
+                     'visible', 'off', ...
+                    'fontsize', 8);
 
-        % Wait for d to close before running to completion
-        uiwait(d);
+    % create the two button to cancel or validate the inputs
+    uicontrol('parent', d, ...
+            'position', [30 30 85 25], ...
+              'string', 'Validate', ...
+            'callback', @callback);
 
-        function callback(~,~)
-            try
-                % if input is numeric, get it and close the dialog box
-                if ~isnan(str2double(get(edit,'String')))
-                    number = str2double(get(edit,'String'));
-                    delete(gcf);
-                else
-                    set(error, 'visible', 'on');
-                end
-            catch
+    uicontrol('parent', d, ...
+            'position', [135 30 85 25], ...
+              'string', 'Cancel', ...
+            'callback', 'delete(gcf)');
+
+    % Wait for d to close before running to completion
+    uiwait(d);
+
+    function callback(~,~)
+        try
+            % if input is numeric, get it and close the dialog box
+            if ~isnan(str2double(get(edit,'String')))
+                number = str2double(get(edit,'String'));
+                delete(gcf);
+            else
                 set(error, 'visible', 'on');
             end
+        catch
+            set(error, 'visible', 'on');
         end
     end
+end
 
 end

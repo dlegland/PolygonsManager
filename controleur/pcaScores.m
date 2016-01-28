@@ -4,12 +4,16 @@ function pcaScores(obj)
 
 if isnumeric([cp1 cp2])
     fen = PolygonsManagerMainFrame;
-    setupNewFrame(fen, obj.model.nameList, obj.model.PolygonArray, ...
-                            'factorTable', obj.model.factorTable, ...
-                                    'pca', obj.model.pca, ...
-                       obj.model.pca.scores(:, cp1).data, ...
-                       obj.model.pca.scores(:, cp2).data, ...
-                       'on');
+    % set the new polygon array as the current polygon array
+    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
+                                    'nameList', obj.model.nameList, ...
+                                 'factorTable', obj.model.factorTable, ...
+                                         'pca', obj.model.pca);
+
+    setupNewFrame(fen, model, ...
+                  obj.model.pca.scores(:, cp1).data, ...
+                  obj.model.pca.scores(:, cp2).data, ...
+                  'on', 'Scores');
     
     if isa(fen.model.factorTable, 'Table')
         set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores']);
@@ -17,11 +21,11 @@ if isnumeric([cp1 cp2])
         set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Scores');
     end
     
-    xlim(fen.handles.axes{1}, [min(obj.model.pca.scores(:, cp1).data)-1 max(obj.model.pca.scores(:, cp1).data)+1]);
-    ylim(fen.handles.axes{1}, [min(obj.model.pca.scores(:, cp2).data)-1 max(obj.model.pca.scores(:, cp2).data)+1]);
+    xlim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp1).data)-1 max(obj.model.pca.scores(:, cp1).data)+1]);
+    ylim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp2).data)-1 max(obj.model.pca.scores(:, cp2).data)+1]);
 
     % create legends
-    annotateFactorialPlot(fen.model.pca, fen.handles.axes{1}, cp1, cp2);
+    annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 end
 function [cp1, cp2] = pcaScoresPrompt(nbCP)
 %COLORFACTORPROMPT  A dialog figure on which the user can select

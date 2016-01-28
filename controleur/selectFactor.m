@@ -18,11 +18,11 @@ if ~strcmp(factor, '?')
     obj.model.selectedFactor = {factor levels leg};
     
     % display the colored polygons
-    displayPolygonsFactor(obj, getPolygonsFromFactor(obj.model, factor), obj.handles.axes{1});
+    displayPolygonsFactor(obj.handles.Panels{1}, getPolygonsFromFactor(obj.model, factor));
     if isa(obj.model.PolygonArray, 'PolarSignatureArray')
         % if the polygon array is a signature array, also display the
         % colored polar signatures
-        displayPolarSignatureFactor(obj, getSignatureFromFactor(obj.model, factor), obj.handles.axes{2});
+        displayPolarSignatureFactor(obj.handles.Panels{2}, getSignatureFromFactor(obj.model, factor));
     end
 end
 

@@ -11,7 +11,7 @@ function importCoordsPolygon(obj)
 fFile = fullfile(fPath, fName);
 
 if fName ~= 0
-    if ~isempty(obj.handles.panels)
+    if ~isempty(obj.handles.Panels)
         % if the figure already contains a polygon array
         obj = PolygonsManagerMainFrame;
     end
@@ -19,10 +19,9 @@ if fName ~= 0
     %read the Table contained in the selected file
     import = Table.read(fFile);
     
-    % create the polygon array
-    polygons = CoordsPolygonArray(import.data);
+    % set the new polygon array as the current polygon array
+    model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(import.data), 'nameList', import.rowNames');
 
     %setup the frame
-    setupNewFrame(obj, import.rowNames', polygons)
-end
+    setupNewFrame(obj, model);
 end

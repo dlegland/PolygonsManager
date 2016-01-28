@@ -1,5 +1,5 @@
 function importBasicPolygon(obj)
-%IMPORTPOLYGONARRAY  Imports a folder containing polygons coordinates files (.txt) and make it the current polygon array
+%IMPORTBASICPOLYGON  Imports a folder containing polygons coordinates files (.txt) and make it the current polygon array
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -17,7 +17,7 @@ nameArray = cell(1, length(files));
 
 if dname ~= 0
     if ~isempty(files)
-        if ~isempty(obj.handles.panels)
+        if ~isempty(obj.handles.Panels)
         % if the figure already contains a polygon array
             obj = PolygonsManagerMainFrame;
         end
@@ -41,10 +41,10 @@ if dname ~= 0
 %         close(h)
         
         % set the new polygon array as the current polygon array
-        polygons = BasicPolygonArray(polygonArray);
+        model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', nameArray);
         
         %setup the frame
-        setupNewFrame(obj, nameArray, polygons);
+        setupNewFrame(obj, model);
     else
         msgbox('The selected folder is empty');
     end

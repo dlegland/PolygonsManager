@@ -13,9 +13,6 @@ if ~strcmp(resol, '?')
     % memory allocation
     polygonList = cell(1, length(obj.model.nameList));
 
-    % create waitbar
-%     h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
-    
     for i = 1:length(polygonList)
         % get the name of the polygon that will be converted
         name = obj.model.nameList{i};
@@ -26,24 +23,21 @@ if ~strcmp(resol, '?')
         % convert the polygon
         polyMm = poly * resol;
 
-        %update the polygon and the waitbar
+        %update the polygon
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
-%         waitbar(i / length(polygonList), h, ['process : ' name]);
     end
-    % close waitbar
-%     close(h)
     
     % get the selected factor
-    ud = obj.model.selectedFactor;
-    
+    sf = obj.model.selectedFactor;
+
     % if a factor was selected prior to the conversion
-    if iscell(ud)
+    if iscell(sf)
         % display the contours colored depending on the selected factor
-        polygonList = getPolygonsFromFactor(obj.model, ud{1});
-        displayPolygonsFactor(obj, polygonList, obj.handles.axes{1});
+        polygonList = getPolygonsFromFactor(obj.model, sf{1});
+        displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
     else
         % display the contours without special coloration
-        displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
+        displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
     end
 end
 

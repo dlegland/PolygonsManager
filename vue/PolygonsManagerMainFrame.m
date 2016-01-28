@@ -17,7 +17,7 @@ classdef PolygonsManagerMainFrame < handle
     end
     
     methods
-        function obj = PolygonsManagerMainFrame
+        function this = PolygonsManagerMainFrame
         %Constructor for PolygonsManagerMainFrame class
         %
         %   figure = PolygonsManagerMainFrame
@@ -33,7 +33,7 @@ classdef PolygonsManagerMainFrame < handle
             set(fen, 'units', 'pixel');
             
             % add the handle of the figure to the list of handles
-            obj.handles.figure = fen;            
+            this.handles.figure = fen;            
             
             % creation of the boxes that will contain different elements
             % later
@@ -51,15 +51,12 @@ classdef PolygonsManagerMainFrame < handle
             set(main_box, 'widths', [-1 -8]);
             
             % add created handles to the list of handles
-            obj.handles.main = main_box;
-            obj.handles.tabs = tab_pan;
-            obj.handles.list = list_box;
+            this.handles.main = main_box;
+            this.handles.tabs = tab_pan;
+            this.handles.list = list_box;
             
             % create spaces that will be used by other elements later
-            obj.handles.panels = {};
-            obj.handles.axes = {};
-            obj.handles.lines = {};
-            obj.handles.legends = {};
+            this.handles.Panels = {};
             
             % create the menu
             setupMenu;
@@ -74,45 +71,45 @@ classdef PolygonsManagerMainFrame < handle
                 contmenu = uicontextmenu; 
                 
                 %add the menus' handles to the list of handles
-                obj.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu, pcaMenu, contmenu};
+                this.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu, pcaMenu, contmenu};
                 
                 % create the space that will contain all the submenus
-                obj.handles.submenus = {};
+                this.handles.submenus = {};
                 
 %               ----------------------------------------------------------- 
                 
                 % create all the submenus of the 'file' menu
                 f1 = uimenu(fileMenu, 'label', '&Import polygons (folder)', ...
-                              'callback', @(src, event) importBasicPolygon(obj));
+                              'callback', @(src, event) importBasicPolygon(this));
                 f2 = uimenu(fileMenu, 'label', '&Import polygons (file)', ...
-                              'callback', @(src, event) importCoordsPolygon(obj));
+                              'callback', @(src, event) importCoordsPolygon(this));
                 f3 = uimenu(fileMenu, 'label', '&Import signatures', ...
-                              'callback', @(src, event) importPolarSignature(obj));
+                              'callback', @(src, event) importPolarSignature(this));
                 
                 f4 = uimenu(fileMenu, 'label', '&Save polygons', ...
-                                   'callback', @(src, event) saveContours(obj), ...
+                                   'callback', @(src, event) saveContours(this), ...
                                      'enable', 'off', ...
                              'separator', 'on');
                 f5 = uimenu(fileMenu, 'label', '&Save signatures', ...
-                                   'callback', @(src, event) savePolarSignature(obj), ...
+                                   'callback', @(src, event) savePolarSignature(this), ...
                                      'enable', 'off');
                 
                 f6 = uimenu(fileMenu, 'label', '&Close', ...
                               'callback', @(src, event) closef(gcf), ...
                              'separator', 'on');
                 
-                obj.handles.submenus{1} = {f1, f2, f3, f4, f5, f6};
+                this.handles.submenus{1} = {f1, f2, f3, f4, f5, f6};
                 
 %               ----------------------------------------------------------- 
                 
                 % create all the submenus of the 'factors' menu
                 e1 = uimenu(editMenu, 'label', '&Import factors', ...
-                              'callback', @(src, event) importFactors(obj));
+                              'callback', @(src, event) importFactors(this));
                 e2 = uimenu(editMenu, 'label', '&Create factors', ...
-                              'callback', @(src, event) createFactors(obj));
+                              'callback', @(src, event) createFactors(this));
                 
                 e3 = uimenu(editMenu, 'label', '&Save factors', ...
-                                   'callback', @(src, event) saveFactors(obj), ...
+                                   'callback', @(src, event) saveFactors(this), ...
                                      'enable', 'off', ...
                                   'separator', 'on');
                 
@@ -121,63 +118,63 @@ classdef PolygonsManagerMainFrame < handle
                                      'enable', 'off', ...
                                   'separator', 'on');
                 
-                obj.handles.submenus{2} = {e1, e2, e3, e4};
+                this.handles.submenus{2} = {e1, e2, e3, e4};
                 
 %               -----------------------------------------------------------  
                 
                 % create all the submenus of the 'process' menu
                 fc1 = uimenu(foncMenu, 'label', '&Rotate all');
                 uimenu(fc1, 'label', '&90° right', ...
-                         'callback', @(src, event) contoursRotate(obj, 1, 'all'));
+                         'callback', @(src, event) contoursRotate(this, 1, 'all'));
                 uimenu(fc1, 'label', '&90° left', ...
-                         'callback', @(src, event) contoursRotate(obj, 2, 'all'));
+                         'callback', @(src, event) contoursRotate(this, 2, 'all'));
                 uimenu(fc1, 'label', '&180°', ...
-                         'callback', @(src, event) contoursRotate(obj, 3, 'all'));
+                         'callback', @(src, event) contoursRotate(this, 3, 'all'));
                 
                 fc2 = uimenu(foncMenu, 'label', '&Rotate selected');
                 uimenu(fc2, 'label', '&90° right', ...
-                         'callback', @(src, event) contoursRotate(obj, 1, 'selected'));
+                         'callback', @(src, event) contoursRotate(this, 1, 'selected'));
                 uimenu(fc2, 'label', '&90° left', ...
-                         'callback', @(src, event) contoursRotate(obj, 2, 'selected'));
+                         'callback', @(src, event) contoursRotate(this, 2, 'selected'));
                 uimenu(fc2, 'label', '&180°', ...
-                         'callback', @(src, event) contoursRotate(obj, 3, 'selected'));
+                         'callback', @(src, event) contoursRotate(this, 3, 'selected'));
                 
                 fc3 = uimenu(foncMenu, 'label', '&Recenter polygons', ...
-                              'callback', @(src, event) contoursRecenter(obj), ...
+                              'callback', @(src, event) contoursRecenter(this), ...
                              'separator', 'on');
                 fc4 = uimenu(foncMenu, 'label', '&Resize polygons', ...
-                              'callback', @(src, event) contoursResize(obj));
+                              'callback', @(src, event) contoursResize(this));
                 
                 fc5 = uimenu(foncMenu, 'label', '&Align axis', ...
-                              'callback', @(src, event) contoursAlign(obj), ...
+                              'callback', @(src, event) contoursAlign(this), ...
                              'separator', 'on');
                 fc6 = uimenu(foncMenu, 'label', '&Signature', ...
-                              'callback', @(src, event) contoursToSignature(obj));
+                              'callback', @(src, event) contoursToSignature(this));
                 fc7 = uimenu(foncMenu, 'label', '&Concatenate', ...
-                              'callback', @(src, event) contoursConcatenate(obj));
+                              'callback', @(src, event) contoursConcatenate(this));
                           
-                obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7};
+                this.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7};
                 
 %               -----------------------------------------------------------  
                 
                 % create all the submenus of the 'process' menu
                 pca1 = uimenu(pcaMenu, 'label', '&Compute PCA', ...
-                              'callback', @(src, event) testPCA(obj));
+                              'callback', @(src, event) computePCA(this));
                           
                 pca2 = uimenu(pcaMenu, 'label', '&Display eigen', ...
-                              'callback', @(src, event) pcaEigen(obj), ...
+                              'callback', @(src, event) pcaEigen(this), ...
                                 'enable', 'off', ...
                              'separator', 'on');
                 pca3 = uimenu(pcaMenu, 'label', '&Display scores', ...
-                              'callback', @(src, event) pcaScores(obj), ...
+                              'callback', @(src, event) pcaScores(this), ...
                                 'enable', 'off');
                 pca4 = uimenu(pcaMenu, 'label', '&Display loadings', ...
-                              'callback', @(src, event) pcaLoadings(obj), ...
+                              'callback', @(src, event) pcaLoadings(this), ...
                                 'enable', 'off');
                 pca5 = uimenu(pcaMenu, 'label', '&Display influence', ...
-                              'callback', @(src, event) pcaInfluence(obj), ...
+                              'callback', @(src, event) pcaInfluence(this), ...
                                 'enable', 'off');
-                obj.handles.submenus{5} = {pca1, pca2, pca3, pca4, pca5};
+                this.handles.submenus{5} = {pca1, pca2, pca3, pca4, pca5};
                 
 %               ----------------------------------------------------------- 
                 
@@ -185,12 +182,12 @@ classdef PolygonsManagerMainFrame < handle
                 v1 = uimenu(viewMenu, 'label', '&No Coloration', ...
                               'callback', @(src, event) dispAxes);
                 v2 = uimenu(viewMenu, 'label', '&Coloration factor', ...
-                              'callback', @(src, event) selectFactor(obj), ...
+                              'callback', @(src, event) selectFactor(this), ...
                                 'enable', 'off');
                 v3 = uimenu(viewMenu, 'label', '&Grid', ...
                               'callback', @(src, event) showGrid);
                 
-                obj.handles.submenus{4} = {v1, v2, v3};
+                this.handles.submenus{4} = {v1, v2, v3};
                 
 %               ----------------------------------------------------------- 
                 
@@ -199,12 +196,12 @@ classdef PolygonsManagerMainFrame < handle
                 c1 = uimenu(contmenu, 'label', '&No Coloration', ...
                               'callback', @(src, event) dispAxes);
                 c2 = uimenu(contmenu, 'label', '&Coloration factor', ...
-                              'callback', @(src, event) selectFactor(obj), ...
+                              'callback', @(src, event) selectFactor(this), ...
                                 'enable', 'off');
                 c3 = uimenu(contmenu, 'label', '&Grid', ...
                               'callback', @(src, event) showGrid);
                 
-                obj.handles.submenus{6} = {c1, c2, c3};
+                this.handles.submenus{6} = {c1, c2, c3};
                 
                 function closef(h)
                     %CLOSEF  close a figure
@@ -217,7 +214,7 @@ classdef PolygonsManagerMainFrame < handle
                 function showFactors
                     %SHOWFACTORS  open a new figure that displays the
                     %current factor Table
-                    show(obj.model.factorTable);
+                    show(this.model.factorTable);
                 end
                 
                 function showGrid
@@ -226,30 +223,30 @@ classdef PolygonsManagerMainFrame < handle
                     if strcmp(v3.Checked, 'off');
                         set(v3, 'checked', 'on');
                         set(c3, 'checked', 'on');
-                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'on');
-                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'on');
+                        set(this.handles.Panels{this.handles.tabs.Selection}.uiAxis, 'xgrid', 'on');
+                        set(this.handles.Panels{this.handles.tabs.Selection}.uiAxis, 'ygrid', 'on');
                     else
                         set(v3, 'checked', 'off');
                         set(c3, 'checked', 'off');
-                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid', 'off');
-                        set(obj.handles.axes{obj.handles.tabs.Selection}, 'ygrid', 'off');
+                        set(this.handles.Panels{this.handles.tabs.Selection}.uiAxis, 'xgrid', 'off');
+                        set(this.handles.Panels{this.handles.tabs.Selection}.uiAxis, 'ygrid', 'off');
                     end
                 end
                 
                 function dispAxes
                     %DISPAXES  display the datas of the current polygons
-                    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
-                    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-                        displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
+                    displayPolygons(this.handles.Panels{1}, getAllPolygons(this.model.PolygonArray));
+                    if isa(this.model.PolygonArray, 'PolarSignatureArray')
+                        displayPolarSignature(this.handles.Panels{2}, this.model.PolygonArray);
                     end
                 end
             end
         end
         
-        function pos = getMiddle(obj, height, width)
+        function pos = getMiddle(this, height, width)
             %GETMIDDLE  get the position where a figure must be to be at
             %the exact center of the main frame
-            pos = get(obj, 'outerposition');
+            pos = get(this, 'outerposition');
 
             pos(1) = pos(1) + (pos(3)/2) - (height/2);
             pos(2) = pos(2) + (pos(4)/2) - (width/2);
@@ -257,7 +254,7 @@ classdef PolygonsManagerMainFrame < handle
             pos(4) = width;
         end
         
-        function setupNewFrame(obj, nameArray, polygonArray, varargin)
+        function setupNewFrame(this, model, varargin)
             %SETUPNEWFRAME  fill a PolygonsManagerMainFrame with the parameters given
             %
             %   inputs :
@@ -269,109 +266,90 @@ classdef PolygonsManagerMainFrame < handle
             %       PolygonsManagerMainFrame will display
             
             % creation of the model of the new PolygonsManagerMainFrame
-            obj.model = PolygonsManagerData(polygonArray, nameArray);
-            
-            if  find(strcmp('factorTable', varargin))
-                ind = find(strcmp('factorTable', varargin));
-                obj.model.factorTable = varargin{ind+1};
-                varargin(ind+1) = [];
-                varargin(ind) = [];
-            end
-            if find(strcmp('pca', varargin))
-                ind = find(strcmp('pca', varargin));
-                obj.model.pca = varargin{ind+1};
-                varargin(ind+1) = [];
-                varargin(ind) = [];
-            end
+            this.model = model;
             
             % fill the selection list of the new PolygonsManagerMainFrame
-            set(obj.handles.list, 'string', nameArray, 'callback', @(src, event) select);
+            set(this.handles.list, 'string', model.nameList, 'callback', @(src, event) select);
             
             % update the menus of the new PolygonsManagerMainFrame
-            updateMenus(obj);
+            updateMenus(this);
             
             
             if isempty(varargin)
                 % creation of a panel on which the polygons will be drawn
-                createPanel(obj,length(obj.handles.tabs.Children) + 1, 'on');
+                Panel(this, length(this.handles.tabs.Children) + 1, 'on');
                 
                 % draw the polygons of the new PolygonsManagerMainFrame
-                displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
-                if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-                    createPanel(obj,obj.handles.tabs.Selection + 1, 'off');
-                    displayPolarSignature(obj, obj.model.PolygonArray, obj.handles.axes{2});
+                displayPolygons(this.handles.Panels{1}, getAllPolygons(this.model.PolygonArray));
+                this.handles.Panels{1}.type = 'polygons';
+                if isa(this.model.PolygonArray, 'PolarSignatureArray')
+                    Panel(this, length(this.handles.tabs.Children) + 1, 'off');
+                    displayPolarSignature(this.handles.Panels{2}, this.model.PolygonArray);
+                    this.handles.Panels{2}.type = 'signatures';
                 end
             else
                 % creation of a panel on which the polygons will be drawn
-                createPanel(obj,length(obj.handles.tabs.Children) + 1, varargin{3});
-                
-                displayPca(obj, obj.handles.axes{1}, varargin{1}, varargin{2});
+                Panel(this,length(this.handles.tabs.Children) + 1, varargin{3});
+                this.handles.Panels{1}.type = varargin{4};
+                displayPca(this.handles.Panels{1}, varargin{1}, varargin{2});
             end
         
             function select
-                list = cellstr(get(obj.handles.list, 'String'));
-                sel_val = get(obj.handles.list, 'value');
-                obj.model.selectedPolygons = list(sel_val);
-                updateSelectedPolygonsDisplay(obj);
+                list = cellstr(get(this.handles.list, 'String'));
+                sel_val = get(this.handles.list, 'value');
+                this.model.selectedPolygons = list(sel_val);
+                updateSelectedPolygonsDisplay(this.handles.Panels{this.handles.tabs.Selection});
             end
         end
         
-        function updateSelectedPolygonsDisplay(obj)
-            %UPDATESELECTEDPOLYGONSDISPLAY  display the lines of the
-            %current axis differently if they're selected or not
-            selected = obj.model.selectedPolygons;
-            allHandleList = get(obj.handles.axes{obj.handles.tabs.Selection}, 'Children'); 
-            allTagList = get(allHandleList, 'tag');
-            if ~isempty(allTagList)
-                neededHandle = allHandleList(ismember(allTagList, selected));
-                if strcmp(allHandleList(1).LineStyle, '-')
-                    set(allHandleList, 'LineWidth', .5);
-                    set(neededHandle, 'LineWidth', 3.5);
-                    uistack(neededHandle, 'top');
-                else    
-                    set(allHandleList, 'color', 'k');
-                    set(allHandleList, 'Marker', '.');
-                    set(neededHandle, 'color', 'r');
-                    set(neededHandle, 'Marker', '*');
-                    uistack(neededHandle, 'top');
-                end
-            end
-        end
-        
-        function updateMenus(obj)
+        function updateMenus(this)
             %UPDATEMENUS  update the menus depending on the current datas
             %of the model
-            if isa(obj.model, 'PolygonsManagerData')
-                set(obj.handles.menus{2}, 'enable', 'on');
-                set(obj.handles.menus{4}, 'enable', 'on');
-                set(obj.handles.menus{3}, 'enable', 'on');
-                if isa(obj.model.PolygonArray, 'BasicPolygonArray')
-                    set(obj.handles.submenus{1}{4}, 'enable', 'on');
-                elseif isa(obj.model.PolygonArray, 'CoordsPolygonArray')
-                    set(obj.handles.menus{3}, 'visible', 'off');
-                    set(obj.handles.menus{5}, 'visible', 'on');
-                    set(obj.handles.submenus{1}{4}, 'enable', 'on');
-                elseif isa(obj.model.PolygonArray, 'PolarSignatureArray')
-                    set(obj.handles.menus{3}, 'visible', 'off');
-                    set(obj.handles.menus{5}, 'visible', 'on');
-                    set(obj.handles.submenus{1}{5}, 'enable', 'on');
+            if isa(this.model, 'PolygonsManagerData')
+                set(this.handles.menus{2}, 'enable', 'on');
+                set(this.handles.menus{4}, 'enable', 'on');
+                set(this.handles.menus{3}, 'enable', 'on');
+                if isa(this.model.PolygonArray, 'BasicPolygonArray')
+                    set(this.handles.submenus{1}{4}, 'enable', 'on');
+                elseif isa(this.model.PolygonArray, 'CoordsPolygonArray')
+                    set(this.handles.menus{3}, 'visible', 'off');
+                    set(this.handles.menus{5}, 'visible', 'on');
+                    set(this.handles.submenus{1}{4}, 'enable', 'on');
+                elseif isa(this.model.PolygonArray, 'PolarSignatureArray')
+                    set(this.handles.menus{3}, 'visible', 'off');
+                    set(this.handles.menus{5}, 'visible', 'on');
+                    set(this.handles.submenus{1}{5}, 'enable', 'on');
                 end
-                if isa(obj.model.factorTable, 'Table')
-                    set(obj.handles.submenus{2}{1}, 'checked', 'on');
-                    set([obj.handles.submenus{2}{:}], 'enable', 'on');
-                    set(obj.handles.submenus{4}{2}, 'enable', 'on');
-                    set(obj.handles.submenus{6}{2}, 'enable', 'on');
-                    set(obj.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name]);
+                if isa(this.model.factorTable, 'Table')
+                    set(this.handles.submenus{2}{1}, 'checked', 'on');
+                    set([this.handles.submenus{2}{:}], 'enable', 'on');
+                    set(this.handles.submenus{4}{2}, 'enable', 'on');
+                    set(this.handles.submenus{6}{2}, 'enable', 'on');
+                    set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name]);
                 end
-                if isa(obj.model.pca, 'Pca')
-                    set([obj.handles.submenus{5}{:}], 'enable', 'on');
-                    if isa(obj.model.factorTable, 'Table')
-                        set(obj.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA']);
+                if isa(this.model.pca, 'Pca')
+                    set([this.handles.submenus{5}{:}], 'enable', 'on');
+                    if isa(this.model.factorTable, 'Table')
+                        set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name ' | PCA']);
                     else
-                        set(obj.handles.figure, 'name', 'Polygons Manager | PCA');
+                        set(this.handles.figure, 'name', 'Polygons Manager | PCA');
                     end
                 end
             end
+        end
+        
+        function names = setupDisplay(this, i1, i2, tabInd, tabName)
+            
+            % update the checked values in the menu
+            set(this.handles.submenus{4}{i1}, 'checked', 'on');
+            set(this.handles.submenus{4}{i2}, 'checked', 'off');
+            set(this.handles.submenus{6}{i1}, 'checked', 'on');
+            set(this.handles.submenus{6}{i2}, 'checked', 'off');
+
+            % set the name of the tab
+            this.handles.tabs.TabTitles{tabInd} = tabName;
+            
+            names = this.model.nameList;
         end
     end
 end

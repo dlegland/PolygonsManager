@@ -21,7 +21,7 @@ if ~strcmp(axis, '?')
         
         % update the waitbar and the contours selection (purely cosmetic)
         obj.model.selectedPolygons = name;
-        updateSelectedPolygonsDisplay(obj);
+        updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
         waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
@@ -55,16 +55,11 @@ if ~strcmp(axis, '?')
     close(h) 
     
     % create a new figure and display the results of the rotation on this
-    % new figure
-    fen = PolygonsManagerMainFrame;    
-    polygons = BasicPolygonArray(polygonArray);
+    % new figure  
+    model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
     
-    % if factors were imported in the last figure, transfer them
-    if isa(obj.model.factorTable, 'Table')
-        setupNewFrame(fen, obj.model.nameList, polygons, 'factorTable', obj.model.factorTable);
-    else
-        setupNewFrame(fen, obj.model.nameList, polygons);
-    end
+    fen = PolygonsManagerMainFrame;  
+    setupNewFrame(fen, model);
 end
 
 function axe = contoursAlignPrompt

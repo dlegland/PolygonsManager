@@ -27,7 +27,7 @@ if ~strcmp(startAngle, '?')
 
         % update the waitbar and the contours selection (purely cosmetic)
         obj.model.selectedPolygons = name;
-        updateSelectedPolygonsDisplay(obj);
+        updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
         waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
@@ -47,15 +47,10 @@ if ~strcmp(startAngle, '?')
     
     % create a new figure and display the results of the rotation on this
     % new figure
-    fen = PolygonsManagerMainFrame;    
-    polygons = PolarSignatureArray(dat, angles);
+    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
+    fen = PolygonsManagerMainFrame;  
     
-    % if factors were imported in the last figure, transfer them
-    if isa(obj.model.factorTable, 'Table')
-        setupNewFrame(fen, obj.model.nameList, polygons, 'factorTable', obj.model.factorTable);
-    else
-        setupNewFrame(fen, obj.model.nameList, polygons);
-    end
+    setupNewFrame(fen, model);
 end
 
 function [start, number] = contoursToSignaturePrompt

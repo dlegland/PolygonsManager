@@ -11,7 +11,7 @@ function importPolarSignature(obj)
 fFile = fullfile(fPath, fName);
 
 if fName ~= 0
-    if ~isempty(obj.handles.panels)
+    if ~isempty(obj.handles.Panels)
         % if the figure already contains a polygon array
         obj = PolygonsManagerMainFrame;
     end
@@ -24,10 +24,9 @@ if fName ~= 0
     startAngle = str2double(import.colNames{1});
     angles = startAngle:pas:360+startAngle-pas;
     
-    % create the polygon array
-    polygons = PolarSignatureArray(import.data, angles);
+    % set the new polygon array as the current polygon array
+    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(import.data, angles), 'nameList', import.rowNames');
 
     %setup the frame
-    setupNewFrame(obj, import.rowNames', polygons)
-end
+    setupNewFrame(obj, model);
 end

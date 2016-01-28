@@ -8,9 +8,6 @@ function contoursRecenter(obj)
 % preallocating memory
 polygonList = cell(1, length(obj.model.nameList));
 
-% create waitbar
-% h = waitbar(0,'Début de la conversion');
-
 for i = 1:length(polygonList)
     % get the name of the contours that will be centered
     name = obj.model.nameList{i};
@@ -22,22 +19,18 @@ for i = 1:length(polygonList)
     center  = polygonCentroid(poly);
     poly = bsxfun(@minus, poly, center);
     
-    % update the polygon and the waitbar
+    % update the polygon
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), poly);
-%     waitbar(i / length(polygonList), h, ['process : ' name]);
 end
-% close waitbar
-% close(h) 
-
 % get the selected factor
-ud = obj.model.selectedFactor;
+sf = obj.model.selectedFactor;
 
 % if a factor was selected prior to the conversion
-if iscell(ud)
+if iscell(sf)
     % display the contours colored depending on the selected factor
-    polygonList = getPolygonsFromFactor(obj.model, ud{1});
-    displayPolygonsFactor(obj, polygonList, obj.handles.axes{1});
+    polygonList = getPolygonsFromFactor(obj.model, sf{1});
+    displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
 else
     % display the contours without special coloration
-    displayPolygons(obj, getAllPolygons(obj.model.PolygonArray), obj.handles.axes{1});
+    displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
 end

@@ -3,6 +3,7 @@ function pcaScores(obj)
 if isempty(obj.handles.Panels{1}.type)
     [cp1, cp2, equal] = pcaScoresPrompt(length(obj.model.pca.scores.rowNames));
     
+    
     if isnumeric([cp1 cp2])
         fen = PolygonsManagerMainFrame;
         % set the new polygon array as the current polygon array
@@ -115,7 +116,7 @@ function [cp1, cp2, equal] = pcaScoresPrompt(nbCP)
     function callback(~,~)
         cp1 = popup1.Value;
         cp2 = popup2.Value;
-        equal = lower(get(toggleB,'String'));
+        equal = get(toggleB,'String');
         
         delete(gcf);
     end

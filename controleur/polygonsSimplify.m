@@ -1,19 +1,19 @@
-function contoursResize(obj)
-%CONTOURSRESIZE  Converts contours units to user untis (millimeters)
+function polygonsSimplify(obj)
+%POLYGONSSIMPLIFY  Simplify the current polygons
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
 % enter the resolution of the image to make the conversion
-resol = contoursResizePrompt;
+tol = polygonsSimplifyPrompt;
 
-if ~strcmp(resol, '?')
+if ~strcmp(tol, '?')
     
     % memory allocation
-    polygonList = cell(1, length(obj.model.nameList));
+    polygonArray = cell(1,length(obj.model.nameList));
 
-    for i = 1:length(polygonList)
+    for i = 1:length(polygonArray)
         % get the name of the polygon that will be converted
         name = obj.model.nameList{i};
 
@@ -21,35 +21,28 @@ if ~strcmp(resol, '?')
         poly = getPolygonFromName(obj.model, name);
         
         % convert the polygon
-        polyMm = poly * resol;
+        polyS = simplifyPolygon(poly, tol);
 
-        %update the polygon
-        updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
+        polygonArray{i} = polyS;
     end
     
-    % get the selected factor
-    sf = obj.model.selectedFactor;
-
-    % if a factor was selected prior to the conversion
-    if iscell(sf)
-        % display the contours colored depending on the selected factor
-        polygonList = getPolygonsFromFactor(obj.model, sf{1});
-        displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
-    else
-        % display the contours without special coloration
-        displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
-    end
+    % create a new figure and display the results of the rotation on this
+    % new figure  
+    model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
+    
+    fen = PolygonsManagerMainFrame;  
+    setupNewFrame(fen, model);
 end
 
-function resol = contoursResizePrompt
-%CONTOURSRESIZEPROMPT  A dialog figure on which the user can select type
-%the resolution of the image
+function tol = polygonsSimplifyPrompt
+%POLYGONSSIMPLIFYPROMPT  A dialog figure on which the user can select type
+%the simplification's tolerence
 %
 %   Inputs : none
 %   Outputs : resolution of the image
 
     % default value of the ouput to prevent errors
-    resol = '?';
+    tol = '?';
 
     % get the position where the prompt will at the center of the
     % current figure
@@ -63,7 +56,7 @@ function resol = contoursResizePrompt
     uicontrol('parent', d,...
             'position', [30 80 90 20], ...
                'style', 'text',...
-              'string', 'Resolution :', ...
+              'string', 'Tolerence :', ...
             'fontsize', 10, ...
  'horizontalalignment', 'right');
 
@@ -95,13 +88,9 @@ function resol = contoursResizePrompt
 
     function callback(~,~)
         try
-            % if the input numeric then get its value and close the dialog box
             if ~isnan(str2double(get(edit,'String')))
-                resol = str2double(get(edit,'String'));
-                delete(gcf);
-            % if the input contains an operation get the result and close the dialog box
-            elseif find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
-                resol = eval(get(edit,'String'));
+            % if the input numeric then get its value and close the dialog box
+                tol = str2double(get(edit,'String'));
                 delete(gcf);
             else
                 set(error, 'visible', 'on');

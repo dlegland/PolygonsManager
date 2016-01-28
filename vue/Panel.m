@@ -113,9 +113,7 @@ classdef Panel < handle
                     set(neededHandle, 'LineWidth', 3.5);
                     uistack(neededHandle, 'top');
                 else    
-                    set(allHandleList, 'color', 'k');
                     set(allHandleList, 'Marker', '.');
-                    set(neededHandle, 'color', 'r');
                     set(neededHandle, 'Marker', '*');
                     uistack(neededHandle, 'top');
                 end
@@ -406,10 +404,11 @@ classdef Panel < handle
         end
         
         function displayPca(this, x, y)
-
-            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type);
+            
+            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
             
             delete([this.uiLegend{:}]);
+            delete(this.uiAxis.Children(:));
 
             hold(this.uiAxis, 'on');
             for i = 1:length(x)
@@ -420,6 +419,64 @@ classdef Panel < handle
             end
             hold(this.uiAxis, 'off');
 
+        end
+        
+        function displayPcaFactor(this, pca)
+
+            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
+            
+            nbSelected = length(this.mainFrame.model.selectedFactor{2});
+            
+            axis = this.uiAxis;
+            
+            % reset the position of the cursor in the axis' colormap
+            set(axis, 'colororderindex', 1);
+
+            % change the axis' colormap to get colors that are as different as
+            % possible from eachother
+            set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :));
+
+            % memory allocation for the array that'll contain the legend's lines
+            lines = cell(1, length(names));
+            lineHandles = cell(1, nbSelected);
+            levels = cell(1, nbSelected);
+
+            delete([this.uiLegend{:}]);
+            delete(this.uiAxis.Children(:));
+
+            hold(axis, 'on');
+            for i = 1:length(pca)
+                lines{i} = plot(pca{i, 2}, pca{i, 3}, ...
+                                  'marker', '.', ...
+                               'linestyle', 'none', ...
+                                  'parent', axis, ...
+                           'ButtonDownFcn', @this.detectLineClick, ...
+                                     'tag', names{i}, ...
+                                   'color', axis.ColorOrder(pca{i, 1}, :));
+
+                if cellfun('isempty',lineHandles(pca{i, 1}))
+                    % if the factor of the signature that was just drawn has never been
+                    % encountered, create a copy of this line and save it
+                    lineHandles{pca{i, 1}} = copy(lines{i});
+                    levels{pca{i, 1}} = this.mainFrame.model.selectedFactor{2}{pca{i, 1}};
+                end
+            end
+            hold(axis, 'off');
+            
+            levels = levels(~cellfun('isempty',levels));
+
+
+            if ~isempty(this.mainFrame.model.selectedPolygons)
+                % if at least one signature was selected, update the view
+                updateSelectedPolygonsDisplay(this);
+            end
+
+            if this.mainFrame.model.selectedFactor{3} == 0
+                % if the legend must be displayed, display it
+                this.uiLegend{1} = legend(axis, [lineHandles{:}], levels, ...
+                                                   'location', 'eastoutside', ...
+                                              'uicontextmenu', []);
+            end
         end
     end
 end

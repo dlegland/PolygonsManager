@@ -17,12 +17,21 @@ if ~strcmp(factor, '?')
     % save the selected factor, it's levels, and the legend display option
     obj.model.selectedFactor = {factor levels leg};
     
-    % display the colored polygons
-    displayPolygonsFactor(obj.handles.Panels{1}, getPolygonsFromFactor(obj.model, factor));
-    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        % if the polygon array is a signature array, also display the
-        % colored polar signatures
-        displayPolarSignatureFactor(obj.handles.Panels{2}, getSignatureFromFactor(obj.model, factor));
+    if isempty(obj.handles.Panels{1}.type)
+        % display the colored polygons
+        displayPolygonsFactor(obj.handles.Panels{1}, getPolygonsFromFactor(obj.model, factor));
+        if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+            % if the polygon array is a signature array, also display the
+            % colored polar signatures
+            displayPolarSignatureFactor(obj.handles.Panels{2}, getSignatureFromFactor(obj.model, factor));
+        end
+    else
+        if ~strcmp(obj.handles.Panels{1}.type, 'pcaInfluence')
+            ud = obj.handles.Panels{1}.uiAxis.UserData;
+            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type, ud{1}, ud{2}));
+        else
+            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type));
+        end
     end
 end
 

@@ -1,5 +1,5 @@
-function contoursConcatenate(obj)
-%CONTOURSALIGN  Rotate all slab contours such that they are aligned with
+function polygonsConcatenate(obj)
+%POLYGONSCONCATENATE  Rotate all slab contours such that they are aligned with
 %one of the axis
 %
 %   Inputs :

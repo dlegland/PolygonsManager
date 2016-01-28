@@ -11,14 +11,14 @@ model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
 setupNewFrame(fen, model, ...
               sqrt(sum(obj.model.pca.scores.data .^ 2, 2)), ...
               min(abs(obj.model.pca.scores.data), [], 2), ...
-              'off', 'Influence');
+              'off', 'pcaInfluence');
           
 if isa(obj.model.factorTable, 'Table')
     set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Influence']);
 else
     set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Influence');
 end
-
+    
 % annotate graph
 xlabel(fen.handles.Panels{1}.uiAxis, 'Distance to origin');
 ylabel(fen.handles.Panels{1}.uiAxis, 'Distance to axis');

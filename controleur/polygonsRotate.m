@@ -1,5 +1,5 @@
-function contoursRotate(obj, angle, type)
-%CONTOURSROTATE  Rotate the contour 
+function polygonsRotate(obj, angle, type)
+%POLYGONSROTATE  Rotate the contour 
 %
 %   Inputs :
 %       - obj : handle of the MainFrame

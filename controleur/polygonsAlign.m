@@ -1,5 +1,5 @@
-function contoursAlign(obj)
-%CONTOURSALIGN  Rotate all slab contours such that they are aligned with
+function polygonsAlign(obj)
+%POLYGONSALIGN  Rotate all slab contours such that they are aligned with
 %one of the axis
 %
 %   Inputs :
@@ -8,11 +8,16 @@ function contoursAlign(obj)
 
 % select which axis the contours will be aligned with
 axis = contoursAlignPrompt;
-
+tic;
 if ~strcmp(axis, '?')
     % preallocating memory
     polygonArray = cell(1,length(obj.model.nameList));
-
+    
+    save = 0;
+    if any(obj.model.PolygonArray.alignAngles, 2) == 0
+        save = 1;
+    end
+    disp(save);
     % create waitbar
     h = waitbar(0,'Please wait...', 'name', 'Alignement des contours');
     for i = 1:length(obj.model.nameList)
@@ -36,15 +41,17 @@ if ~strcmp(axis, '?')
             % compute symmetric wrt the vertical axis
             polySym = [-poly(:,1) poly(:,2)];
         end
-
-        % determines the rotation angle that best matches the polygon with the
-        % rotated polygon
-        thetaMin = fminbnd(...
-        @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
-        -pi/4, pi/4);
+        
+        if save == 1
+            % determines the rotation angle that best matches the polygon with the
+            % rotated polygon
+            obj.model.PolygonArray.alignAngles(i) = fminbnd(...
+                                                    @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
+                                                    -pi/4, pi/4);
+        end
 
         % divide angle by 2 for aligning polygon with axis
-        rot     = createRotation(-thetaMin/2);
+        rot     = createRotation(-obj.model.PolygonArray.alignAngles(i)/2);
         polyRot = transformPoint(poly, rot);
 
         polygonArray{i} = polyRot;
@@ -61,7 +68,7 @@ if ~strcmp(axis, '?')
     fen = PolygonsManagerMainFrame;  
     setupNewFrame(fen, model);
 end
-
+toc;
 function axe = contoursAlignPrompt
 %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
 %which axis will be aligned with the contours

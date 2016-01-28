@@ -125,35 +125,39 @@ classdef PolygonsManagerMainFrame < handle
                 % create all the submenus of the 'process' menu
                 fc1 = uimenu(foncMenu, 'label', '&Rotate all');
                 uimenu(fc1, 'label', '&90° right', ...
-                         'callback', @(src, event) contoursRotate(this, 1, 'all'));
+                         'callback', @(src, event) polygonsRotate(this, 1, 'all'));
                 uimenu(fc1, 'label', '&90° left', ...
-                         'callback', @(src, event) contoursRotate(this, 2, 'all'));
+                         'callback', @(src, event) polygonsRotate(this, 2, 'all'));
                 uimenu(fc1, 'label', '&180°', ...
-                         'callback', @(src, event) contoursRotate(this, 3, 'all'));
+                         'callback', @(src, event) polygonsRotate(this, 3, 'all'));
                 
                 fc2 = uimenu(foncMenu, 'label', '&Rotate selected');
                 uimenu(fc2, 'label', '&90° right', ...
-                         'callback', @(src, event) contoursRotate(this, 1, 'selected'));
+                         'callback', @(src, event) polygonsRotate(this, 1, 'selected'));
                 uimenu(fc2, 'label', '&90° left', ...
-                         'callback', @(src, event) contoursRotate(this, 2, 'selected'));
+                         'callback', @(src, event) polygonsRotate(this, 2, 'selected'));
                 uimenu(fc2, 'label', '&180°', ...
-                         'callback', @(src, event) contoursRotate(this, 3, 'selected'));
+                         'callback', @(src, event) polygonsRotate(this, 3, 'selected'));
                 
                 fc3 = uimenu(foncMenu, 'label', '&Recenter polygons', ...
-                              'callback', @(src, event) contoursRecenter(this), ...
+                              'callback', @(src, event) polygonsRecenter(this), ...
                              'separator', 'on');
                 fc4 = uimenu(foncMenu, 'label', '&Resize polygons', ...
-                              'callback', @(src, event) contoursResize(this));
+                              'callback', @(src, event) polygonsResize(this));
                 
-                fc5 = uimenu(foncMenu, 'label', '&Align axis', ...
-                              'callback', @(src, event) contoursAlign(this), ...
+                fc5 = uimenu(foncMenu, 'label', '&Simplify polygons', ...
+                              'callback', @(src, event) polygonsSimplify(this), ...
                              'separator', 'on');
-                fc6 = uimenu(foncMenu, 'label', '&Signature', ...
-                              'callback', @(src, event) contoursToSignature(this));
-                fc7 = uimenu(foncMenu, 'label', '&Concatenate', ...
-                              'callback', @(src, event) contoursConcatenate(this));
+                fc6 = uimenu(foncMenu, 'label', '&Align polygons', ...
+                              'callback', @(src, event) polygonsAlign(this));
                           
-                this.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7};
+                fc7 = uimenu(foncMenu, 'label', '&Signature', ...
+                              'callback', @(src, event) polygonsToSignature(this), ...
+                             'separator', 'on');
+                fc8 = uimenu(foncMenu, 'label', '&Concatenate', ...
+                              'callback', @(src, event) polygonsConcatenate(this));
+                          
+                this.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7, fc8};
                 
 %               -----------------------------------------------------------  
                 
@@ -235,9 +239,14 @@ classdef PolygonsManagerMainFrame < handle
                 
                 function dispAxes
                     %DISPAXES  display the datas of the current polygons
-                    displayPolygons(this.handles.Panels{1}, getAllPolygons(this.model.PolygonArray));
-                    if isa(this.model.PolygonArray, 'PolarSignatureArray')
-                        displayPolarSignature(this.handles.Panels{2}, this.model.PolygonArray);
+                    if isempty(this.handles.Panels{1}.type)
+                        displayPolygons(this.handles.Panels{1}, getAllPolygons(this.model.PolygonArray));
+                        if isa(this.model.PolygonArray, 'PolarSignatureArray')
+                            displayPolarSignature(this.handles.Panels{2}, this.model.PolygonArray);
+                        end
+                    else
+                        fh = str2func(this.handles.Panels{1}.type);
+                        fh(this);
                     end
                 end
             end
@@ -271,21 +280,15 @@ classdef PolygonsManagerMainFrame < handle
             % fill the selection list of the new PolygonsManagerMainFrame
             set(this.handles.list, 'string', model.nameList, 'callback', @(src, event) select);
             
-            % update the menus of the new PolygonsManagerMainFrame
-            updateMenus(this);
-            
-            
             if isempty(varargin)
                 % creation of a panel on which the polygons will be drawn
                 Panel(this, length(this.handles.tabs.Children) + 1, 'on');
                 
                 % draw the polygons of the new PolygonsManagerMainFrame
                 displayPolygons(this.handles.Panels{1}, getAllPolygons(this.model.PolygonArray));
-                this.handles.Panels{1}.type = 'polygons';
                 if isa(this.model.PolygonArray, 'PolarSignatureArray')
                     Panel(this, length(this.handles.tabs.Children) + 1, 'off');
                     displayPolarSignature(this.handles.Panels{2}, this.model.PolygonArray);
-                    this.handles.Panels{2}.type = 'signatures';
                 end
             else
                 % creation of a panel on which the polygons will be drawn
@@ -293,7 +296,10 @@ classdef PolygonsManagerMainFrame < handle
                 this.handles.Panels{1}.type = varargin{4};
                 displayPca(this.handles.Panels{1}, varargin{1}, varargin{2});
             end
-        
+            
+            % update the menus of the new PolygonsManagerMainFrame
+            updateMenus(this);
+            
             function select
                 list = cellstr(get(this.handles.list, 'String'));
                 sel_val = get(this.handles.list, 'value');
@@ -329,6 +335,12 @@ classdef PolygonsManagerMainFrame < handle
                 end
                 if isa(this.model.pca, 'Pca')
                     set([this.handles.submenus{5}{:}], 'enable', 'on');
+                    if ~isempty(this.handles.Panels{1}.type)
+                        if ~ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence'})
+                            set(this.handles.submenus{4}{2}, 'enable', 'off');
+                            set(this.handles.submenus{6}{2}, 'enable', 'off');
+                        end
+                    end
                     if isa(this.model.factorTable, 'Table')
                         set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name ' | PCA']);
                     else

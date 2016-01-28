@@ -1,5 +1,5 @@
-function contoursToSignature(obj)
-%CONTOURSTOSIGNATURE  Converts contour in polar signatures
+function polygonsToSignature(obj)
+%POLYGONSTOSIGNATURE  Converts contour in polar signatures
 %
 %   Inputs :
 %       - obj : handle of the MainFrame

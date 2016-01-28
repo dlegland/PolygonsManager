@@ -1,5 +1,5 @@
-function contoursRecenter(obj)
-%CONTOURSRECENTER  Recenter the contour
+function polygonsRecenter(obj)
+%POLYGONSRECENTER  Recenter the contour
 %
 %   Inputs :
 %       - obj : handle of the MainFrame

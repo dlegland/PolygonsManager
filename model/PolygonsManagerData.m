@@ -75,14 +75,10 @@ classdef PolygonsManagerData
             
             % memory allocation
             polygons = cell(length(names), 2);
-%             h = waitbar(0,'Starting ...', 'name', 'Loading polygons');
             for i = 1:length(names)
                 polygons{i, 1} = factors(i);
                 polygons{i, 2} = getPolygonFromName(this, names{i});
-                
-%                 waitbar(i / length(names), h, ['process : ' names{i}]);
             end
-%             close(h)
         end
         
         function signature = getSignatureFromName(this, name)
@@ -104,15 +100,38 @@ classdef PolygonsManagerData
             
             % memory allocation
             signatures = cell(length(names), 2);
-            h = waitbar(0,'Starting ...', 'name', 'Loading polygons');
             for i = 1:length(names)
                 signatures{i, 1} = factors(i);
                 signatures{i, 2} = getSignatureFromName(this, names{i});
-                
-                waitbar(i / length(names), h, ['process : ' names{i}]);
             end
-            close(h)
         end
         
+        function pca = getPcaFromFactor(this, factor, type, varargin)
+            % returns all the signatures assossiated to their level iwt the
+            % input factor
+            
+            % get the names of all the signatures
+            names = this.nameList;
+            
+            % get all the values input factor's column
+            factors = getColumn(this.factorTable, factor);
+            
+            if strcmp(type, 'pcaScores')
+                x = this.pca.scores(:, varargin{1}).data;
+                y = this.pca.scores(:, varargin{2}).data;
+            else
+                x = sqrt(sum(this.pca.scores.data .^ 2, 2));
+                y = min(abs(this.pca.scores.data), [], 2);
+            end
+            
+            % memory allocation
+            pca = cell(length(names), 3);
+            for i = 1:length(names)
+                index = find(strcmp(names{i}, this.pca.scores.rowNames));
+                pca{i, 1} = factors(i);
+                pca{i, 2} = x(index);
+                pca{i, 3} = y(index);
+            end
+        end
     end
 end

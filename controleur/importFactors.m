@@ -26,10 +26,9 @@ while loop == 0
         
         % memory allocation
         factorTbl = zeros(length(obj.model.nameList), columnNumber(import));
-        levels = cell(columnNumber(import), 1);
-        for j = 1:columnNumber(import)
-            levels{j} = cell(length(import.levels{j}), 1);
-        end
+        
+        %get the levels list of the Table that was imported
+        levels = import.levels;
         
         %for each row of the imported factor Table
         for i = 1:rowNumber(import)
@@ -41,43 +40,10 @@ while loop == 0
             if any(index, 2) ~= 0
                 % save this row in the futur factor Table at the right
                 % index
-                
                 factorTbl(index, :) = getRow(import, i);
-                % save the levels of this row
-                for j = 1:columnNumber(import)
-                    if isFactor(import, j)
-                        if any(strcmp(levels{j}, getLevel(import, i, j))) == 0
-                            ind = strcmp(import.levels{j}, getLevel(import, i, j));
-                            levels{j}{ind} = getLevel(import, i, j);
-                        end
-                    end
-                end
             end
         end
-        % eliminate all the zeros that the futur factor Table contains
-        factorTbl = factorTbl(factorTbl~=0);
-        factorTbl = reshape(factorTbl,[], columnNumber(import));
-        
         if size(factorTbl, 1) == length(obj.model.nameList)
-            % if the number of rows of the futur factor Table matches the
-            % number of polygons
-            for i = 1:columnNumber(import)
-                % rearrange the values of the factor Table to make them
-                % correspond the the values of the levels
-                levels{i} = levels{i}(~cellfun('isempty',levels{i}));
-                transform = zeros(length(unique(factorTbl(:, i))), 2);
-                transform(:, 1) = 1:length(unique(factorTbl(:, i)));
-                transform(:, 2) = unique(factorTbl(:, i));
-                if size(transform, 1) == 1
-                    a=transform(1); b=transform(2);
-                    factorTbl(factorTbl(:, i) == b, i) = a;
-                else
-                    for j=1:length(transform)
-                        a=transform(j,1); b=transform(j,2);
-                        factorTbl(factorTbl(:, i) == b, i) = a;
-                    end
-                end
-            end
             
             % create the new factor Table
             factorTbl = Table.create(factorTbl, 'rowNames', obj.model.nameList, 'colNames', import.colNames);

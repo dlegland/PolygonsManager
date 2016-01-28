@@ -21,7 +21,15 @@ classdef PolygonsManagerData
         
         % 1-by-3 Cell array that contains informations neccessary to the
         % coloration of polygons
+        % the cells contains :
+        %   cell 1 : factor that displayed
+        %   cell 2 : factor's levels
+        %   cell 3 : logical that determines if the legend must be
+        %   displayed or not
         selectedFactor;
+        
+        % PCA containing the results of the PolygonArray's PCA
+        pca;
         
     end
     

@@ -61,7 +61,7 @@ if ~strcmp(axis, '?')
     
     % if factors were imported in the last figure, transfer them
     if isa(obj.model.factorTable, 'Table')
-        setupNewFrame(fen, obj.model.nameList, polygons, obj.model.factorTable);
+        setupNewFrame(fen, obj.model.nameList, polygons, 'factorTable', obj.model.factorTable);
     else
         setupNewFrame(fen, obj.model.nameList, polygons);
     end

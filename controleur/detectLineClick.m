@@ -1,5 +1,5 @@
 function detectLineClick(h,~, obj)
-%CREATEFACTORS  callback used when the user clicks on one of the axis' line
+%DETECTLINECLICK  callback used when the user clicks on one of the axis' line
 %
 %   Inputs :
 %       - h : handle of the object that sent the callback 
@@ -7,7 +7,7 @@ function detectLineClick(h,~, obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-if strcmp(obj.handles.figure.SelectionType, 'alt')
+if ismember(obj.handles.figure.SelectionType, {'alt', 'open'})
     % if the user is pressing the 'ctrl' key or using the right
     % mouse-button
     if find(strcmp(get(h,'tag'), obj.model.selectedPolygons))

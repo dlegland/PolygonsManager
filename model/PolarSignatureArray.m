@@ -53,5 +53,9 @@ classdef PolarSignatureArray < PolygonArray
             % returns all the signatures
             obj.signatures(row, :) = polygonSignature(polygon, obj.angleList);
         end
+        
+        function array = getDatas(obj)
+            array = obj.signatures;
+        end
     end
 end

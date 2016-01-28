@@ -52,7 +52,7 @@ if ~strcmp(startAngle, '?')
     
     % if factors were imported in the last figure, transfer them
     if isa(obj.model.factorTable, 'Table')
-        setupNewFrame(fen, obj.model.nameList, polygons, obj.model.factorTable);
+        setupNewFrame(fen, obj.model.nameList, polygons, 'factorTable', obj.model.factorTable);
     else
         setupNewFrame(fen, obj.model.nameList, polygons);
     end
@@ -66,7 +66,6 @@ function [start, number] = contoursToSignaturePrompt
 %   Outputs : 
 %       - start : the starting angle
 %       - number : the number of angles
-
 
     % default value of the ouput to prevent errors
     start = '?';

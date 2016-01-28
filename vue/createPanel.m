@@ -1,4 +1,4 @@
-function createPanel(obj, index, equal, varargin)
+function createPanel(obj, index, equal)
 %CREATEPANEL  Create a new panel and every elements needed to display an axis
 %
 %   Inputs :
@@ -11,6 +11,7 @@ function createPanel(obj, index, equal, varargin)
 %                   - 2 : off
 %   Outputs : none
 
+% creation of the colormap
 %      R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |  R    G    B |
 co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252;
       78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
@@ -50,55 +51,72 @@ co = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253;
       146, 245, 106; 144, 246, 108; 142, 247, 109; 140, 248, 111; 138, 249, 113; 136, 250, 115; 134, 251, 117;
       132, 253, 119; 130, 254, 121; 128, 255, 123; 126, 255, 125];
     
+% creation of the panel taht'll contain the axis
 myPanel = uipanel('parent', obj.handles.tabs, ...
               'bordertype', 'none', ...
-           'uicontextmenu', obj.handles.menus{5});
+           'uicontextmenu', obj.handles.menus{6});
+       
+% creation of the axis on which the lines will be drawn
 myAxe = axes('parent', myPanel, ...
       'ButtonDownFcn', @(src, event) reset, ...
          'colororder', co/255, ...
-      'uicontextmenu', obj.handles.menus{5});
+      'uicontextmenu', obj.handles.menus{6});
 
-if equal == 1
+if strcmp(equal, 'on')
+    % use the same length for the data units along each axis
     axis equal;
 end
 
+% memory allocation
 obj.handles.lines{index} = cell(length(obj.model.nameList), 1);
+
+% save the handles to the panel and the axis in the mainframe
 obj.handles.panels{index} = myPanel;
 obj.handles.axes{index} = myAxe;
 
+% add a callback to the tabpanel to call when the tab selection change
 set(obj.handles.tabs, 'selection', index, ...
             'SelectionChangedFcn', @(src, event) select);
-if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-    condition = 'index > 2';
-else
-    condition = 'index > 1';
-end
-
-if eval(condition);
-    obj.handles.contextMenus{index} = uicontextmenu;
-    uimenu(obj.handles.contextMenus{index},'Label','Close','Callback', @(src, event) deletePanel);
-else
-    obj.handles.contextMenus{index} = [];
-end
-set(obj.handles.tabs, 'TabContextMenus', obj.handles.contextMenus);
+        
+% if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+%     condition = 'index > 2';
+% else
+%     condition = 'index > 1';
+% end
+% 
+% if eval(condition);
+%     obj.handles.contextMenus{index} = uicontextmenu;
+%     uimenu(obj.handles.contextMenus{index},'Label','Close','Callback', @(src, event) deletePanel);
+% else
+%     obj.handles.contextMenus{index} = [];
+% end
+% set(obj.handles.tabs, 'TabContextMenus', obj.handles.contextMenus);
 
 function reset
-    if ~strcmp(obj.handles.figure.SelectionType, 'alt')
+    %RESET  set the current selection to null
+    
+    if ~ismember(obj.handles.figure.SelectionType, {'alt', 'open'})
+        % if the user is not pressing the 'ctrl' key or right-clicking
+        
+        %empty the selection lists and update the view
         obj.model.selectedPolygons = {};
         set(obj.handles.list, 'value', []);
+        
+        % update the view
         updateSelectedPolygonsDisplay(obj);
     end
 end
 
 function select
+    %SELECT  update the view depending on the selection
     updateSelectedPolygonsDisplay(obj);
     set(obj.handles.submenus{4}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
-    set(obj.handles.submenus{5}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
+    set(obj.handles.submenus{6}{3}, 'checked', get(obj.handles.axes{obj.handles.tabs.Selection}, 'xgrid'));
 end
 
-function deletePanel
-    obj.handles.axes(obj.handles.tabs.Selection) = [];
-    delete(obj.handles.panels{obj.handles.tabs.Selection});
-    obj.handles.panels(obj.handles.tabs.Selection) = [];
-end
+% function deletePanel
+%     obj.handles.axes(obj.handles.tabs.Selection) = [];
+%     delete(obj.handles.panels{obj.handles.tabs.Selection});
+%     obj.handles.panels(obj.handles.tabs.Selection) = [];
+% end
 end

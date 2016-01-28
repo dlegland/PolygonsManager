@@ -1,4 +1,4 @@
-function importPolygonArray(obj)
+function importBasicPolygon(obj)
 %IMPORTPOLYGONARRAY  Imports a folder containing polygons coordinates files (.txt) and make it the current polygon array
 %
 %   Inputs :

@@ -20,29 +20,34 @@ if ~strcmp(nbFactors, '?')
     % number of characters
     [start, number, name] = createFactorPrompt2(1, sampleName);
     
-    % create the Table that will be output
-    factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
-    
-    % if there's more than 1 factor
-    if nbFactors > 1
-        for i = 2:nbFactors
-            % for each factor, enter it's name, index of its first character, and
-            % number of characters
-            [start, number, name] = createFactorPrompt2(i, sampleName);
-            
-            % add the new factor to the factor table
-            factorTbl = horzcat(factorTbl, parseFactorFromRowNames(rowNames, start, number, name));
+    if ~strcmp(name, '?')
+        % create the Table that will be output
+        factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
+
+        if nbFactors > 1
+            % if there's more than 1 factor
+            for i = 2:nbFactors
+                % for each factor, enter it's name, index of its first character, and
+                % number of characters
+                [start, number, name] = createFactorPrompt2(i, sampleName);
+
+                if strcmp(name, '?')
+                    return;
+                end
+                % add the new factor to the factor table
+                factorTbl = horzcat(factorTbl, parseFactorFromRowNames(rowNames, start, number, name));
+            end
         end
+    
+        % set the factor Table name
+        factorTbl.name = factorName;
+
+        % set the new factor Table as the current factor Table
+        obj.model.factorTable = factorTbl;
+
+        %update the menus
+        updateMenus(obj);
     end
-    
-    % set the factor Table name
-    factorTbl.name = factorName;
-    
-    % set the new factor Table as the current factor Table
-    obj.model.factorTable = factorTbl;
-    
-    %update the menus
-    updateMenus(obj);
     
 end
 

@@ -1,6 +1,5 @@
 function polygonsAlign(obj)
-%POLYGONSALIGN  Rotate all slab contours such that they are aligned with
-%one of the axis
+%POLYGONSALIGN  Rotate all slab contours such that they are aligned with one of the axis
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -45,13 +44,13 @@ if ~strcmp(axis, '?')
         if save == 1
             % determines the rotation angle that best matches the polygon with the
             % rotated polygon
-            obj.model.PolygonArray.alignAngles(i) = fminbnd(...
-                                                    @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
-                                                    -pi/4, pi/4);
+            angle = fminbnd(...
+                    @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
+                    -pi/4, pi/4);
         end
 
         % divide angle by 2 for aligning polygon with axis
-        rot     = createRotation(-obj.model.PolygonArray.alignAngles(i)/2);
+        rot     = createRotation(-angle/2);
         polyRot = transformPoint(poly, rot);
 
         polygonArray{i} = polyRot;
@@ -96,7 +95,7 @@ function axe = contoursAlignPrompt
               'string', 'x-axis');
 
     uicontrol('parent', group, ...
-            'position', [145 82 90 20], ...
+            'position', [145 80 90 20], ...
                'style', 'radiobutton', ...
               'string', 'y-axis');
 
@@ -104,7 +103,7 @@ function axe = contoursAlignPrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(src, event) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -114,7 +113,7 @@ function axe = contoursAlignPrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         % get the value of the selected radio button and close the
         % dialog box
         axe = group.SelectedObject.String;

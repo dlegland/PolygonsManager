@@ -27,6 +27,10 @@ classdef CoordsPolygonArray < PolygonArray
             arraySize = size(obj.polygons, 1);
         end
         
+        function polygonSize = getPolygonSize(obj)
+            polygonSize = size(obj.polygons, 2);
+        end
+        
         function polygon = getPolygon(obj, row)
             % returns the polygon found at the index row
             polygon = rowToPolygon(obj.polygons(row, :), 'packed');

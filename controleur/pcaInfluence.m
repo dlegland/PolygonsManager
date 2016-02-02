@@ -13,7 +13,7 @@ setupNewFrame(fen, model, ...
               min(abs(obj.model.pca.scores.data), [], 2), ...
               'off', 'pcaInfluence');
           
-if isa(obj.model.factorTable, 'Table')
+if strcmp(class(obj.model.factorTable), 'Table')
     set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Influence']);
 else
     set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Influence');

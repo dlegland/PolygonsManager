@@ -20,7 +20,7 @@ if ~strcmp(factor, '?')
     if isempty(obj.handles.Panels{1}.type)
         % display the colored polygons
         displayPolygonsFactor(obj.handles.Panels{1}, getPolygonsFromFactor(obj.model, factor));
-        if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+        if strcmp(class(obj.model.PolygonArray, 'PolarSignatureArray'))
             % if the polygon array is a signature array, also display the
             % colored polar signatures
             displayPolarSignatureFactor(obj.handles.Panels{2}, getSignatureFromFactor(obj.model, factor));

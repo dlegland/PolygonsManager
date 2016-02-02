@@ -1,11 +1,12 @@
 function computePCA(obj)
+%COMPUTEPCA  Compute the Principal Component Analysis of the current
+%polygons
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
-if ~isa(obj.model.PolygonArray, 'BasicPolygonArray')
-    obj.model.pca = Pca(Table.create(getDatas(obj.model.PolygonArray), 'rowNames', obj.model.nameList'), 'Display', 'none');
-end
-
-% createPanel(obj, length(obj.handles.tabs.Children)+1, 'on');
-% loadingPlot(obj.model.pca,obj.handles.axes{length(obj.handles.tabs.Children)},1,2, 'showNames', 0);
+obj.model.pca = Pca(Table.create(getDatas(obj.model.PolygonArray), 'rowNames', obj.model.nameList'), 'Display', 'none');
 
 updateMenus(obj);
 end

@@ -6,7 +6,7 @@ if isnumeric([cp1 cp2])
     fen = PolygonsManagerMainFrame;
     % set the new polygon array as the current polygon array
     model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', obj.model.pca.loadings(:, cp1).rowNames, ...
+                                    'nameList', obj.model.nameList, ...
                                  'factorTable', obj.model.factorTable, ...
                                          'pca', obj.model.pca);
 
@@ -15,7 +15,7 @@ if isnumeric([cp1 cp2])
                   obj.model.pca.loadings(:, cp2).data, ...
                   'off', 'pcaLoadings');
     
-    if isa(fen.model.factorTable, 'Table')
+    if strcmp(class(fen.model.factorTable), 'Table')
         set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Loadings']);
     else
         set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Loadings');

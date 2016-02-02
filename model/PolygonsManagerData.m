@@ -81,12 +81,31 @@ classdef PolygonsManagerData
             end
         end
         
+        function polygons = getPolygonsNameFromFactor(this, factor, level)
+            % returns all the polygons assossiated to their level iwt the
+            % input factor
+            
+            % get the names of all the polygons
+            names = this.nameList;
+            
+            % get all the values input factor's column
+            factors = getColumn(this.factorTable, factor);
+            factorLevel = factorLevels(this.factorTable, factor);
+            
+%             memory allocation
+            polygons = {};
+            for i = 1:length(names)
+                if strcmp(level,factorLevel{factors(i)})
+                    polygons{end+1} = names{i};
+                end
+            end
+        end
+        
         function signature = getSignatureFromName(this, name)
             % returns the signature that corresponds to the input name
             index = find(strcmp(name, this.nameList));
             signature = getSignature(this.PolygonArray, index);
         end
-        
         
         function signatures = getSignatureFromFactor(this, factor)
             % returns all the signatures assossiated to their level iwt the

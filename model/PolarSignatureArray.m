@@ -31,6 +31,10 @@ classdef PolarSignatureArray < PolygonArray
             arraySize = size(obj.signatures, 1);
         end
         
+        function polygonSize = getPolygonSize(obj)
+            polygonSize = size(obj.signatures, 2);
+        end
+        
         function polygon = getPolygon(obj, row)
             % computes the polygon found at the index row
             polygon = signatureToPolygon(getSignature(obj, row), obj.angleList);

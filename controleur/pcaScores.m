@@ -16,7 +16,7 @@ if isempty(obj.handles.Panels{1}.type)
                       obj.model.pca.scores(:, cp2).data, ...
                       equal, 'pcaScores');
 
-        if isa(fen.model.factorTable, 'Table')
+        if strcmp(class(fen.model.factorTable), 'Table')
             set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores']);
         else
             set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Scores');

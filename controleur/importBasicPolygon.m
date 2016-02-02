@@ -22,8 +22,6 @@ if dname ~= 0
             obj = PolygonsManagerMainFrame;
         end
         
-        % create waitbar
-%         h = waitbar(0,'Début de l''import', 'name', 'Chargement des contours');
         for i = 1:length(files)
             % get the name of the polygon without the '.txt' at the end
             name = files(i).name(1:end-4);
@@ -33,12 +31,7 @@ if dname ~= 0
             
             % save the polygon 
             polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
-
-            % update the waitbar
-%             waitbar(i / length(files), h, ['process : ' name]);
         end
-        %close the waitbar
-%         close(h)
         
         % set the new polygon array as the current polygon array
         model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', nameArray);

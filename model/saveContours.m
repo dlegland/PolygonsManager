@@ -9,7 +9,7 @@ function saveContours(obj)
 %       
 %       savePolarSignature
 
-if isa(obj.model.PolygonArray, 'CoordsPolygonArray')
+if strcmp(class(obj.model.PolygonArray, 'CoordsPolygonArray'))
     % open the file save prompt and let the user select the file where the polygons will be saved
     [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 

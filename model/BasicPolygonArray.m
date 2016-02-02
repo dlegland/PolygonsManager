@@ -8,8 +8,6 @@ classdef BasicPolygonArray < PolygonArray
     properties
         % the list of all the polygons
         polygons;
-        
-        alignAngles;
     end
     
     methods
@@ -20,7 +18,6 @@ classdef BasicPolygonArray < PolygonArray
         %   where polygons is a 1-by-N cell array, containing N 2-by-M cell arrays
         
             obj.polygons = polygons;
-            obj.alignAngles = zeros(length(polygons), 1);
         end
         
         function arraySize = getPolygonNumber(obj)

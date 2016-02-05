@@ -15,6 +15,10 @@ classdef PolygonsManagerData
         % 1-by-N Cell array that contains the names of the polygons
         nameList;
         
+        % Table that contains the informations concerning the current
+        % polygons
+        infoTable;
+        
         % 1-by-N Cell array that contains the names of the polygons that have been
         % selected
         selectedPolygons = {};
@@ -30,6 +34,8 @@ classdef PolygonsManagerData
         
         % PCA containing the results of the PolygonArray's PCA
         pca;
+        
+        usedProcess = {};
         
     end
     
@@ -50,6 +56,7 @@ classdef PolygonsManagerData
                     varargin(ind) = [];
                 end
             end
+            this.infoTable = loadPolygonInfos(this);
         end
         
         function index = getPolygonIndexFromName(this, name)
@@ -61,6 +68,11 @@ classdef PolygonsManagerData
             % returns the polygon that corresponds to the input name
             index = find(strcmp(name, this.nameList));
             polygon = getPolygon(this.PolygonArray, index);
+        end
+        
+        function polygon = getPolygonRowFromName(this, name)
+            index = find(strcmp(name, this.nameList));
+            polygon = getPolygonRow(this.PolygonArray, index);
         end
         
         function polygons = getPolygonsFromFactor(this, factor)
@@ -151,6 +163,31 @@ classdef PolygonsManagerData
                 pca{i, 2} = x(index);
                 pca{i, 3} = y(index);
             end
+        end
+        
+        function infoTable = loadPolygonInfos(this)
+            infos = zeros(getPolygonNumber(this.PolygonArray), 3);
+            for i = 1:getPolygonNumber(this.PolygonArray)
+                poly = getPolygon(this.PolygonArray, i);
+                infos(i, 1) = abs(polygonArea(poly));
+                infos(i, 2) = polygonLength(poly);
+                infos(i, 3) = (polygonArea(poly) < 0) + 1;
+                
+            end
+            infoTable = Table.create(infos, 'rownames', this.nameList, 'colnames', {'Area', 'Perimeter', 'Orientation'});
+            setFactorLevels(infoTable, 3, {'CW', 'CCW'});
+        end
+        
+        function updatePolygonInfos(this, name)
+            index = getPolygonIndexFromName(this, name);
+            poly = getPolygon(this.PolygonArray, index);
+            this.infoTable.data(index, 1) = abs(polygonArea(poly));
+            this.infoTable.data(index, 2) = polygonLength(poly);
+            this.infoTable.data(index, 3) = (polygonArea(poly) < 0) + 1;
+        end
+        
+        function infos = getInfoFromName(this, name)
+            infos = getRow(this.infoTable, name);
         end
     end
 end

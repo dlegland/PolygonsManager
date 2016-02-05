@@ -1,4 +1,4 @@
-function polygonsAlign(obj)
+function polygonsAlign(obj, type, varargin)
 %POLYGONSALIGN  Rotate all slab contours such that they are aligned with one of the axis
 %
 %   Inputs :
@@ -6,17 +6,41 @@ function polygonsAlign(obj)
 %   Outputs : none
 
 % select which axis the contours will be aligned with
-axis = contoursAlignPrompt;
-tic;
+if nargin == 2
+    axis = contoursAlignPrompt;
+else
+    axis = varargin{1};
+    if nargin > 3 
+        tolerence = varargin{2};
+    end
+end
+
 if ~strcmp(axis, '?')
     % preallocating memory
     polygonArray = cell(1,length(obj.model.nameList));
     
-    save = 0;
-    if any(obj.model.PolygonArray.alignAngles, 2) == 0
-        save = 1;
+    if strcmp(class(type), 'cell')
+        angleArray = type;
+    else
+        angleArray = cell(length(obj.model.nameList), 1);
+        if strcmp(type, 'fast')
+            if exist('tolerence', 'var')
+                polygons = polygonsSimplify(obj, 'off', tolerence);
+                macro = 'on';
+            else
+                [polygons, tolerence] = polygonsSimplify(obj, 'off');
+                macro = 'off';
+            end
+        end
     end
-    disp(save);
+    if ~strcmp(class(type), 'cell')
+        if strcmp(type, 'fast')
+            obj.model.usedProcess{end+1} = ['polygonsAlign : type = ' type ' ; axis = ' axis ' ; tolerence = ' num2str(tolerence)];
+        else
+            obj.model.usedProcess{end+1} = ['polygonsAlign : type = ' type ' ; axis = ' axis];
+        end
+    end
+    
     % create waitbar
     h = waitbar(0,'Please wait...', 'name', 'Alignement des contours');
     for i = 1:length(obj.model.nameList)
@@ -31,7 +55,11 @@ if ~strcmp(axis, '?')
         waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
         
         % get the polygon from its name
-        poly = getPolygonFromName(obj.model, name);
+        if strcmp(type, 'fast')
+            poly = getPolygonFromName(polygons, name);
+        else
+            poly = getPolygonFromName(obj.model, name);
+        end
 
         if strcmp(axis, 'x-axis')
             % compute symmetric wrt the horizontal axis
@@ -41,33 +69,47 @@ if ~strcmp(axis, '?')
             polySym = [-poly(:,1) poly(:,2)];
         end
         
-        if save == 1
+        if cellfun('isempty', angleArray(i))
             % determines the rotation angle that best matches the polygon with the
             % rotated polygon
-            angle = fminbnd(...
+            angleArray{i} = fminbnd(...
                     @(theta) sum(distancePointPolygon(transformPoint(polySym, createRotation(theta)), poly).^2), ...
                     -pi/4, pi/4);
         end
-
+        
         % divide angle by 2 for aligning polygon with axis
-        rot     = createRotation(-angle/2);
+        rot     = createRotation(-angleArray{i}/2);
         polyRot = transformPoint(poly, rot);
 
         polygonArray{i} = polyRot;
     end
     waitbar(length(obj.model.nameList), h);
-        
+    
     % close waitbar
     close(h) 
-    
-    % create a new figure and display the results of the rotation on this
-    % new figure  
-    model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
-    
-    fen = PolygonsManagerMainFrame;  
-    setupNewFrame(fen, model);
+    if strcmp(type, 'fast')
+        polygonsAlign(obj, angleArray, axis, macro);
+    else
+        model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+        if nargin == 2
+            % create a new figure and display the results of the rotation on this
+            % new figure  
+
+            fen = PolygonsManagerMainFrame;  
+            setupNewFrame(fen, model);
+        else
+            if strcmp(varargin{2}, 'off')
+                % create a new figure and display the results of the rotation on this
+                % new figure  
+                fen = PolygonsManagerMainFrame;  
+                setupNewFrame(fen, model);
+            else
+                obj.model = model;
+                displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
+            end
+        end
+    end
 end
-toc;
 function axe = contoursAlignPrompt
 %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
 %which axis will be aligned with the contours
@@ -103,7 +145,7 @@ function axe = contoursAlignPrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @(src, event) callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...

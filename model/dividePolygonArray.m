@@ -15,13 +15,13 @@ function dividePolygonArray(obj)
             if strcmp(factor, 'Display selected')
                 nameArray = obj.model.selectedPolygons;
             else
-                disp(strfind(obj.model.selectedPolygons, obj.model.nameList));
+                nameArray = setdiff(obj.model.nameList, obj.model.selectedPolygons);
             end
         else
             nameArray = getPolygonsNameFromFactor(obj.model, factor, level);
         end
        
-        if strcmp(class(obj.model.factorTable, 'Table'))
+        if strcmp(class(obj.model.factorTable), 'Table')
             % if there was already a factor Table loaded, update it to
             % match the new polygons
             
@@ -59,7 +59,7 @@ function dividePolygonArray(obj)
         % create a new mainframe
         fen = PolygonsManagerMainFrame;
         
-        if strcmp(class(obj.model.PolygonArray, 'BasicPolygonArray'))
+        if strcmp(class(obj.model.PolygonArray), 'BasicPolygonArray')
             % if the current polygons are Basic polygons
             polygons = cell(length(nameArray), 1);
             
@@ -71,19 +71,19 @@ function dividePolygonArray(obj)
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.model.PolygonArray, 'CoordsPolygonArray'))
+        elseif strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
             % if the current polygons are already simplified polygons
             polygons = zeros(length(nameArray), getPolygonSize(obj.model.PolygonArray));
             
             % get all the polygons
             for i = 1:length(nameArray)
-                polygons(i, :) = polygonToRow(getPolygonFromName(obj.model, nameArray{i}), 'packed');
+                polygons(i, :) = getPolygonRowFromName(obj.model, nameArray{i});
             end
             
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.model.PolygonArray, 'PolarSignatureArray'))
+        elseif strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
             % if the current polygons are saved as polar signatures
             polygons = zeros(length(nameArray), getPolygonSize(obj.model.PolygonArray));
             
@@ -91,7 +91,7 @@ function dividePolygonArray(obj)
             
             % get all the polygons
             for i = 1:length(nameArray)
-                polygons(i, :) = polygonSignature(getPolygonFromName(obj.model, nameArray{i}), angles);
+                polygons(i, :) = getSignatureFromName(obj.model, nameArray{i});
             end
             
             % create the data model of the new frame
@@ -127,21 +127,24 @@ function dividePolygonArray(obj)
 
     % create the inputs of the dialog box
     group1 = uibuttongroup('visible', 'on', ...
-              'SelectionChangedFcn',@(src, event) swapMethod);
+               'SelectionChangedFcn',@(~,~) swapMethod);
 
-    b1 = uicontrol('parent', group1, ...
-                 'position', [45 80 90 20], ...
-                    'style', 'radiobutton', ...
-                   'string', 'Selection');
+    uicontrol('parent', group1, ...
+            'position', [45 150 90 20], ...
+               'style', 'radiobutton', ...
+              'string', 'Selection');
 
     b2 = uicontrol('parent', group1, ...
-                 'position', [145 80 90 20], ...
+                 'position', [145 150 90 20], ...
                     'style', 'radiobutton', ...
                    'string', 'Factor', ...
                    'enable', 'off');
                
     % create the inputs of the dialog box
-    group2 = uibuttongroup('visible', 'on');
+    group2 = uibuttongroup('parent', d, ...
+                         'position', [0 0 1 0.7], ...
+                       'bordertype', 'none', ...
+                          'visible', 'on');
 
     uicontrol('parent', group2, ...
             'position', [30 115 210 20], ...
@@ -153,7 +156,7 @@ function dividePolygonArray(obj)
                'style', 'radiobutton', ...
               'string', 'Display non-selected');
           
-    if strcmp(class(obj.model.factorTable, 'Table'))
+    if strcmp(class(obj.model.factorTable), 'Table')
         set(b2, 'enable', 'on');
     
         factorP{1} = uicontrol('parent', d, ...
@@ -170,7 +173,7 @@ function dividePolygonArray(obj)
                               'string', obj.model.factorTable.colNames, ...
                                'value', 1, ...
                              'visible', 'off', ...
-                            'callback', @(src, event) popupCallback);
+                            'callback', @(~,~) popupCallback);
 
         factorP{3} = uicontrol('parent', d, ...
                             'position', [30 80 90 20], ...
@@ -191,7 +194,7 @@ function dividePolygonArray(obj)
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate',...
-            'callback', @(src, event) callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -223,13 +226,9 @@ function dividePolygonArray(obj)
     function swapMethod
         if strcmp(group1.SelectedObject.String, 'Factor')
             set(group2, 'visible', 'off');
-            set(b1, 'position', [45 150 90 20]);
-            set(b2, 'position', [145 150 90 20]);
             set([factorP{:}], 'visible', 'on');
         else
             set(group2, 'visible', 'on');
-            set(b1, 'position', [45 80 90 20]);
-            set(b2, 'position', [145 80 90 20]);
             set([factorP{:}], 'visible', 'off');
         end
     end

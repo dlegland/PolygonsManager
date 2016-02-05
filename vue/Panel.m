@@ -15,6 +15,7 @@ classdef Panel < handle
     methods
         function this = Panel(mainFrame, index, equal)
             this.mainFrame = mainFrame;
+
             this.colorMap = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252;
                              78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
                              100, 65 , 248; 103, 66 , 248; 106, 66 , 247; 110, 67 , 247; 113, 67 , 246; 116, 68 , 246; 119, 68 , 245;
@@ -60,7 +61,7 @@ classdef Panel < handle
 
             % creation of the axis on which the lines will be drawn
             this.uiAxis = axes('parent', this.uiPanel, ...
-                       'ButtonDownFcn', @(src, event) reset, ...
+                       'ButtonDownFcn', @(~,~) reset, ...
                           'colororder', this.colorMap, ...
                        'uicontextmenu', mainFrame.handles.menus{6});
             
@@ -73,7 +74,7 @@ classdef Panel < handle
             
             % add a callback to the tabpanel to call when the tab selection change
             set(mainFrame.handles.tabs, 'selection', index, ...
-                              'SelectionChangedFcn', @(src, event) panelChange);
+                              'SelectionChangedFcn', @(~,~) panelChange);
 
             function reset
                 %RESET  set the current selection to null
@@ -127,6 +128,11 @@ classdef Panel < handle
                     set(neededHandle, 'Marker', '*');
                     uistack(neededHandle, 'top');
                 end
+            end
+            if length(selected) == 1
+                updateInfoBox(this.mainFrame, getInfoFromName(this.mainFrame.model, selected));
+            else
+                updateInfoBox(this.mainFrame);
             end
         end
         
@@ -188,21 +194,24 @@ classdef Panel < handle
             %       - axis : handle of the axis on which the lines will be drawn
             %   Outputs : none
             
-            names = setupDisplay(this.mainFrame, 1, 2, 1, 'Polygons');
+            names = setupDisplay(this.mainFrame, 1, 2);
             axis = this.uiAxis;
             
             % reset the position of the cursor in the axis' colormap
             set(axis, 'colororderindex', 1);
             
-            if length(this.colorMap) > length(names)
-                % if there's less polygons than colors in the colormap
-                % change the axis' colormap to get colors that are as different as
-                % possible from eachother
-                set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)):length(this.colorMap)), :));
+            if nargin > 2
+                set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
             else
-                set(axis, 'colororder', this.colorMap);
+                if length(this.colorMap) > length(names)
+                    % if there's less polygons than colors in the colormap
+                    % change the axis' colormap to get colors that are as different as
+                    % possible from eachother
+                    set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)):length(this.colorMap)), :));
+                else
+                    set(axis, 'colororder', this.colorMap);
+                end
             end
-
             % delete all the lines already drawn on the axis and the legends
             delete(axis.Children(:));
             delete([this.uiLegend{:}]);
@@ -215,7 +224,6 @@ classdef Panel < handle
                                                        
                                             if nargin > 2 
                                                 set(line, 'handlevisibility', 'off', ...
-                                                                     'color', 'k', ...
                                                                  'linewidth', 2);
                                             else
                                                 set(line, 'tag', names{i}, ...
@@ -235,7 +243,7 @@ classdef Panel < handle
             %       - axis : handle of the axis on which the lines will be drawn
             %   Outputs : none
 
-            names = setupDisplay(this.mainFrame, 2, 1, 1, 'Polygons');
+            names = setupDisplay(this.mainFrame, 2, 1);
             axis = this.uiAxis;
 
             % reset the position of the cursor in the axis' colormap
@@ -298,7 +306,7 @@ classdef Panel < handle
             % first
             angles(end+1) = angles(end) + angles(2)-angles(1);
 
-            names = setupDisplay(this.mainFrame, 1, 2, 2, 'Signatures');
+            names = setupDisplay(this.mainFrame, 1, 2);
             axis = this.uiAxis;
             
             % set the name of the tab
@@ -313,6 +321,9 @@ classdef Panel < handle
                 set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)) :length(this.colorMap)), :));
             end
             
+            if nargin > 3
+                set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
+            end
             if ~isempty(signatures)
                 % set the axis' limits
                 xlim(axis, [angles(1), angles(end)]);
@@ -335,7 +346,6 @@ classdef Panel < handle
                 line = plot(angles, signature, 'parent', axis);
                 if nargin > 3
                     set(line, 'handlevisibility', 'off', ...
-                                         'color', 'k', ...
                                      'linewidth', 2);
                 else
                     set(line, 'tag', names{i}, ...
@@ -360,7 +370,7 @@ classdef Panel < handle
             angles = this.mainFrame.model.PolygonArray.angleList;
             angles(end+1) = angles(end) + angles(2) - angles(1);
 
-            names = setupDisplay(this.mainFrame, 2, 1, 2, 'Signatures');
+            names = setupDisplay(this.mainFrame, 2, 1);
             axis = this.uiAxis;
 
             nbSelected = length(this.mainFrame.model.selectedFactor{2});
@@ -415,24 +425,32 @@ classdef Panel < handle
         
         function displayPca(this, x, y)
             
-%             names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
+            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
             
             delete([this.uiLegend{:}]);
             delete(this.uiAxis.Children(:));
 
+            points = cell(length(x), 1);
+            
             hold(this.uiAxis, 'on');
             for i = 1:length(x)
-                plot(x(i), y(i), '.k', ...
-                       'parent', this.uiAxis, ...
-                'ButtonDownFcn', @this.detectLineClick);
+                points{i} = plot(x(i), y(i), '.k', ...
+                             'parent', this.uiAxis);
             end
+            if ~strcmp(this.type(4:end), 'Loadings')
+                for i = 1:length(x)
+                    set(points{i}, 'tag', names{i}, ...
+                         'ButtonDownFcn', @this.detectLineClick);
+                end
+            end
+            
             hold(this.uiAxis, 'off');
 
         end
         
         function displayPcaFactor(this, pca)
 
-            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
+            names = setupDisplay(this.mainFrame, 2, 1, 1, this.type(4:end));
             
             nbSelected = length(this.mainFrame.model.selectedFactor{2});
             
@@ -445,6 +463,11 @@ classdef Panel < handle
             % possible from eachother
             set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :));
 
+%             groupColors = this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :);
+%             
+%             groupMarkers = cell(nbSelected,1);
+%             groupMarkers(:) = {'.'};
+
             % memory allocation for the array that'll contain the legend's lines
             lines = cell(1, length(names));
             lineHandles = cell(1, nbSelected);
@@ -452,7 +475,13 @@ classdef Panel < handle
 
             delete([this.uiLegend{:}]);
             delete(this.uiAxis.Children(:));
-
+            
+%             scatterGroup(this.mainFrame.model.pca.scores(:,1), this.mainFrame.model.pca.scores(:,2), ...
+%                          this.mainFrame.model.factorTable(this.mainFrame.model.selectedFactor{1}), ...
+%                          'groupcolors', groupColors, ...
+%                         'groupmarkers', groupMarkers, ...
+%                               'parent', axis, ...
+%                        'ButtonDownFcn', @this.detectLineClick);
             hold(axis, 'on');
             for i = 1:length(pca)
                 lines{i} = plot(pca{i, 2}, pca{i, 3}, ...
@@ -470,12 +499,53 @@ classdef Panel < handle
                     levels{pca{i, 1}} = this.mainFrame.model.selectedFactor{2}{pca{i, 1}};
                 end
             end
-            hold(axis, 'off');
             
+            set(axis, 'colororderindex', 1);
+            
+            uniques = unique([pca{:, 1}]);
+            for i = 1:length(unique([pca{:, 1}]))
+                inds = find([pca{:, 1}] == uniques(i));
+                xdata = [pca{inds, 2}];
+                ydata = [pca{inds, 3}];
+                switch lower(this.mainFrame.model.selectedFactor{4})
+                    case 'none'
+                        % do nothing more...
+
+                    case 'convex hull'
+                        if length(xdata') > 2
+                            inds2   = convhull([xdata' ydata']);
+                            plot(xdata(inds2), ydata(inds2), ...
+                                           'marker', 'none', ...
+                                        'linestyle', '-', ...
+                                       'color', axis.ColorOrder(uniques(i), :));
+                        else
+                            plot(xdata', ydata', ...
+                                           'marker', 'none', ...
+                                        'linestyle', '-', ...
+                                       'color', axis.ColorOrder(uniques(i), :));
+                        end
+
+                    case 'ellipse'
+                        center  = mean([xdata' ydata']);
+                        sigma   = std([xdata' ydata']) * 1.96; 
+                        drawEllipse([center sigma 0],...
+                                            'marker', 'none', ...
+                                         'linestyle', '-', ...
+                                             'color', axis.ColorOrder(uniques(i), :));
+
+                    case 'inertia ellipse'
+                        elli    = inertiaEllipse([xdata' ydata']);
+                        drawEllipse(elli,...
+                                'marker', 'none', ...
+                             'linestyle', '-',  ...
+                                 'color', axis.ColorOrder(uniques(i), :));
+                end
+            end
+            hold(axis, 'off');
             levels = levels(~cellfun('isempty',levels));
 
             if this.mainFrame.model.selectedFactor{3} == 0
-                % if the legend must be displayed, display it
+%                 if the legend must be displayed, display it
                 this.uiLegend{1} = legend(axis, [lineHandles{:}], levels, ...
                                                    'location', 'eastoutside', ...
                                               'uicontextmenu', []);

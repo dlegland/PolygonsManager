@@ -1,4 +1,4 @@
-function polygonsConcatenate(obj)
+function polygonsConcatenate(obj, varargin)
 %POLYGONSCONCATENATE  Rotate all slab contours such that they are aligned with
 %one of the axis
 %
@@ -7,9 +7,18 @@ function polygonsConcatenate(obj)
 %   Outputs : none
 
 % select which axis the contours will be aligned with
-number = contoursConcatPrompt;
+if nargin == 1
+    number = contoursConcatPrompt;
+else
+    if ~strcmp(class(varargin{1}), 'double')
+        number = str2double(varargin{1});
+    else
+        number = varargin{1};
+    end
+end
 
 if ~strcmp(number, '?')
+    obj.model.usedProcess{end+1} = ['polygonsConcatenate : number = ' num2str(number)];
     % get the number of polygons
     Nf = length(obj.model.nameList);
 
@@ -20,20 +29,12 @@ if ~strcmp(number, '?')
     h = waitbar(0,'Please wait...', 'name', 'Concatenate contours');
     
     for i = 1:Nf
-        % get the name of the contours that will be converted
+        % get the name of the contours that will be converted 
         name = obj.model.nameList{i};
         
-        % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = name;
-        updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
-        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
-        
-        waitbar(i / (Nf+1), h, ['process : ' name]);
-
-        % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);
         
-        % polygon's number of points
+        
         np      = size(poly, 1);
 
         % index of points above x-axis
@@ -71,9 +72,19 @@ if ~strcmp(number, '?')
             poly2(j,:) = centro;
         end
 
+        name = obj.model.nameList{i};
+        
+        % update the waitbar and the contours selection (purely cosmetic)
+        obj.model.selectedPolygons = name;
+        updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
+        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
+        
+        waitbar(i / (Nf+1), h, ['process : ' name]);
+
+%         poly2 = resamplePolygon(poly, number);
+
         % fill the data table
-        dat(i, 1:number)        = poly2(:,1);
-        dat(i, number+1:2*number)    = poly2(:,2);    
+        dat(i, :) = polygonToRow(poly2, 'packed');
     end
     waitbar(Nf, h);
     % close waitbar
@@ -81,7 +92,7 @@ if ~strcmp(number, '?')
     
     % create a new figure and display the results of the rotation on this
     % new figure
-    model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(dat), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
+    model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(dat), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
     
     fen = PolygonsManagerMainFrame;  
     setupNewFrame(fen, model);
@@ -129,7 +140,7 @@ function number = contoursConcatPrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -139,7 +150,7 @@ function number = contoursConcatPrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             % if input is numeric, get it and close the dialog box
             if ~isnan(str2double(get(edit,'String')))

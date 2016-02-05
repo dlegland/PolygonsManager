@@ -1,4 +1,4 @@
-function polygonsToSignature(obj)
+function polygonsToSignature(obj, varargin)
 %POLYGONSTOSIGNATURE  Converts contour in polar signatures
 %
 %   Inputs :
@@ -7,9 +7,24 @@ function polygonsToSignature(obj)
 
 % enter the starting angle and the number of angle that will be used during
 % the transformation
-[startAngle, angleNumber] = contoursToSignaturePrompt;
+if nargin == 1
+    [startAngle, angleNumber] = contoursToSignaturePrompt;
+else
+    if ~strcmp(class(varargin{1}), 'double')
+        startAngle = str2double(varargin{1});
+    else
+        startAngle = varargin{1};
+    end
+    if ~strcmp(class(varargin{1}), 'double')
+        angleNumber = str2double(varargin{2});
+    else
+        angleNumber = varargin{1};
+    end
+end
 
 if ~strcmp(startAngle, '?')
+    
+    obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
     % determine the angles that will be used for the transformation
     pas = 360/angleNumber;
     angles = startAngle:pas:360+startAngle-pas;
@@ -47,7 +62,7 @@ if ~strcmp(startAngle, '?')
     
     % create a new figure and display the results of the rotation on this
     % new figure
-    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
+    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
     fen = PolygonsManagerMainFrame;  
     
     setupNewFrame(fen, model);
@@ -112,7 +127,7 @@ function [start, number] = contoursToSignaturePrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -122,7 +137,7 @@ function [start, number] = contoursToSignaturePrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             % if both inputs are numeric, get them and close the dialog box
             if ~isnan(str2double(get(edit,'String'))) && ~isnan(str2double(get(edit2,'String')))

@@ -1,4 +1,4 @@
-function polygonsResize(obj)
+function polygonsResize(obj, varargin)
 %POLYGONSRESIZE  Converts contours units to user untis (millimeters)
 %
 %   Inputs :
@@ -6,10 +6,20 @@ function polygonsResize(obj)
 %   Outputs : none
 
 % enter the resolution of the image to make the conversion
-resol = contoursResizePrompt;
+if nargin == 1
+    resol = contoursResizePrompt;
+else
+    if ~strcmp(class(varargin{1}), 'double')
+        resol = str2double(varargin{1});
+    else
+        resol = varargin{1};
+    end
+end
 
 if ~strcmp(resol, '?')
     
+    obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(resol)];
+
     % memory allocation
     polygonList = cell(1, length(obj.model.nameList));
 
@@ -25,6 +35,7 @@ if ~strcmp(resol, '?')
 
         %update the polygon
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
+        updatePolygonInfos(obj.model, name)
     end
     
     % get the selected factor
@@ -63,7 +74,7 @@ function resol = contoursResizePrompt
     uicontrol('parent', d,...
             'position', [30 80 90 20], ...
                'style', 'text',...
-              'string', 'Resolution :', ...
+              'string', 'Resolution :', ... 
             'fontsize', 10, ...
  'horizontalalignment', 'right');
 
@@ -83,7 +94,7 @@ function resol = contoursResizePrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -93,7 +104,7 @@ function resol = contoursResizePrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             % if the input numeric then get its value and close the dialog box
             if ~isnan(str2double(get(edit,'String')))

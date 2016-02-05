@@ -9,7 +9,7 @@ function saveContours(obj)
 %       
 %       savePolarSignature
 
-if strcmp(class(obj.model.PolygonArray, 'CoordsPolygonArray'))
+if strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
     % open the file save prompt and let the user select the file where the polygons will be saved
     [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 
@@ -86,7 +86,7 @@ function [dname, fileName] = savePrompt
     uicontrol('parent', d,...
             'position', [450 116 20 20], ...
               'string', '...', ...
-              'callback', @dnameFnc);
+              'callback', @(~,~) dnameFnc);
 
     uicontrol('parent', d,...
             'position', [30 80 90 20], ...
@@ -104,7 +104,7 @@ function [dname, fileName] = savePrompt
     uicontrol('parent', d, ...
             'position', [280 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -114,7 +114,7 @@ function [dname, fileName] = savePrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         % get the values of both textbox
         dname = get(edit,'String');
         fileName = get(edit2,'String');
@@ -125,7 +125,7 @@ function [dname, fileName] = savePrompt
         end
     end
 
-    function dnameFnc(~,~)
+    function dnameFnc
         % open the folder selection prompt and let the user select the
         % folder he wants to use as the save folder
         name = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\Tests');

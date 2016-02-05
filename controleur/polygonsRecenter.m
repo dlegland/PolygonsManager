@@ -8,6 +8,8 @@ function polygonsRecenter(obj)
 % preallocating memory
 polygonList = cell(1, length(obj.model.nameList));
 
+obj.model.usedProcess{end+1} = 'polygonsRecenter';
+
 for i = 1:length(polygonList)
     % get the name of the contours that will be centered
     name = obj.model.nameList{i};
@@ -21,6 +23,7 @@ for i = 1:length(polygonList)
     
     % update the polygon
     updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), poly);
+    updatePolygonInfos(obj.model, name)
 end
 % get the selected factor
 sf = obj.model.selectedFactor;

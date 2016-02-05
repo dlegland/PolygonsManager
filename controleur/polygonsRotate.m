@@ -10,11 +10,17 @@ function polygonsRotate(obj, angle, type)
 %       - type : determines which polygons must be rotated
 %   Outputs : none
 
+if ~strcmp(class(angle), 'double')
+    angle = str2double(angle);
+end
+
 % determine which polygons will be rotated
 switch type
     case 'all'
         % all the polygons
         polygonArray = obj.model.nameList;
+        
+        obj.model.usedProcess{end+1} = ['polygonsRotate : angle = ' num2str(angle) ' ; type = ' type];
     case 'selected'
         % only the polygons selected by the user
         polygonArray = obj.model.selectedPolygons;
@@ -31,19 +37,20 @@ if ~isempty(polygonArray)
         
         % rotate the polygon
         switch angle
-            case 1
+            case 90
                 % 90°
                 polyRot = [poly(:,2) -poly(:,1)];
-            case 2
+            case 270
                 % 270 °
                 polyRot = [-poly(:,2) poly(:,1)];
-            case 3
+            case 180
                 % 180°
                 polyRot = [-poly(:,1) -poly(:,2)];
         end
         
         %update the polygon
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
+        updatePolygonInfos(obj.model, name)
     end
     
     % get the selected factor

@@ -1,4 +1,4 @@
-function polygonsSimplify(obj)
+function varargout = polygonsSimplify(obj, display,  varargin)
 %POLYGONSSIMPLIFY  Simplify the current polygons
 %
 %   Inputs :
@@ -6,10 +6,21 @@ function polygonsSimplify(obj)
 %   Outputs : none
 
 % enter the resolution of the image to make the conversion
-tol = polygonsSimplifyPrompt;
+if nargin == 2
+    tolerence = polygonsSimplifyPrompt;
+else
+    if ~strcmp(class(varargin{1}), 'double')
+        tolerence = str2double(varargin{1});
+    else
+        tolerence = varargin{1};
+    end
+end
 
-if ~strcmp(tol, '?')
+if ~strcmp(tolerence, '?')
     
+    if strcmp(display, 'off')
+        obj.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerence = ' num2str(tolerence)];
+    end
     % memory allocation
     polygonArray = cell(1,length(obj.model.nameList));
 
@@ -21,17 +32,30 @@ if ~strcmp(tol, '?')
         poly = getPolygonFromName(obj.model, name);
         
         % convert the polygon
-        polyS = simplifyPolygon(poly, tol);
+        polyS = simplifyPolygon(poly, tolerence);
 
         polygonArray{i} = polyS;
     end
     
-    % create a new figure and display the results of the rotation on this
-    % new figure  
-    model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca);
-    
-    fen = PolygonsManagerMainFrame;  
-    setupNewFrame(fen, model);
+    if strcmp(display, 'off')
+        varargout{1} = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+        if nargout == 2
+            varargout{2} = tolerence;
+        end
+    else
+        if nargin == 2
+            % create a new figure and display the results of the rotation on this
+            % new figure  
+            model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+
+            fen = PolygonsManagerMainFrame;  
+            setupNewFrame(fen, model);
+        else
+            polygons = BasicPolygonArray(polygonArray);
+            obj.model.PolygonArray = polygons;
+            updatePolygonInfos(obj.model, name)
+        end
+    end
 end
 
 function tol = polygonsSimplifyPrompt
@@ -76,7 +100,7 @@ function tol = polygonsSimplifyPrompt
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -86,7 +110,7 @@ function tol = polygonsSimplifyPrompt
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             if ~isnan(str2double(get(edit,'String')))
             % if the input numeric then get its value and close the dialog box

@@ -36,6 +36,10 @@ classdef CoordsPolygonArray < PolygonArray
             polygon = rowToPolygon(obj.polygons(row, :), 'packed');
         end
         
+        function polygon = getPolygonRow(obj, row)
+            polygon = obj.polygons(row, :);
+        end
+        
         function polygons = getAllPolygons(obj)
             % returns all the polygons
             polygons = cell(1, getPolygonNumber(obj));

@@ -8,6 +8,7 @@ function polygonsRecenter(obj)
 % preallocating memory
 polygonList = cell(1, length(obj.model.nameList));
 
+% save the name of the function in the log variable
 obj.model.usedProcess{end+1} = 'polygonsRecenter';
 
 for i = 1:length(polygonList)

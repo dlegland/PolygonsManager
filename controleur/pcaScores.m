@@ -1,55 +1,71 @@
 function pcaScores(obj)
-%PCASCORES  display the score of each polygon depending on 2 principal components
+%PCASCORES  Display the score of each polygon depending on 2 principal components
 %   Inputs :
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
 if isempty(obj.handles.Panels{1}.type) || ~strcmp(obj.handles.Panels{1}.type, 'pcaScores')
     % if the current panel isn't displaying a score plot
-    % get the 
+    
+    % select the two principal component we want to compare and the
+    % variable that defines if the axis must be equalized
     [cp1, cp2, equal] = pcaScoresPrompt(length(obj.model.pca.scores.rowNames));
     
     if isnumeric([cp1 cp2])
+        % create a new PolygonsManagerMainFrame
         fen = PolygonsManagerMainFrame;
-        % set the new polygon array as the current polygon array
+        
+        % create the PolygonsManagerData that'll be used as the new
+        % PolygonsManagerMainFrame's model
         model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
                                         'nameList', obj.model.nameList, ...
                                      'factorTable', obj.model.factorTable, ...
                                              'pca', obj.model.pca);
-
-        setupNewFrame(fen, model, ...
+                                         
+        % prepare the the new PolygonsManagerMainFrame's name
+        if strcmp(class(obj.model.factorTable), 'Table')
+            fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores'];
+        else
+            fenName = 'Polygons Manager | PCA - Scores';
+        end
+        
+        % prepare the new PolygonsManagerMainFrame and display the graph
+        setupNewFrame(fen, model, fenName, ...
                       'pcaScores', equal, ...
                       obj.model.pca.scores(:, cp1).data, ...
                       obj.model.pca.scores(:, cp2).data);
 
-        if strcmp(class(fen.model.factorTable), 'Table')
-            set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores']);
-        else
-            set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Scores');
-        end
-        
+        % save the two principal components that were selected in the axis
         fen.handles.Panels{1}.uiAxis.UserData = {cp1, cp2};
 
-        xlim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp1).data)-1 max(obj.model.pca.scores(:, cp1).data)+1]);
-        ylim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp2).data)-1 max(obj.model.pca.scores(:, cp2).data)+1]);
+%         % set the limits of the graph so that no point will be placed on
+%         % the edges of the graph
+%         xlim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp1).data)-1 max(obj.model.pca.scores(:, cp1).data)+1]);
+%         ylim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp2).data)-1 max(obj.model.pca.scores(:, cp2).data)+1]);
 
         % create legends
         annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 
     end
 else
+    % if the current panel is displaying a score plot
+    
+    % get the two principal components that were saved in the axis
     ud = obj.handles.Panels{1}.uiAxis.UserData;
+    
+    % display a new graph using these two components
     displayPca(obj.handles.Panels{1}, obj.model.pca.scores(:, ud{1}).data, obj.model.pca.scores(:, ud{2}).data);
 end
 function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
-%COLORFACTORPROMPT  A dialog figure on which the user can select
-%which factor he wants to see colored and if he wants to display the
-%legend or not
+%PCASCOREPROMPT  A dialog figure on which the user can select
+%which principal components he wants to oppose and if the axis must be
+%equalized
 %
 %   Inputs : none
 %   Outputs : 
-%       - factor : selected factor
-%       - leg : display option of the legend
+%       - cp1 : principal component n°1
+%       - cp2 : principal component n°2
+%       - equal : determines if the axis must be equalized
 
     % default value of the ouput to prevent errors
     cp1 = '?';
@@ -119,15 +135,18 @@ function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
     uiwait(d);
 
     function callback
+        % get the valus of both popup and the value of th toggle button
         cp1 = popup1.Value;
         cp2 = popup2.Value;
         equal = lower(get(toggleB,'String'));
         
+        % delete the dialog
         delete(gcf);
     end
     
 
     function toggle
+        % updaate the value of the toggle button depending on its state
         if get(toggleB,'Value') == 1
             set(toggleB, 'string', 'Off');
         else 

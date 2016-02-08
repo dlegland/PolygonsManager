@@ -1,5 +1,5 @@
 function createFactors(obj)
-%CREATEFACTORS  creates a factor Table using the current polygons
+%CREATEFACTORS  Creates a factor Table using the current polygons
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -108,7 +108,7 @@ function [factorName, nbFactors] = createFactorPrompt1
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -118,7 +118,7 @@ function [factorName, nbFactors] = createFactorPrompt1
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             % if both inputs are numeric, get them and close the dialog box
             if ~isnan(str2double(get(edit2,'String')))
@@ -212,7 +212,7 @@ function [start, number, name] = createFactorPrompt2(index, sample)
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
               'string', 'Validate', ...
-            'callback', @callback);
+            'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
             'position', [135 30 85 25], ...
@@ -222,7 +222,7 @@ function [start, number, name] = createFactorPrompt2(index, sample)
     % Wait for d to close before running to completion
     uiwait(d);
 
-    function callback(~,~)
+    function callback
         try
             if ~isnan(str2double(get(edit1,'String'))) && ~isnan(str2double(get(edit2,'String')))
                 start = str2double(get(edit1,'String'));

@@ -3,22 +3,26 @@ function polygonsResize(obj, varargin)
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
+%       - varargin : contains the parameters if the function is called from
+%       a macro
 %   Outputs : none
 
-% enter the resolution of the image to make the conversion
+% select the coefficient of the conversion
 if nargin == 1
-    resol = contoursResizePrompt;
+    coef = contoursResizePrompt;
 else
     if ~strcmp(class(varargin{1}), 'double')
-        resol = str2double(varargin{1});
+        coef = str2double(varargin{1});
     else
-        resol = varargin{1};
+        coef = varargin{1};
     end
 end
 
-if ~strcmp(resol, '?')
+if ~strcmp(coef, '?')
     
-    obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(resol)];
+    % save the name of the function and the parameters used during
+    % its call in the log variable
+    obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(coef)];
 
     % memory allocation
     polygonList = cell(1, length(obj.model.nameList));
@@ -31,7 +35,7 @@ if ~strcmp(resol, '?')
         poly = getPolygonFromName(obj.model, name);
         
         % convert the polygon
-        polyMm = poly * resol;
+        polyMm = poly * coef;
 
         %update the polygon
         updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
@@ -52,7 +56,7 @@ if ~strcmp(resol, '?')
     end
 end
 
-function resol = contoursResizePrompt
+function coef = contoursResizePrompt
 %CONTOURSRESIZEPROMPT  A dialog figure on which the user can select type
 %the resolution of the image
 %
@@ -60,7 +64,7 @@ function resol = contoursResizePrompt
 %   Outputs : resolution of the image
 
     % default value of the ouput to prevent errors
-    resol = '?';
+    coef = '?';
 
     % get the position where the prompt will at the center of the
     % current figure
@@ -108,11 +112,11 @@ function resol = contoursResizePrompt
         try
             % if the input numeric then get its value and close the dialog box
             if ~isnan(str2double(get(edit,'String')))
-                resol = str2double(get(edit,'String'));
+                coef = str2double(get(edit,'String'));
                 delete(gcf);
             % if the input contains an operation get the result and close the dialog box
             elseif find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
-                resol = eval(get(edit,'String'));
+                coef = eval(get(edit,'String'));
                 delete(gcf);
             else
                 set(error, 'visible', 'on');

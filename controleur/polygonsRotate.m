@@ -20,6 +20,8 @@ switch type
         % all the polygons
         polygonArray = obj.model.nameList;
         
+        % save the name of the function and the parameters used during
+        % its call in the log variable
         obj.model.usedProcess{end+1} = ['polygonsRotate : angle = ' num2str(angle) ' ; type = ' type];
     case 'selected'
         % only the polygons selected by the user

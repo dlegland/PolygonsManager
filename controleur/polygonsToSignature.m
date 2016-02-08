@@ -3,9 +3,11 @@ function polygonsToSignature(obj, varargin)
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
+%       - varargin : contains the parameters if the function is called from
+%       a macro
 %   Outputs : none
 
-% enter the starting angle and the number of angle that will be used during
+% select the starting angle and the number of angle that will be used during
 % the transformation
 if nargin == 1
     [startAngle, angleNumber] = contoursToSignaturePrompt;
@@ -23,7 +25,8 @@ else
 end
 
 if ~strcmp(startAngle, '?')
-    
+    % save the name of the function and the parameters used during
+    % its call in the log variable
     obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
     % determine the angles that will be used for the transformation
     pas = 360/angleNumber;
@@ -33,7 +36,7 @@ if ~strcmp(startAngle, '?')
     dat = zeros(length(obj.model.nameList), angleNumber);
     
     %create waitbar
-    h = waitbar(0,'Conversion starting ...', 'name', 'Conversion');
+    h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
     
     for i = 1:length(obj.model.nameList)
 
@@ -56,15 +59,17 @@ if ~strcmp(startAngle, '?')
         % save all the polar signatures in a numeric array 
         dat(i, 1:length(sign)) = sign(:);
     end
-    waitbar(length(obj.model.nameList), h);
+    waitbar(1, h);
     % close waitbar
     close(h) 
-    
-    % create a new figure and display the results of the rotation on this
-    % new figure
-    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+    % create a new PolygonsManagerMainFrame
     fen = PolygonsManagerMainFrame;  
     
+    % create the PolygonsManagerData that'll be used as the new
+    % PolygonsManagerMainFrame's model
+    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+    
+    % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model);
 end
 

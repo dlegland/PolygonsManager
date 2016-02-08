@@ -1,39 +1,50 @@
 function pcaLoadings(obj)
+%PCALOADINGS Display the loadings of each vertices depending on 2 principal components
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
+% select the two principal component we want to compare
 [cp1, cp2] = pcaLoadingsPrompt(length(obj.model.pca.loadings.rowNames));
 
 if isnumeric([cp1 cp2])
+    % create a new PolygonsManagerMainFrame
     fen = PolygonsManagerMainFrame;
-    % set the new polygon array as the current polygon array
+    
+    % create the PolygonsManagerData that'll be used as the new
+    % PolygonsManagerMainFrame's model
     model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', {}, ...
+                                    'nameList', obj.model.nameList, ...
                                  'factorTable', obj.model.factorTable, ...
                                          'pca', obj.model.pca);
 
-    setupNewFrame(fen, model, ...
+    % prepare the the new PolygonsManagerMainFrame's name
+    if strcmp(class(obj.model.factorTable), 'Table')
+        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Loadings'];
+    else
+        fenName = 'Polygons Manager | PCA - Loadings';
+    end
+    
+    % prepare the new PolygonsManagerMainFrame and display the graph
+    setupNewFrame(fen, model, fenName, ...
                   'pcaLoadings', 'off', ...
                   obj.model.pca.loadings(:, cp1).data, ...
                   obj.model.pca.loadings(:, cp2).data);
     
-    if strcmp(class(fen.model.factorTable), 'Table')
-        set(fen.handles.figure, 'name', ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Loadings']);
-    else
-        set(fen.handles.figure, 'name', 'Polygons Manager | PCA - Loadings');
-    end
     
     % create legends
     annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 end
 
 function [cp1, cp2] = pcaLoadingsPrompt(nbPC)
-%COLORFACTORPROMPT  A dialog figure on which the user can select
-%which factor he wants to see colored and if he wants to display the
-%legend or not
+%PCALOADINGSPROMPT  A dialog figure on which the user can select
+%which principal components he wants to oppose
 %
 %   Inputs : none
 %   Outputs : 
-%       - factor : selected factor
-%       - leg : display option of the legend
+%       - cp1 : principal component n°1
+%       - cp2 : principal component n°2
 
     % default value of the ouput to prevent errors
     cp1 = '?';
@@ -88,9 +99,11 @@ function [cp1, cp2] = pcaLoadingsPrompt(nbPC)
     uiwait(d);
 
     function callback
+        % get the values of both popup
         cp1 = popup1.Value;
         cp2 = popup2.Value;
         
+        % delete the dialog
         delete(gcf);
     end
 end

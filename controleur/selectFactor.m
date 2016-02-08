@@ -9,9 +9,9 @@ function selectFactor(obj)
 % the axis must be displayed
 
 if isempty(obj.handles.Panels{1}.type)
-    [factor, leg, ~] = selectFactorPrompt;
+    [factor, leg, ~, ~] = selectFactorPrompt;
 else
-    [factor, leg, envelope] = selectFactorPrompt;
+    [factor, leg, factor2, envelope] = selectFactorPrompt;
 end
 
 if ~strcmp(factor, '?')
@@ -37,16 +37,16 @@ if ~strcmp(factor, '?')
     else
         if ~strcmp(obj.handles.Panels{1}.type, 'pcaInfluence')
             ud = obj.handles.Panels{1}.uiAxis.UserData;
-            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type, ud{1}, ud{2}));
+            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type, ud{1}, ud{2}), factor2);
 %             displayPcaFactor(obj.handles.Panels{1});
         else
-            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type));
+            displayPcaFactor(obj.handles.Panels{1}, getPcaFromFactor(obj.model, factor, obj.handles.Panels{1}.type), factor2);
 %             displayPcaFactor(obj.handles.Panels{1});
         end
     end
 end
 
-function [factor, leg, group] = selectFactorPrompt
+function [factor, leg, factor2, group] = selectFactorPrompt
 %SELECTFACTORPROMPT  Creates a dialog figure on which the user can select
 %which factor he wants to see colored and if he wants to display the
 %legend or not
@@ -59,9 +59,9 @@ function [factor, leg, group] = selectFactorPrompt
     % default value of the ouput to prevent errors
     factor = '?';
     leg = '?';
+    factor2 = '?';
     group = '?';
     
-    output = nargout;
     % get the position where the prompt will at the center of the
     % current figure
     pos = getMiddle(gcf, 250, 165);
@@ -74,7 +74,7 @@ function [factor, leg, group] = selectFactorPrompt
     popupText = uicontrol('parent', d, ...
                         'position', [30 115 90 20], ...
                            'style', 'text', ...
-                          'string', 'Factor :', ...
+                          'string', 'Color factor :', ...
                         'fontsize', 10, ...
              'horizontalalignment', 'right');
 
@@ -97,10 +97,23 @@ function [factor, leg, group] = selectFactorPrompt
                    'callback', @(~,~) toggle);
                
     if ~isempty(obj.handles.Panels{1}.type)
-        pos = getMiddle(obj.handles.figure, 250, 200);
+        pos = getMiddle(obj.handles.figure, 250, 235);
         d.Position = pos;
-        popupText.Position = [30 150 90 20];
-        popup1.Position = [130 152 90 20];
+        popupText.Position = [30 185 90 20];
+        popup1.Position = [130 187 90 20];
+        
+        % create the inputs of the dialog box
+        uicontrol('parent', d, ...
+                'position', [30 150 90 20], ...
+                   'style', 'text', ...
+                  'string', 'Group factor :', ...
+                'fontsize', 10, ...
+     'horizontalalignment', 'right');
+
+        popup2 = uicontrol('Parent', d, ...
+                         'Position', [130 152 90 20], ...
+                            'Style', 'popup', ...
+                           'string', obj.model.factorTable.colNames);
         
         % create the inputs of the dialog box
         uicontrol('parent', d, ...
@@ -110,13 +123,16 @@ function [factor, leg, group] = selectFactorPrompt
                 'fontsize', 10, ...
      'horizontalalignment', 'right');
 
-        popup2 = uicontrol('Parent', d, ...
+        popup3 = uicontrol('Parent', d, ...
                          'Position', [130 117 90 20], ...
                             'Style', 'popup', ...
                            'string', {'convex hull', 'ellipse', 'inertia ellipse', 'none'});
 
     end
-
+    if strcmp(obj.handles.Panels{1}.type, 'pcaScores & Profiles')
+        set(toggleB,'string', 'No', 'enable', 'off', 'Value', 1);
+    end
+               
     % create the two button to cancel or validate the inputs
     uicontrol('parent', d, ...
             'position', [30 30 85 25], ...
@@ -136,9 +152,12 @@ function [factor, leg, group] = selectFactorPrompt
         maps = popup1.String;
         factor = maps{val};
         leg = get(toggleB,'Value');
-        if output > 2
+        if ~isempty(obj.handles.Panels{1}.type)
             val = popup2.Value;
             maps = popup2.String;
+            factor2 = maps{val};
+            val = popup3.Value;
+            maps = popup3.String;
             group = maps{val};
         end
 

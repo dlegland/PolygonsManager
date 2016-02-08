@@ -102,15 +102,16 @@ function dividePolygonArray(obj)
         setupNewFrame(fen, model);
     end
     
-    function [method, factor, level] = dividePolygonArrayPrompt  
-%COLORFACTORPROMPT  A dialog figure on which the user can select
+function [method, factor, level] = dividePolygonArrayPrompt  
+%DIVIDEPOLYGONARRAYPROMPT  A dialog figure on which the user can select
 %which factor he wants to see colored and if he wants to display the
 %legend or not
 %
 %   Inputs : none
 %   Outputs : 
-%       - factor : selected factor
-%       - leg : display option of the legend
+%       - method : method used to divide the polygons
+%       - factor : factor of division
+%       - level : level of the factor (case method = 'factor')
 
     % default value of the ouput to prevent errors
     method = '?';

@@ -147,12 +147,12 @@ classdef PolygonsManagerData
             % get all the values input factor's column
             factors = getColumn(this.factorTable, factor);
             
-            if strcmp(type, 'pcaScores')
-                x = this.pca.scores(:, varargin{1}).data;
-                y = this.pca.scores(:, varargin{2}).data;
-            else
+            if strcmp(type, 'pcaInfluence')
                 x = sqrt(sum(this.pca.scores.data .^ 2, 2));
                 y = min(abs(this.pca.scores.data), [], 2);
+            else
+                x = this.pca.scores(:, varargin{1}).data;
+                y = this.pca.scores(:, varargin{2}).data;
             end
             
             % memory allocation
@@ -171,11 +171,11 @@ classdef PolygonsManagerData
                 poly = getPolygon(this.PolygonArray, i);
                 infos(i, 1) = abs(polygonArea(poly));
                 infos(i, 2) = polygonLength(poly);
-                infos(i, 3) = (polygonArea(poly) < 0) + 1;
-                
+                infos(i, 3) = length(poly);
+                infos(i, 4) = (polygonArea(poly) < 0) + 1;
             end
-            infoTable = Table.create(infos, 'rownames', this.nameList, 'colnames', {'Area', 'Perimeter', 'Orientation'});
-            setFactorLevels(infoTable, 3, {'CW', 'CCW'});
+            infoTable = Table.create(infos, 'rownames', this.nameList, 'colnames', {'Area', 'Perimeter', 'Vertices', 'Orientation'});
+            setFactorLevels(infoTable, 4, {'CW', 'CCW'});
         end
         
         function updatePolygonInfos(this, name)
@@ -183,11 +183,23 @@ classdef PolygonsManagerData
             poly = getPolygon(this.PolygonArray, index);
             this.infoTable.data(index, 1) = abs(polygonArea(poly));
             this.infoTable.data(index, 2) = polygonLength(poly);
-            this.infoTable.data(index, 3) = (polygonArea(poly) < 0) + 1;
+            this.infoTable.data(index, 3) = length(poly);
+            this.infoTable.data(index, 4) = (polygonArea(poly) < 0) + 1;
         end
         
         function infos = getInfoFromName(this, name)
             infos = getRow(this.infoTable, name);
+        end
+        
+        function saveMacro(obj)
+            [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.log.txt');
+
+            if fileName ~= 0
+                fileID = fopen(fullfile(dname, fileName), 'w');
+                temp = obj.usedProcess';
+                fprintf(fileID,'%s\n', temp{:});
+                fclose(fileID);
+            end
         end
     end
 end

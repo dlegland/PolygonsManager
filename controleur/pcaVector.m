@@ -1,5 +1,5 @@
 function [poly, values] = pcaVector(obj)
-%PCAVECTOR  compute the polygons' and signatures' means and display them
+%PCAVECTOR  Compute the polygons' and signatures' means and display them
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -12,21 +12,31 @@ function [poly, values] = pcaVector(obj)
 [index, coef] = pcaVectorPrompt(length(obj.model.pca.loadings.rowNames));
 
 if ~strcmp(index, '?')
-    % create a new main frame
+    % create a new PolygonsManagerMainFrame
     fen = PolygonsManagerMainFrame;
     
-    % set the new polygon array as the current polygon array
+    % create the PolygonsManagerData that'll be used as the new
+    % PolygonsManagerMainFrame's model
     model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
                                     'nameList', obj.model.nameList, ...
                                  'factorTable', obj.model.factorTable, ...
                                          'pca', obj.model.pca);
+                                     
+    % prepare the the new PolygonsManagerMainFrame's name
+    if strcmp(class(obj.model.factorTable), 'Table')
+        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
+    else
+        fenName = 'Polygons Manager | PCA - Vectors';
+    end
     
+    % memory allocation
     if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
         values = zeros(3, length(obj.model.PolygonArray.angleList));
     else
         values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
     end
     poly = {};
+    
     % compute eigen vector with appropriate coeff
     ld = obj.model.pca.loadings(:, index).data';
     lambda = obj.model.pca.eigenValues(index, 1).data;
@@ -45,21 +55,22 @@ if ~strcmp(index, '?')
         poly{3} = rowToPolygon(values(3, :), 'packed');
     end
 
-    % setup the new frame
-    setupNewFrame(fen, model, ...
+    % prepare the new PolygonsManagerMainFrame and display the graph
+    setupNewFrame(fen, model, fenName, ...
                   'pcaVector', 'on', ...
                   poly, ...
                   values);
 end
-function [index, coef] = pcaVectorPrompt(nbPC)
-%COLORFACTORPROMPT  A dialog figure on which the user can select
-%which factor he wants to see colored and if he wants to display the
-%legend or not
+function [index, coef] = pcaVectorPrompt(maxPC)
+%PCAVECTORPROMPT  A dialog figure on which the user can select
+%which principal component's vector he wants to display and the coefficient of the
+%calculus
 %
-%   Inputs : none
+%   Inputs : 
+%       - maxPC : total number of principal components
 %   Outputs : 
-%       - factor : selected factor
-%       - leg : display option of the legend
+%       - index : selected principal component
+%       - coef : coefficient of the calculus
 
     % default value of the ouput to prevent errors
     index = '?';
@@ -84,7 +95,7 @@ function [index, coef] = pcaVectorPrompt(nbPC)
     popup = uicontrol('Parent', d, ...
                     'Position', [130 116 90 20], ...
                        'Style', 'popup', ...
-                      'string', 1:nbPC);
+                      'string', 1:maxPC);
 
     uicontrol('parent', d, ...
             'position', [30 80 90 20], ...
@@ -121,6 +132,7 @@ function [index, coef] = pcaVectorPrompt(nbPC)
     uiwait(d);
 
     function callback
+        % get the value of the popup
         index = popup.Value;
         try
             % if the input numeric then get its value and close the dialog box
@@ -136,6 +148,7 @@ function [index, coef] = pcaVectorPrompt(nbPC)
             set(error, 'visible', 'on');
         end
         
+        % delete the dialog
         delete(gcf);
     end
 end

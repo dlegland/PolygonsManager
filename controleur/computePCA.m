@@ -1,6 +1,5 @@
 function computePCA(obj)
-%COMPUTEPCA  Compute the Principal Component Analysis of the current
-%polygons
+%COMPUTEPCA  Compute the Principal Component Analysis of the current polygons
 %
 %   Inputs :
 %       - obj : handle of the MainFrame

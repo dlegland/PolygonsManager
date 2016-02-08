@@ -1,12 +1,19 @@
 function pcaEigen(obj)
+%PCAEIGEN Creates a new frame and displays the eigen values of the current pca on it
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%   Outputs : none
 
 % extract data
 coord   = obj.model.pca.scores.data;
 values  = obj.model.pca.eigenValues.data;
 
-nx = pcaEigenPrompt(size(coord, 2));
+% select the number of principal component the must be displayed
+nbPC = pcaEigenPrompt(size(coord, 2));
 
-if isnumeric(nx)
+if isnumeric(nbPC)
+    % create a new figure
     figure('units', 'normalized', ...
         'outerposition', [0.25 0.25 0.5 0.5], ...
               'menubar', 'none', ...
@@ -14,28 +21,26 @@ if isnumeric(nx)
                  'Name', 'Polygons Manager | PCA - Eigen Values');
 
     % scree plot
-    bar(1:nx, values(1:nx, 2));
+    bar(1:nbPC, values(1:nbPC, 2));
 
     % setup graph
-    xlim([0 nx+1]);
+    xlim([0 nbPC+1]);
 
     % annotations
     xlabel('Number of components');
     ylabel('Inertia (%)');
 end
 
-function nx = pcaEigenPrompt(nbPC)
-%COLORFACTORPROMPT  A dialog figure on which the user can select
-%which factor he wants to see colored and if he wants to display the
-%legend or not
+function nbPC = pcaEigenPrompt(maxPC)
+%PCAEIGENPROMPT  A dialog figure on which the user can select the number of principal components he wants to see on the graph
 %
-%   Inputs : none
+%   Inputs : 
+%       - maxPC : total number of principal components
 %   Outputs : 
-%       - factor : selected factor
-%       - leg : display option of the legend
+%       - nbPC : selected number of pricipal components
 
     % default value of the ouput to prevent errors
-    nx = '?';
+    nbPC = '?';
 
     % get the position where the prompt will at the center of the
     % current figure
@@ -55,7 +60,7 @@ function nx = pcaEigenPrompt(nbPC)
     popup = uicontrol('Parent', d, ...
                     'Position', [130 82 90 20], ...
                        'Style', 'popup', ...
-                      'string', 1:nbPC, ...
+                      'string', 1:maxPC, ...
                        'value', 2);
 
     % create the two button to cancel or validate the inputs
@@ -73,7 +78,7 @@ function nx = pcaEigenPrompt(nbPC)
     uiwait(d);
 
     function callback(~,~)
-        nx = popup.Value;
+        nbPC = popup.Value;
         
         delete(gcf);
     end

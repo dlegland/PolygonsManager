@@ -3,14 +3,26 @@ function polygonsAlign(obj, type, varargin)
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
+%       - type : determines the type of alignement. Values :
+%           - slow : classic alignement
+%           - fast : the polygons will be simplified to get an
+%           approximation of the rotation angles that must be used, and
+%           these angles will be used on the initial polygons
+%           - contains a cell array : the array containing the list of
+%           angles that must be used during the alignement
+%       - varargin : contains the parameters if the function is called from
+%       a macro
 %   Outputs : none
 
 % select which axis the contours will be aligned with
 if nargin == 2
+    % if the function is called normally
     axis = contoursAlignPrompt;
 else
+    % if the function is called from a macro
     axis = varargin{1};
     if nargin > 3 
+        % if the function is called from a macro and has the 'fast' type
         tolerence = varargin{2};
     end
 end
@@ -19,30 +31,39 @@ if ~strcmp(axis, '?')
     % preallocating memory
     polygonArray = cell(1,length(obj.model.nameList));
     
+    % prepare the array containing the angles
     if strcmp(class(type), 'cell')
+        % if the array has been predetermined, use it
         angleArray = type;
     else
+        % if the array has never been computed, allocate memory ro store it
         angleArray = cell(length(obj.model.nameList), 1);
         if strcmp(type, 'fast')
+            % if the function has the 'fast' type
             if exist('tolerence', 'var')
+                % if the function is called from a macro (tolerence already known)
+                % get the list of simplified polygon using the tolerence
                 polygons = polygonsSimplify(obj, 'off', tolerence);
                 macro = 'on';
             else
+                % if the function isn't called from a macro (tolerence unknown)
+                % call the polygonsSimplufy function and get both the list
+                % of simplified polygons and the tolerence used during the
+                % simplification
                 [polygons, tolerence] = polygonsSimplify(obj, 'off');
                 macro = 'off';
             end
-        end
-    end
-    if ~strcmp(class(type), 'cell')
-        if strcmp(type, 'fast')
+            
+            % save the name of the function and the parameters used during
+            % its call in the log variable
             obj.model.usedProcess{end+1} = ['polygonsAlign : type = ' type ' ; axis = ' axis ' ; tolerence = ' num2str(tolerence)];
-        else
+        else 
             obj.model.usedProcess{end+1} = ['polygonsAlign : type = ' type ' ; axis = ' axis];
         end
     end
     
     % create waitbar
-    h = waitbar(0,'Please wait...', 'name', 'Alignement des contours');
+    h = waitbar(0,'Please wait...', 'name', 'Polygons aligning');
     for i = 1:length(obj.model.nameList)
         % get the name of the polygon that will be rotated
         name = obj.model.nameList{i};
@@ -83,28 +104,38 @@ if ~strcmp(axis, '?')
 
         polygonArray{i} = polyRot;
     end
-    waitbar(length(obj.model.nameList), h);
+    waitbar(1, h);
     
     % close waitbar
     close(h) 
+    
     if strcmp(type, 'fast')
+        % if the function was called with the 'fast' parameter, recall it
+        % with the list of angles as the type parameter
         polygonsAlign(obj, angleArray, axis, macro);
     else
+        % create the PolygonsManagerData that'll be used as the new
+        % PolygonsManagerMainFrame's model
         model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+        
         if nargin == 2
-            % create a new figure and display the results of the rotation on this
-            % new figure  
-
+            % create a new PolygonsManagerMainFrame
             fen = PolygonsManagerMainFrame;  
+            
+            % prepare the new PolygonsManagerMainFrame and display the graph
             setupNewFrame(fen, model);
         else
             if strcmp(varargin{2}, 'off')
-                % create a new figure and display the results of the rotation on this
-                % new figure  
-                fen = PolygonsManagerMainFrame;  
+                % create a new PolygonsManagerMainFrame
+                fen = PolygonsManagerMainFrame;
+                
+                % prepare the new PolygonsManagerMainFrame and display the graph
                 setupNewFrame(fen, model);
             else
+                % update the model of the current PolygonsManagerMainFrame
                 obj.model = model;
+                
+                % display the graph
                 displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
             end
         end
@@ -156,9 +187,10 @@ function axe = contoursAlignPrompt
     uiwait(d);
 
     function callback
-        % get the value of the selected radio button and close the
-        % dialog box
+        % get the value of the selected radio button
         axe = group.SelectedObject.String;
+        
+        % delete the dialog
         delete(gcf);
     end
 end

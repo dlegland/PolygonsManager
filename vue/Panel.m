@@ -1,4 +1,5 @@
 classdef Panel < handle
+%POLYGONSMANAGERDATA Class that creates a panel and 
    
     properties
         mainFrame;
@@ -94,7 +95,6 @@ classdef Panel < handle
             function panelChange
                 %SELECT  update the view depending on the selection
                 
-                
                 updateSelectedPolygonsDisplay(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection});
                 set(mainFrame.handles.submenus{4}{3}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
                 set(mainFrame.handles.submenus{6}{3}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
@@ -178,6 +178,33 @@ classdef Panel < handle
             % match the selection of the name list to the selection of the axis
             set(this.mainFrame.handles.list, 'value', find(ismember(this.mainFrame.model.nameList, this.mainFrame.model.selectedPolygons)));
         end
+        
+        function detectVectorClick(this, h,~)
+            %DETECTLINECLICK  callback used when the user clicks on one of the axis' line
+            %
+            %   Inputs :
+            %       - h : handle of the object that sent the callback 
+            %       - ~ (not used) : input automatically send by matlab during a callback
+            %       - obj : handle of the MainFrame
+            %   Outputs : none
+            
+            if ~iscell(h.UserData)
+                poly = h.UserData;
+            else
+                poly = signatureToPolygon(h.UserData{1}, h.UserData{2});
+            end
+            
+            %empty the selection lists and update the view
+            this.mainFrame.model.selectedPolygons = {};
+            set(this.mainFrame.handles.list, 'value', []);
+            
+            updateSelectedPolygonsDisplay(this);
+            
+            this.mainFrame.handles.infoFields{1}.String = abs(polygonArea(poly));
+            this.mainFrame.handles.infoFields{2}.String = polygonLength(poly);
+            this.mainFrame.handles.infoFields{3}.String = length(poly);
+            this.mainFrame.handles.infoFields{4}.String = this.mainFrame.model.infoTable.levels{4}{(polygonArea(poly) < 0) + 1};
+        end
     end
     
 % -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,13 +249,15 @@ classdef Panel < handle
                 % draw the polygon on the axis
                 line = drawPolygon(polygonArray{i}, 'parent', axis);
                                                        
-                                            if nargin > 2 
-                                                set(line, 'handlevisibility', 'off', ...
-                                                                 'linewidth', 2);
-                                            else
-                                                set(line, 'tag', names{i}, ...
-                                                'ButtonDownFcn', @this.detectLineClick);
-                                            end
+                if nargin > 2 
+                    set(line, 'handlevisibility', 'off', ...
+                                     'linewidth', 2, ...
+                                      'userdata', [polygonArray{i}], ...
+                                 'ButtonDownFcn', @this.detectVectorClick);
+                else
+                    set(line, 'tag', names{i}, ...
+                    'ButtonDownFcn', @this.detectLineClick);
+                end
             end
             uistack(axis.Children(:), 'bottom');
             hold(axis, 'off');
@@ -327,7 +356,7 @@ classdef Panel < handle
             if ~isempty(signatures)
                 % set the axis' limits
                 xlim(axis, [angles(1), angles(end)]);
-                ylim(axis, [0 max(signatures(:))+.5]);
+                ylim(axis, [0 max([max(signatures(:))+.5, 10])]);
             end
 
             % delete all the lines already drawn on the axis
@@ -346,7 +375,9 @@ classdef Panel < handle
                 line = plot(angles, signature, 'parent', axis);
                 if nargin > 3
                     set(line, 'handlevisibility', 'off', ...
-                                     'linewidth', 2);
+                                     'linewidth', 2, ...
+                                      'userdata', {signature(1:end-1), angles(1:end-1)}, ...
+                                 'ButtonDownFcn', @this.detectVectorClick);
                 else
                     set(line, 'tag', names{i}, ...
                     'ButtonDownFcn', @this.detectLineClick);
@@ -425,30 +456,30 @@ classdef Panel < handle
         
         function displayPca(this, x, y)
             
-            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
-            
-            delete([this.uiLegend{:}]);
-            delete(this.uiAxis.Children(:));
+        names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
 
-            points = cell(length(x), 1);
-            
-            hold(this.uiAxis, 'on');
+        delete([this.uiLegend{:}]);
+        delete(this.uiAxis.Children(:));
+
+        points = cell(length(x), 1);
+
+        hold(this.uiAxis, 'on');
+        for i = 1:length(x)
+            points{i} = plot(x(i), y(i), '.k', ...
+                         'parent', this.uiAxis);
+        end
+        if ~strcmp(this.type(4:end), 'Loadings')
             for i = 1:length(x)
-                points{i} = plot(x(i), y(i), '.k', ...
-                             'parent', this.uiAxis);
+                set(points{i}, 'tag', names{i}, ...
+                     'ButtonDownFcn', @this.detectLineClick);
             end
-            if ~strcmp(this.type(4:end), 'Loadings')
-                for i = 1:length(x)
-                    set(points{i}, 'tag', names{i}, ...
-                         'ButtonDownFcn', @this.detectLineClick);
-                end
-            end
-            
-            hold(this.uiAxis, 'off');
+        end
+
+        hold(this.uiAxis, 'off');
 
         end
         
-        function displayPcaFactor(this, pca)
+        function displayPcaFactor(this, pca, factor)
 
             names = setupDisplay(this.mainFrame, 2, 1, 1, this.type(4:end));
             
@@ -463,25 +494,14 @@ classdef Panel < handle
             % possible from eachother
             set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :));
 
-%             groupColors = this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :);
-%             
-%             groupMarkers = cell(nbSelected,1);
-%             groupMarkers(:) = {'.'};
-
             % memory allocation for the array that'll contain the legend's lines
             lines = cell(1, length(names));
             lineHandles = cell(1, nbSelected);
             levels = cell(1, nbSelected);
 
             delete([this.uiLegend{:}]);
-            delete(this.uiAxis.Children(:));
+            delete(allchild(this.uiAxis));
             
-%             scatterGroup(this.mainFrame.model.pca.scores(:,1), this.mainFrame.model.pca.scores(:,2), ...
-%                          this.mainFrame.model.factorTable(this.mainFrame.model.selectedFactor{1}), ...
-%                          'groupcolors', groupColors, ...
-%                         'groupmarkers', groupMarkers, ...
-%                               'parent', axis, ...
-%                        'ButtonDownFcn', @this.detectLineClick);
             hold(axis, 'on');
             for i = 1:length(pca)
                 lines{i} = plot(pca{i, 2}, pca{i, 3}, ...
@@ -502,9 +522,12 @@ classdef Panel < handle
             
             set(axis, 'colororderindex', 1);
             
-            uniques = unique([pca{:, 1}]);
-            for i = 1:length(unique([pca{:, 1}]))
-                inds = find([pca{:, 1}] == uniques(i));
+            factors = getColumn(this.mainFrame.model.factorTable, factor);
+            factors = factors(:);
+            
+            uniques = unique(factors);
+            for i = 1:length(uniques)
+                inds = find(factors == uniques(i));
                 xdata = [pca{inds, 2}];
                 ydata = [pca{inds, 3}];
                 switch lower(this.mainFrame.model.selectedFactor{4})
@@ -515,37 +538,49 @@ classdef Panel < handle
                         if length(xdata') > 2
                             inds2   = convhull([xdata' ydata']);
                             plot(xdata(inds2), ydata(inds2), ...
+                                           'parent', axis, ...
                                            'marker', 'none', ...
                                         'linestyle', '-', ...
-                                       'color', axis.ColorOrder(uniques(i), :));
+                                            'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                    'PickableParts', 'none', ...
+                                 'handlevisibility', 'off');
                         else
                             plot(xdata', ydata', ...
+                                           'parent', axis, ...
                                            'marker', 'none', ...
                                         'linestyle', '-', ...
-                                       'color', axis.ColorOrder(uniques(i), :));
+                                            'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                    'PickableParts', 'none', ...
+                                 'handlevisibility', 'off');
                         end
 
                     case 'ellipse'
                         center  = mean([xdata' ydata']);
                         sigma   = std([xdata' ydata']) * 1.96; 
                         drawEllipse([center sigma 0],...
+                                            'parent', axis, ...
                                             'marker', 'none', ...
                                          'linestyle', '-', ...
-                                             'color', axis.ColorOrder(uniques(i), :));
+                                             'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                     'PickableParts', 'none', ...
+                                  'handlevisibility', 'off');
 
                     case 'inertia ellipse'
                         elli    = inertiaEllipse([xdata' ydata']);
                         drawEllipse(elli,...
+                                'parent', axis, ...
                                 'marker', 'none', ...
                              'linestyle', '-',  ...
-                                 'color', axis.ColorOrder(uniques(i), :));
+                                 'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                         'PickableParts', 'none', ...
+                      'handlevisibility', 'off');
                 end
             end
             hold(axis, 'off');
             levels = levels(~cellfun('isempty',levels));
 
             if this.mainFrame.model.selectedFactor{3} == 0
-%                 if the legend must be displayed, display it
+                % if the legend must be displayed, display it
                 this.uiLegend{1} = legend(axis, [lineHandles{:}], levels, ...
                                                    'location', 'eastoutside', ...
                                               'uicontextmenu', []);

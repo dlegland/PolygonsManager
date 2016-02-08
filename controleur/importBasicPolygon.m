@@ -11,7 +11,6 @@ dname = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\Tests');
 files = dir(fullfile(dname, '*txt'));
 
 % memory allocation
-
 polygonArray = cell(1,length(files));
 nameArray = cell(1, length(files));
 

@@ -9,7 +9,7 @@ function [poly, values] = pcaVector(obj)
 
 % get ths column that will be displayed index, and the coefficient of the
 % the calculus
-[index, coef] = pcaVectorPrompt(length(obj.model.pca.loadings.rowNames));
+[index, coef, profiles] = pcaVectorPrompt(length(obj.model.pca.loadings.rowNames));
 
 if ~strcmp(index, '?')
     % create a new PolygonsManagerMainFrame
@@ -40,9 +40,9 @@ if ~strcmp(index, '?')
     % compute eigen vector with appropriate coeff
     ld = obj.model.pca.loadings(:, index).data';
     lambda = obj.model.pca.eigenValues(index, 1).data;
-    values(1, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
-    values(2, :) = obj.model.pca.means + (coef+1) * sqrt(lambda) * ld;
-    values(3, :) = obj.model.pca.means + (coef-1) * sqrt(lambda) * ld;
+    values(1, :) = obj.model.pca.means;
+    values(2, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
+    values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
     
     % resulting polygon
     if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
@@ -54,14 +54,35 @@ if ~strcmp(index, '?')
         poly{2} = rowToPolygon(values(2, :), 'packed');
         poly{3} = rowToPolygon(values(3, :), 'packed');
     end
-
+    
+    color = 1;
+    switch profiles
+        case 1
+            polygons = poly;
+            selValues = values;
+        case 2
+            [~,i] = min([sum(values(2, :)) sum(values(3,:))]);
+            polygons = {poly{1}, poly{i+1}};
+            selValues(1, :) = values(1, :);
+            selValues(2, :) = values(i+1, :);
+            color = 2;
+        case 3
+            [~,i] = max([sum(values(2, :)) sum(values(3,:))]);
+            polygons = {poly{1}, poly{i+1}};
+            selValues(1, :) = values(1, :);
+            selValues(2, :) = values(i+1, :);
+        case 4
+            polygons = poly(1);
+            selValues(1, :) = values(1, :);
+    end
     % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model, fenName, ...
                   'pcaVector', 'on', ...
-                  poly, ...
-                  values);
+                  polygons, ...
+                  selValues, ...
+                  color);
 end
-function [index, coef] = pcaVectorPrompt(maxPC)
+function [index, coef, profiles] = pcaVectorPrompt(maxPC)
 %PCAVECTORPROMPT  A dialog figure on which the user can select
 %which principal component's vector he wants to display and the coefficient of the
 %calculus
@@ -74,11 +95,11 @@ function [index, coef] = pcaVectorPrompt(maxPC)
 
     % default value of the ouput to prevent errors
     index = '?';
-    coef = '0';
+    coef = '1';
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 165);
+    pos = getMiddle(gcf, 250, 200);
 
     % create the dialog box
     d = dialog('Position', pos, ...
@@ -86,28 +107,40 @@ function [index, coef] = pcaVectorPrompt(maxPC)
 
     % create the inputs of the dialog box
     uicontrol('parent', d, ...
-            'position', [30 115 90 20], ...
+            'position', [30 150 90 20], ...
                'style', 'text', ...
               'string', 'PC :', ...
             'fontsize', 10, ...
  'horizontalalignment', 'right');
 
-    popup = uicontrol('Parent', d, ...
-                    'Position', [130 116 90 20], ...
+    popup1 = uicontrol('Parent', d, ...
+                    'Position', [130 152 90 20], ...
                        'Style', 'popup', ...
                       'string', 1:maxPC);
 
     uicontrol('parent', d, ...
             'position', [30 80 90 20], ...
                'style', 'text', ...
+              'string', 'Extra profiles :', ...
+            'fontsize', 10, ...
+ 'horizontalalignment', 'right');
+
+    popup2 = uicontrol('Parent', d, ...
+                    'Position', [130 82 90 20], ...
+                       'Style', 'popup', ...
+                      'string', {'Both', 'Minus coef', 'Plus coef', 'None'});
+
+    uicontrol('parent', d, ...
+            'position', [30 115 90 20], ...
+               'style', 'text', ...
               'string', 'Coefficient :', ...
             'fontsize', 10, ...
  'horizontalalignment', 'right');
 
     edit = uicontrol('Parent', d, ...
-                    'Position', [130 81 90 20], ...
+                    'Position', [130 116 90 20], ...
                        'Style', 'edit', ...
-                      'string', 0);
+                      'string', 1);
 
     error = uicontrol('parent', d,...
                     'position', [135 46 85 25], ...
@@ -133,7 +166,8 @@ function [index, coef] = pcaVectorPrompt(maxPC)
 
     function callback
         % get the value of the popup
-        index = popup.Value;
+        index = popup1.Value;
+        profiles = popup2.Value;
         try
             % if the input numeric then get its value and close the dialog box
             if ~isnan(str2double(get(edit,'String')))

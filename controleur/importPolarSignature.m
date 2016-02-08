@@ -34,12 +34,12 @@ while loop == 0
             setupNewFrame(obj, model);
             loop = 1;
         else
+            % if the number of rows of the futur factor Table doesn't match the
+            % number of polygons, display the error prompt
             loop = importPolarSignaturePrompt;
         end
     else
-        % if the number of rows of the futur factor Table doesn't match the
-        % number of polygons, display the error prompt
-        loop = importPolarSignaturePrompt;
+        loop = 1;
     end
 end
 

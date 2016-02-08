@@ -228,7 +228,11 @@ classdef Panel < handle
             set(axis, 'colororderindex', 1);
             
             if nargin > 2
-                set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
+                if varargin{1} == 1
+                    set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
+                else
+                    set(axis, 'colororder', [0, 0, 0; 60, 60, 255]/255);
+                end
             else
                 if length(this.colorMap) > length(names)
                     % if there's less polygons than colors in the colormap
@@ -351,7 +355,11 @@ classdef Panel < handle
             end
             
             if nargin > 3
-                set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
+                if varargin{1} == 1
+                    set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
+                else
+                    set(axis, 'colororder', [0, 0, 0; 60, 60, 255]/255);
+                end
             end
             if ~isempty(signatures)
                 % set the axis' limits

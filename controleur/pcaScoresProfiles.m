@@ -73,25 +73,25 @@ if isnumeric([cp1 cp2])
     lambda2 = obj.model.pca.eigenValues(cp2, 1).data;
     
     if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
-        polys{1, 1} = signatureToPolygon(obj.model.pca.means + 0 * sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
-        polys{1, 2} = signatureToPolygon(obj.model.pca.means + (-1) * sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
-        polys{2, 1} = polys{1, 1};
-        polys{2, 2} = signatureToPolygon(obj.model.pca.means + 1 * sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
+        polys{2, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
+        polys{2, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
+        polys{1, 1} = polys{2, 1};
+        polys{1, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
 
-        polys{3, 1} = signatureToPolygon(obj.model.pca.means + 0 * sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
-        polys{3, 2} = signatureToPolygon(obj.model.pca.means + (-1) * sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
+        polys{3, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
+        polys{3, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
         polys{4, 1} = polys{3, 1};
-        polys{4, 2} = signatureToPolygon(obj.model.pca.means + 1 * sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
+        polys{4, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
     else
-        polys{1, 1} = rowToPolygon(obj.model.pca.means + 0 * sqrt(lambda1) * ld1, 'packed');
-        polys{1, 2} = rowToPolygon(obj.model.pca.means + 1 * sqrt(lambda1) * ld1, 'packed');
-        polys{2, 1} = polys{1, 1};
-        polys{2, 2} = rowToPolygon(obj.model.pca.means + (-1) * sqrt(lambda1) * ld1, 'packed');
+        polys{2, 1} = rowToPolygon(obj.model.pca.means, 'packed');
+        polys{2, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, 'packed');
+        polys{1, 1} = polys{2, 1};
+        polys{1, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, 'packed');
 
-        polys{3, 1} = rowToPolygon(obj.model.pca.means + 0 * sqrt(lambda2) * ld2, 'packed');
-        polys{3, 2} = rowToPolygon(obj.model.pca.means + (-1) * sqrt(lambda2) * ld2, 'packed');
+        polys{3, 1} = rowToPolygon(obj.model.pca.means, 'packed');
+        polys{3, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, 'packed');
         polys{4, 1} = polys{3, 1};
-        polys{4, 2} = rowToPolygon(obj.model.pca.means + 1 * sqrt(lambda2) * ld2, 'packed');
+        polys{4, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, 'packed');
     end
     
     for i = 1:length(axisArray)

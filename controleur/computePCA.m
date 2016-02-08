@@ -5,7 +5,7 @@ function computePCA(obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-obj.model.pca = Pca(Table.create(getDatas(obj.model.PolygonArray), 'rowNames', obj.model.nameList'), 'Display', 'none');
+obj.model.pca = Pca(Table.create(getDatas(obj.model.PolygonArray), 'rowNames', obj.model.nameList'), 'Display', 'none', 'scale', false);
 
 updateMenus(obj);
 end

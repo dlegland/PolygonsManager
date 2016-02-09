@@ -1,5 +1,5 @@
 function saveFactors(obj)
-%SAVEPOLARSIGNATURE  Saves the current factors in a text file
+%SAVEFACTORS  Saves the current factors in a text file
 %
 %   Inputs :
 %       - obj : handle of the MainFrame

@@ -38,3 +38,5 @@ else
     % display the contours without special coloration
     displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
 end
+
+updateMenus(obj);

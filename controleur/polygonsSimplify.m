@@ -1,6 +1,5 @@
 function varargout = polygonsSimplify(obj, display,  varargin)
-%POLYGONSSIMPLIFY  Simplify the current polygons using the douglass-peucker
-%algorithm
+%POLYGONSSIMPLIFY  Simplify the current polygons using the douglass-peucker algorithm
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -20,11 +19,17 @@ else
         tolerence = varargin{1};
     end
 end
-
+if strcmp(display, 'off')
+    varargout{1} = '?';   
+    if nargout == 2
+        varargout{2} = '?';
+    end
+end
 if ~strcmp(tolerence, '?')
     % save the name of the function and the parameters used during
     % its call in the log variable
     obj.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerence = ' num2str(tolerence)];
+    
     % memory allocation
     polygonArray = cell(1,length(obj.model.nameList));
 

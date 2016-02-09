@@ -8,11 +8,7 @@ function selectFactor(obj)
 % select the factor that will determine the coloration and if the legend of
 % the axis must be displayed
 
-if isempty(obj.handles.Panels{1}.type)
-    [factor, leg, ~, ~] = selectFactorPrompt;
-else
-    [factor, leg, factor2, envelope] = selectFactorPrompt;
-end
+[factor, leg, factor2, envelope] = selectFactorPrompt;
 
 if ~strcmp(factor, '?')
     % get the levels of the selected factor
@@ -20,11 +16,7 @@ if ~strcmp(factor, '?')
     levels = obj.model.factorTable.levels{x};
     
     % save the selected factor, it's levels, and the legend display option
-    if ~strcmp(class(obj.model.pca), 'Pca')
-        obj.model.selectedFactor = {factor levels leg};
-    else
-        obj.model.selectedFactor = {factor levels leg envelope};
-    end
+    obj.model.selectedFactor = {factor levels leg envelope};
     
     if isempty(obj.handles.Panels{1}.type)
         % display the colored polygons
@@ -60,7 +52,7 @@ function [factor, leg, factor2, group] = selectFactorPrompt
     factor = '?';
     leg = '?';
     factor2 = '?';
-    group = '?';
+    group = 'None';
     
     % get the position where the prompt will at the center of the
     % current figure
@@ -113,7 +105,8 @@ function [factor, leg, factor2, group] = selectFactorPrompt
         popup2 = uicontrol('Parent', d, ...
                          'Position', [130 152 90 20], ...
                             'Style', 'popup', ...
-                           'string', obj.model.factorTable.colNames);
+                           'string', obj.model.factorTable.colNames, ...
+                           'enable', 'off');
         
         % create the inputs of the dialog box
         uicontrol('parent', d, ...
@@ -126,11 +119,9 @@ function [factor, leg, factor2, group] = selectFactorPrompt
         popup3 = uicontrol('Parent', d, ...
                          'Position', [130 117 90 20], ...
                             'Style', 'popup', ...
-                           'string', {'convex hull', 'ellipse', 'inertia ellipse', 'none'});
+                           'string', {'None', 'Convex hull', 'Ellipse', 'Inertia ellipse'}, ...
+                         'callback', @(~,~) popupCallback);
 
-    end
-    if strcmp(obj.handles.Panels{1}.type, 'pcaScores & Profiles')
-        set(toggleB,'string', 'No', 'enable', 'off', 'Value', 1);
     end
                
     % create the two button to cancel or validate the inputs
@@ -169,6 +160,14 @@ function [factor, leg, factor2, group] = selectFactorPrompt
             set(toggleB, 'string', 'No');
         else 
             set(toggleB, 'string', 'Yes');
+        end
+    end
+    
+    function popupCallback
+        if popup3.Value == 1
+            popup2.Enable = 'off';
+        else
+            popup2.Enable = 'on';
         end
     end
 end

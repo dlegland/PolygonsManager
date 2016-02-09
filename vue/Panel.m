@@ -1,22 +1,44 @@
 classdef Panel < handle
-%POLYGONSMANAGERDATA Class that creates a panel and 
+%PANEL Class that creates a panel and setup its contents
+%
+%   Creation : 
+%   figure = Panel(PolygonsManagerMainFrame, index, equal);
+%
    
     properties
+        % instance of PolygonsManagerMainFrame
         mainFrame;
         
+        % N-by-3 numeric vector containing values of range 0 to 1
         colorMap;
         
+        % uipanel instance
         uiPanel;
+        % axes instance 
         uiAxis;
-        uiLegend = {};
+        % legend of the uiAxis
+        uiLegend;
         
+        % string containing the type of data displayed in the uiAxis
         type;
     end
     
     methods
         function this = Panel(mainFrame, index, equal)
+        %Constructor for the PolygonsManagerMainFrame class
+        %
+        %   inputs : 
+        %       - PolygonsManagerMainFrame : instance of PolygonsManagerMainFrame
+        %       - index : index of the panel in the Panels array of the PolygonsManagerMainFrame
+        %       - equal : defines id the uiAxis must be equalized
+        %   ouputs : 
+        %       - this : Panel instance
+        
+            % set the 'parent' of the panel
             this.mainFrame = mainFrame;
-
+            
+            %set the colormap of the panel
+            %                 R    G    B    R    G    B    R    G    B    R    G    B    R    G    B    R    G    B    R    G    B
             this.colorMap = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252;
                              78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
                              100, 65 , 248; 103, 66 , 248; 106, 66 , 247; 110, 67 , 247; 113, 67 , 246; 116, 68 , 246; 119, 68 , 245;
@@ -62,7 +84,7 @@ classdef Panel < handle
 
             % creation of the axis on which the lines will be drawn
             this.uiAxis = axes('parent', this.uiPanel, ...
-                       'ButtonDownFcn', @(~,~) reset, ...
+                       'ButtonDownFcn', @(~,~) this.reset, ...
                           'colororder', this.colorMap, ...
                        'uicontextmenu', mainFrame.handles.menus{6});
             
@@ -71,26 +93,14 @@ classdef Panel < handle
                 axis(this.uiAxis, 'equal');
             end
                           
+            % save the new paenl in the parent PolygonsManagerMainFrame
             mainFrame.handles.Panels{index} = this;
             
             % add a callback to the tabpanel to call when the tab selection change
             set(mainFrame.handles.tabs, 'selection', index, ...
                               'SelectionChangedFcn', @(~,~) panelChange);
 
-            function reset
-                %RESET  set the current selection to null
-
-                if ~ismember(mainFrame.handles.figure.SelectionType, {'alt', 'open'})
-                    % if the user is not pressing the 'ctrl' key or right-clicking
-
-                    %empty the selection lists and update the view
-                    mainFrame.model.selectedPolygons = {};
-                    set(mainFrame.handles.list, 'value', []);
-
-                    % update the view
-                    updateSelectedPolygonsDisplay(this);
-                end
-            end
+            
             
             function panelChange
                 %SELECT  update the view depending on the selection
@@ -108,27 +118,53 @@ classdef Panel < handle
                     end
                 end
             end
-
         end
         
+        function reset(this)
+            %RESET  set the current selection to void
+
+            if ~ismember(this.mainFrame.handles.figure.SelectionType, {'alt', 'open'})
+                % if the user is not pressing the 'ctrl' key or right-clicking
+
+                %empty the selection lists and update the view
+                this.mainFrame.model.selectedPolygons = {};
+                set(this.mainFrame.handles.list, 'value', []);
+
+                % update the view
+                updateSelectedPolygonsDisplay(this);
+            end
+        end
+            
         function updateSelectedPolygonsDisplay(this)
-            %UPDATESELECTEDPOLYGONSDISPLAY  display the lines of the
-            %current axis differently if they're selected or not
+            %UPDATESELECTEDPOLYGONSDISPLAY  display the lines of the current axis differently if they're selected or not
+            
+            % get the nameList of selected polygons
             selected = this.mainFrame.model.selectedPolygons;
+            
+            % get all the objects drawn onto the axis
             allHandleList = get(this.uiAxis, 'Children'); 
+            
+            % get the tags of all these objects
             allTagList = get(allHandleList, 'tag');
+            
+            % if there's at least one object on drawn on the axis
             if ~isempty(allTagList)
+                % get the objects whose tag is in the nameList
                 neededHandle = allHandleList(ismember(allTagList, selected));
                 if strcmp(allHandleList(1).LineStyle, '-')
+                    % if lines are displayed on the axis
                     set(allHandleList, 'LineWidth', .5);
                     set(neededHandle, 'LineWidth', 3.5);
                     uistack(neededHandle, 'top');
                 else    
+                    % if points are displayed on the axis
                     set(allHandleList, 'Marker', '.');
                     set(neededHandle, 'Marker', '*');
                     uistack(neededHandle, 'top');
                 end
             end
+            
+            %update the infobox
             if length(selected) == 1
                 updateInfoBox(this.mainFrame, getInfoFromName(this.mainFrame.model, selected));
             else
@@ -140,9 +176,9 @@ classdef Panel < handle
             %DETECTLINECLICK  callback used when the user clicks on one of the axis' line
             %
             %   Inputs :
+            %       - this : handle of the Panel
             %       - h : handle of the object that sent the callback 
             %       - ~ (not used) : input automatically send by matlab during a callback
-            %       - obj : handle of the MainFrame
             %   Outputs : none
             
             if ismember(this.mainFrame.handles.figure.SelectionType, {'alt', 'open'})
@@ -212,15 +248,19 @@ classdef Panel < handle
 % -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     methods
+        
+    % ---------------------------------------------------------------------------- POLYGONS -------------------------------------------------------------------------------------------------------
+    
         function displayPolygons(this, polygonArray, varargin)
-            %DISPLAYPOLYGONS  Display the current polygons
+            %DISPLAYPOLYGONS  Display polygons
             %
             %   Inputs :
             %       - obj : handle of the MainFrame
             %       - polygonArray : a N-by-1 cell array containing the polygons
-            %       - axis : handle of the axis on which the lines will be drawn
             %   Outputs : none
             
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
             names = setupDisplay(this.mainFrame, 1, 2);
             axis = this.uiAxis;
             
@@ -228,6 +268,7 @@ classdef Panel < handle
             set(axis, 'colororderindex', 1);
             
             if nargin > 2
+                % if the function is used to display profiles
                 if varargin{1} == 1
                     set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
                 else
@@ -245,7 +286,7 @@ classdef Panel < handle
             end
             % delete all the lines already drawn on the axis and the legends
             delete(axis.Children(:));
-            delete([this.uiLegend{:}]);
+            delete(this.uiLegend);
             
 
             hold(axis, 'on');
@@ -254,6 +295,7 @@ classdef Panel < handle
                 line = drawPolygon(polygonArray{i}, 'parent', axis);
                                                        
                 if nargin > 2 
+                    % if the function is used to display profiles
                     set(line, 'handlevisibility', 'off', ...
                                      'linewidth', 2, ...
                                       'userdata', [polygonArray{i}], ...
@@ -268,20 +310,22 @@ classdef Panel < handle
         end
         
         function displayPolygonsFactor(this, polygonArray)
-            %DISPLAYPOLYGONSFACTOR  Display the current polygons colored by factors
+            %DISPLAYPOLYGONSFACTOR  Display polygons colored by factors
             %
             %   Inputs :
             %       - obj : handle of the MainFrame
             %       - polygonArray : a N-by-1 cell array containing the polygons
-            %       - axis : handle of the axis on which the lines will be drawn
             %   Outputs : none
 
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
             names = setupDisplay(this.mainFrame, 2, 1);
             axis = this.uiAxis;
 
             % reset the position of the cursor in the axis' colormap
             set(axis, 'colororderindex', 1);
             
+            % get the number of levels of the selected factor
             nbSelected = length(this.mainFrame.model.selectedFactor{2});
 
             % change the axis' colormap to get colors that are as different as
@@ -320,29 +364,30 @@ classdef Panel < handle
             
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                this.uiLegend{1} = legend(axis, [lineHandles{:}], levels, ...
+                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
                                                       'location', 'best', ...
                                                  'uicontextmenu', []);
             end
         end
 
+    % ---------------------------------------------------------------------------- SIGNATURES -------------------------------------------------------------------------------------------------------
+    
         function displayPolarSignature(this, signatures, angles, varargin)
-            %DISPLAYPOLARSIGNATURE  Display the current signatures
+            %DISPLAYPOLARSIGNATURE  Display polar signatures
             %
             %   Inputs :
             %       - obj : handle of the MainFrame
             %       - signatureArray : a N-by-M cell array containing the polar signatures
-            %       - axis : handle of the axis on which the lines will be drawn
             %   Outputs : none
 
             % get the list of all angles + 1 angle to make the last point match the
             % first
             angles(end+1) = angles(end) + angles(2)-angles(1);
 
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
             names = setupDisplay(this.mainFrame, 1, 2);
             axis = this.uiAxis;
-            
-            % set the name of the tab
 
             % reset the position of the cursor in the axis' colormap
             set(axis, 'colororderindex', 1);
@@ -355,6 +400,7 @@ classdef Panel < handle
             end
             
             if nargin > 3
+                % if the function is used to display profiles
                 if varargin{1} == 1
                     set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
                 else
@@ -369,7 +415,7 @@ classdef Panel < handle
 
             % delete all the lines already drawn on the axis
             delete(axis.Children(:));
-            delete([this.uiLegend{:}]);
+            delete(this.uiLegend);
             
             hold(axis, 'on');
             for i = 1:size(signatures, 1)
@@ -382,6 +428,7 @@ classdef Panel < handle
                 % draw the line
                 line = plot(angles, signature, 'parent', axis);
                 if nargin > 3
+                    % if the function is used to display profiles
                     set(line, 'handlevisibility', 'off', ...
                                      'linewidth', 2, ...
                                       'userdata', {signature(1:end-1), angles(1:end-1)}, ...
@@ -396,22 +443,24 @@ classdef Panel < handle
         end
         
         function displayPolarSignatureFactor(this, signatureArray)
-            %DISPLAYPOLARSIGNATUREFACTOR  Display the current signatures colored by factors
-            %
-            %   Inputs :
-            %       - obj : handle of the MainFrame
-            %       - signatureArray : a N-by-M cell array containing the polar signatures
-            %       - axis : handle of the axis on which the lines will be drawn
-            %   Outputs : none
+        %DISPLAYPOLARSIGNATUREFACTOR  Display polar signatures
+        %
+        %   Inputs :
+        %       - obj : handle of the MainFrame
+        %       - signatureArray : a N-by-M cell array containing the polar signatures
+        %   Outputs : none
 
             % get the list of all angles + 1 angle to make the last point match the
             % first
             angles = this.mainFrame.model.PolygonArray.angleList;
             angles(end+1) = angles(end) + angles(2) - angles(1);
 
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
             names = setupDisplay(this.mainFrame, 2, 1);
             axis = this.uiAxis;
 
+            % get the number of levels of the selected factor
             nbSelected = length(this.mainFrame.model.selectedFactor{2});
 
             % reset the position of the cursor in the axis' colormap
@@ -456,44 +505,58 @@ classdef Panel < handle
 
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                this.uiLegend{2} = legend(axis, [lineHandles{:}], levels, ...
+                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
                                                    'location', 'eastoutside', ...
                                               'uicontextmenu', []);
             end
         end
         
+    % ---------------------------------------------------------------------------- PCA RESULTS -------------------------------------------------------------------------------------------------------
+    
         function displayPca(this, x, y)
+        %DISPLAYPCA  Display points
+        %
+        %   Inputs :
+        %       - obj : handle of the MainFrame
+        %       - x : the coordiantes of the points on the x-axis
+        %       - y : the coordiantes of the points on the y-axis
+        %   Outputs : none
             
-        names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
+            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
 
-        delete([this.uiLegend{:}]);
-        delete(this.uiAxis.Children(:));
+            % delete all the lines/points and legend already drawn on the axis
+            delete(this.uiLegend);
+            delete(allchild(this.uiAxis));
 
-        points = cell(length(x), 1);
+            % memory allocation
+            points = cell(length(x), 1);
 
-        hold(this.uiAxis, 'on');
-        for i = 1:length(x)
-            points{i} = plot(x(i), y(i), '.k', ...
-                         'parent', this.uiAxis);
-        end
-        if ~strcmp(this.type(4:end), 'Loadings')
+            %draw the points on the axis
+            hold(this.uiAxis, 'on');
             for i = 1:length(x)
-                set(points{i}, 'tag', names{i}, ...
-                     'ButtonDownFcn', @this.detectLineClick);
+                points{i} = plot(x(i), y(i), '.k', ...
+                             'parent', this.uiAxis);
+                %set the tags of the points
+                if ~strcmp(this.type(4:end), 'Loadings')
+                    set(points{i}, 'tag', names{i}, ...
+                         'ButtonDownFcn', @this.detectLineClick);
+                end
             end
-        end
-
-        hold(this.uiAxis, 'off');
+            hold(this.uiAxis, 'off');
 
         end
         
         function displayPcaFactor(this, pca, factor)
 
+            % get the names of all the polygons loaded and prepare the
+            % panel/axis that'll be used to draw
             names = setupDisplay(this.mainFrame, 2, 1, 1, this.type(4:end));
-            
-            nbSelected = length(this.mainFrame.model.selectedFactor{2});
-            
             axis = this.uiAxis;
+            
+            % get the number of levels of the selected factor
+            nbSelected = length(this.mainFrame.model.selectedFactor{2});
             
             % reset the position of the cursor in the axis' colormap
             set(axis, 'colororderindex', 1);
@@ -507,7 +570,8 @@ classdef Panel < handle
             lineHandles = cell(1, nbSelected);
             levels = cell(1, nbSelected);
 
-            delete([this.uiLegend{:}]);
+            % delete all the lines/points and legend already drawn on the axis
+            delete(this.uiLegend);
             delete(allchild(this.uiAxis));
             
             hold(axis, 'on');
@@ -529,10 +593,12 @@ classdef Panel < handle
             end
             
             set(axis, 'colororderindex', 1);
-            
+             
+            % get the datas of the factor that'll be used to group the
+            % points
             factors = getColumn(this.mainFrame.model.factorTable, factor);
-            factors = factors(:);
             
+            % get the list of uniques values
             uniques = unique(factors);
             for i = 1:length(uniques)
                 inds = find(factors == uniques(i));
@@ -589,8 +655,8 @@ classdef Panel < handle
 
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                this.uiLegend{1} = legend(axis, [lineHandles{:}], levels, ...
-                                                   'location', 'eastoutside', ...
+                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
+                                                   'location', 'westoutside', ...
                                               'uicontextmenu', []);
             end
         end

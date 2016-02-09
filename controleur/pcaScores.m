@@ -4,57 +4,39 @@ function pcaScores(obj)
 %       - obj : handle of the MainFrame
 %   Outputs : none
 
-if isempty(obj.handles.Panels{1}.type) || ~strcmp(obj.handles.Panels{1}.type, 'pcaScores')
-    % if the current panel isn't displaying a score plot
-    
-    % select the two principal component we want to compare and the
-    % variable that defines if the axis must be equalized
-    [cp1, cp2, equal] = pcaScoresPrompt(length(obj.model.pca.scores.rowNames));
-    
-    if isnumeric([cp1 cp2])
-        % create a new PolygonsManagerMainFrame
-        fen = PolygonsManagerMainFrame;
-        
-        % create the PolygonsManagerData that'll be used as the new
-        % PolygonsManagerMainFrame's model
-        model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                        'nameList', obj.model.nameList, ...
-                                     'factorTable', obj.model.factorTable, ...
-                                             'pca', obj.model.pca);
-                                         
-        % prepare the the new PolygonsManagerMainFrame's name
-        if strcmp(class(obj.model.factorTable), 'Table')
-            fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores'];
-        else
-            fenName = 'Polygons Manager | PCA - Scores';
-        end
-        
-        % prepare the new PolygonsManagerMainFrame and display the graph
-        setupNewFrame(fen, model, fenName, ...
-                      'pcaScores', equal, ...
-                      obj.model.pca.scores(:, cp1).data, ...
-                      obj.model.pca.scores(:, cp2).data);
+% select the two principal component we want to compare and the
+% variable that defines if the axis must be equalized
+[cp1, cp2, equal] = pcaScoresPrompt(length(obj.model.pca.scores.rowNames));
 
-        % save the two principal components that were selected in the axis
-        fen.handles.Panels{1}.uiAxis.UserData = {cp1, cp2};
+if isnumeric([cp1 cp2])
+    % create a new PolygonsManagerMainFrame
+    fen = PolygonsManagerMainFrame;
 
-%         % set the limits of the graph so that no point will be placed on
-%         % the edges of the graph
-%         xlim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp1).data)-1 max(obj.model.pca.scores(:, cp1).data)+1]);
-%         ylim(fen.handles.Panels{1}.uiAxis, [min(obj.model.pca.scores(:, cp2).data)-1 max(obj.model.pca.scores(:, cp2).data)+1]);
+    % create the PolygonsManagerData that'll be used as the new
+    % PolygonsManagerMainFrame's model
+    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
+                                    'nameList', obj.model.nameList, ...
+                                 'factorTable', obj.model.factorTable, ...
+                                         'pca', obj.model.pca);
 
-        % create legends
-        annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
-
+    % prepare the the new PolygonsManagerMainFrame's name
+    if strcmp(class(obj.model.factorTable), 'Table')
+        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores'];
+    else
+        fenName = 'Polygons Manager | PCA - Scores';
     end
-else
-    % if the current panel is displaying a score plot
-    
-    % get the two principal components that were saved in the axis
-    ud = obj.handles.Panels{1}.uiAxis.UserData;
-    
-    % display a new graph using these two components
-    displayPca(obj.handles.Panels{1}, obj.model.pca.scores(:, ud{1}).data, obj.model.pca.scores(:, ud{2}).data);
+
+    % prepare the new PolygonsManagerMainFrame and display the graph
+    setupNewFrame(fen, model, fenName, ...
+                  'pcaScores', equal, ...
+                  obj.model.pca.scores(:, cp1).data, ...
+                  obj.model.pca.scores(:, cp2).data);
+
+    % save the two principal components that were selected in the axis
+    fen.handles.Panels{1}.uiAxis.UserData = {cp1, cp2};
+
+    % create legends
+    annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 end
 function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
 %PCASCOREPROMPT  A dialog figure on which the user can select

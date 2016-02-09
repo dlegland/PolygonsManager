@@ -1,6 +1,5 @@
 classdef CoordsPolygonArray < PolygonArray
-%BASICPOLYGONARRAY Class for polygon array of polygons that all have the
-%same number of points
+%COORDSPOLYGONARRAY Class for polygon array of polygons that all have the same number of points
 %
 %   Creation : 
 %   polygonArray = BasicPolygonArray(polygons);
@@ -9,7 +8,7 @@ classdef CoordsPolygonArray < PolygonArray
     
     properties
         % the list of all the polygons
-        polygons
+        polygons;
     end
     
     methods 

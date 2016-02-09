@@ -1,5 +1,5 @@
 function pcaScoresProfiles(obj)
-%PCASCORES  Display the score of each polygon depending on 2 principal components
+%PCASCORESPROFILES  Display the score of each polygon depending on 2 principal components
 %   Inputs :
 %       - obj : handle of the MainFrame
 %   Outputs : none
@@ -30,7 +30,7 @@ if isnumeric([cp1 cp2])
 
     % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model, fenName, ...
-                  'pcaScores & Profiles', equal, ...
+                  'pcaScoresProfiles', equal, ...
                   obj.model.pca.scores(:, cp1).data, ...
                   obj.model.pca.scores(:, cp2).data);
 
@@ -46,7 +46,11 @@ if isnumeric([cp1 cp2])
     axisArray{2} = axes('parent', hbox, 'ActivePositionProperty', 'Position');
     uix.Empty('parent', hbox);
 
-    fen.handles.Panels{1}.uiAxis = axes('parent', grid);
+    pan = uipanel('parent', grid, 'bordertype', 'none');
+    fen.handles.Panels{1}.uiAxis = axes('parent', pan, ...
+                                 'ButtonDownFcn', @(~,~) reset(fen.handles.Panels{1}), ...
+                                    'colororder', fen.handles.Panels{1}.colorMap, ...
+                                 'uicontextmenu', fen.handles.menus{6});
 
     uix.Empty('parent', grid);
 

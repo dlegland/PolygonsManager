@@ -32,7 +32,7 @@ if ~strcmp(axis, '?')
     polygonArray = cell(1,length(obj.model.nameList));
     
     % prepare the array containing the angles
-    if strcmp(class(type), 'cell')
+    if iscell(type)
         % if the array has been predetermined, use it
         angleArray = type;
     else
@@ -52,6 +52,9 @@ if ~strcmp(axis, '?')
                 % simplification
                 [polygons, tolerence] = polygonsSimplify(obj, 'off');
                 macro = 'off';
+                if strcmp(tolerence, '?')
+                    return;
+                end
             end
             
             % save the name of the function and the parameters used during
@@ -141,6 +144,7 @@ if ~strcmp(axis, '?')
         end
     end
 end
+
 function axe = contoursAlignPrompt
 %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
 %which axis will be aligned with the contours
@@ -194,5 +198,4 @@ function axe = contoursAlignPrompt
         delete(gcf);
     end
 end
-
 end

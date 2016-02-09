@@ -10,6 +10,11 @@ function polygonsRotate(obj, angle, type)
 %       - type : determines which polygons must be rotated
 %   Outputs : none
 
+if strcmp(angle, 'customCCW')
+    angle = polygonsRotatePrompt(1);
+elseif strcmp(angle, 'customCW')
+    angle = polygonsRotatePrompt(-1);
+end
 if ~strcmp(class(angle), 'double')
     angle = str2double(angle);
 end
@@ -48,6 +53,8 @@ if ~isempty(polygonArray)
             case 180
                 % 180°
                 polyRot = [-poly(:,1) -poly(:,2)];
+            otherwise
+                polyRot = transformPoint(poly, createRotation(angle));
         end
         
         %update the polygon
@@ -67,4 +74,79 @@ if ~isempty(polygonArray)
         % display the contours without special coloration
         displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
     end
+end
+
+updateMenus(obj);
+
+function angle = polygonsRotatePrompt(direction)
+%CONTOURSROTATEPROMPT  A dialog figure on which the user can enter the
+%angles of rotation he wants
+%
+%   Inputs : none
+%   Outputs : angle in radians
+
+    % default value of the ouput to prevent errors
+    angle = '?';
+
+    % get the position where the prompt will at the center of the
+    % current figure
+    pos = getMiddle(gcf, 250, 130);
+
+    % create the dialog
+    d = dialog('position', pos, ...
+                   'name', 'Enter image resolution');
+
+    % create the inputs of the dialog box
+    uicontrol('parent', d,...
+            'position', [30 80 90 20], ...
+               'style', 'text',...
+              'string', 'Coefficient :', ... 
+            'fontsize', 10, ...
+ 'horizontalalignment', 'right');
+
+    edit = uicontrol('parent', d,...
+                   'position', [130 81 90 20], ...
+                      'style', 'edit');
+
+    error = uicontrol('parent', d,...
+                    'position', [135 46 85 25], ...
+                       'style', 'text',...
+                      'string', 'Invalid value', ...
+             'foregroundcolor', 'r', ...
+                     'visible', 'off', ...
+                    'fontsize', 8);
+
+    % create the two button to cancel or validate the inputs
+    uicontrol('parent', d, ...
+            'position', [30 30 85 25], ...
+              'string', 'Validate', ...
+            'callback', @(~,~) callback);
+
+    uicontrol('parent', d, ...
+            'position', [135 30 85 25], ...
+              'string', 'Cancel', ...
+            'callback', 'delete(gcf)');
+
+    % Wait for d to close before running to completion
+    uiwait(d);
+
+    function callback
+        try
+            % if the input numeric then get its value and close the dialog box
+            if ~isnan(str2double(get(edit,'String')))
+                angle = str2double(get(edit,'String'))*pi/180*direction;
+                delete(gcf);
+            % if the input contains an operation get the result and close the dialog box
+            elseif find(ismember(get(edit,'String'), ['\', '¨', '/', '*', '+', '-'])) ~= 0
+                angle = eval(get(edit,'String'));
+                angle = angle*pi/180*direction;
+                delete(gcf);
+            else
+                set(error, 'visible', 'on');
+            end
+        catch
+            set(error, 'visible', 'on');
+        end
+    end
+end
 end

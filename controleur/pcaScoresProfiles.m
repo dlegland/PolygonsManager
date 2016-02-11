@@ -50,6 +50,7 @@ if isnumeric([cp1 cp2])
     fen.handles.Panels{1}.uiAxis = axes('parent', pan, ...
                                  'ButtonDownFcn', @(~,~) reset(fen.handles.Panels{1}), ...
                                     'colororder', fen.handles.Panels{1}.colorMap, ...
+                                           'tag', 'main', ...
                                  'uicontextmenu', fen.handles.menus{6});
 
     uix.Empty('parent', grid);
@@ -61,11 +62,11 @@ if isnumeric([cp1 cp2])
     axisArray{4} = axes('parent', vbox, 'ActivePositionProperty', 'Position');
     uix.Empty('parent', vbox);
     
-    hbox.Widths = [-9 -10 -10 -10 -7];
-    vbox.Heights = [-1 -3 -1 -3 -1];
+    hbox.Widths = [-9 150 -10 150 -7];
+    vbox.Heights = [-1 150 -1 150 -1];
     
-    grid.Heights = [-2 -5]; 
-    grid.Widths = [-5 -1]; 
+    grid.Heights = [150 -1]; 
+    grid.Widths = [-1 170]; 
     
     set([axisArray{:}], 'XTick', [], 'YTick', [], 'YColor','w' , 'XColor','w', 'Xlim', [-10 10], 'Ylim', [-10 10]);
     axis([axisArray{:}], 'equal');
@@ -101,7 +102,7 @@ if isnumeric([cp1 cp2])
     for i = 1:length(axisArray)
         hold(axisArray{i}, 'on');
         drawPolygon(polys{i, 1}, 'parent', axisArray{i}, 'color', 'k');
-        drawPolygon(polys{i, 2}, 'parent', axisArray{i}, 'color', 'b', 'linewidth', 2);
+        drawPolygon(polys{i, 2}, 'parent', axisArray{i}, 'color', 'r', 'linewidth', 2);
         hold(axisArray{i}, 'off');
     end
     

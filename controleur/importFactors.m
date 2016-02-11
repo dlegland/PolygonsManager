@@ -10,7 +10,7 @@ while loop == 0
     try
         % open the file selection prompt and let the user select the file
         % he wants to use as a factor Table
-        [fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt','Select a factor file');
+        [fName, fPath] = uigetfile('*.txt','Select a factor file');
         
         if fPath == 0
             % if the user closed the prompt without selecting a file,

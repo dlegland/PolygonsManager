@@ -7,7 +7,7 @@ function importCoordsPolygon(obj)
 
 % open the file selection prompt and let the user select the file he wants
 % to use as a polygon array
-[fName, fPath] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
+[fName, fPath] = uigetfile('*.txt');
 fFile = fullfile(fPath, fName);
 
 if fName ~= 0

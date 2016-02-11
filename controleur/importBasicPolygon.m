@@ -7,7 +7,7 @@ function importBasicPolygon(obj)
 
 % open the folder selection prompt and let the user select the folder that
 % contains the polygons that will be used as the polygon array
-dname = uigetdir('C:\Stage2016_Thomas\data_plos\slabs\Tests');
+dname = uigetdir;
 files = dir(fullfile(dname, '*txt'));
 
 % memory allocation

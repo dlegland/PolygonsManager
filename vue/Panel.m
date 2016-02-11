@@ -86,6 +86,7 @@ classdef Panel < handle
             this.uiAxis = axes('parent', this.uiPanel, ...
                        'ButtonDownFcn', @(~,~) this.reset, ...
                           'colororder', this.colorMap, ...
+                                 'tag', 'main', ...
                        'uicontextmenu', mainFrame.handles.menus{6});
             
             if strcmp(equal, 'on')
@@ -106,15 +107,15 @@ classdef Panel < handle
                 %SELECT  update the view depending on the selection
                 
                 updateSelectedPolygonsDisplay(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection});
-                set(mainFrame.handles.submenus{4}{3}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
-                set(mainFrame.handles.submenus{6}{3}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
+                set(mainFrame.handles.submenus{4}{1}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
+                set(mainFrame.handles.submenus{6}{1}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
                 if ~isempty(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis.Children)
                     if strcmp(get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis.Children(1), 'Marker'), '+')
-                        set(mainFrame.handles.submenus{4}{4}, 'checked', 'on');
-                        set(mainFrame.handles.submenus{6}{4}, 'checked', 'on');
+                        set(mainFrame.handles.submenus{4}{2}, 'checked', 'on');
+                        set(mainFrame.handles.submenus{6}{2}, 'checked', 'on');
                     else
-                        set(mainFrame.handles.submenus{4}{4}, 'checked', 'off');
-                        set(mainFrame.handles.submenus{6}{4}, 'checked', 'off');
+                        set(mainFrame.handles.submenus{4}{2}, 'checked', 'off');
+                        set(mainFrame.handles.submenus{6}{2}, 'checked', 'off');
                     end
                 end
             end
@@ -142,7 +143,7 @@ classdef Panel < handle
             selected = this.mainFrame.model.selectedPolygons;
             
             % get all the objects drawn onto the axis
-            allHandleList = get(this.uiAxis, 'Children'); 
+            allHandleList = findobj(this.uiAxis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes'); 
             
             % get the tags of all these objects
             allTagList = get(allHandleList, 'tag');
@@ -151,6 +152,7 @@ classdef Panel < handle
             if ~isempty(allTagList)
                 % get the objects whose tag is in the nameList
                 neededHandle = allHandleList(ismember(allTagList, selected));
+                
                 if strcmp(allHandleList(1).LineStyle, '-')
                     % if lines are displayed on the axis
                     set(allHandleList, 'LineWidth', .5);
@@ -261,7 +263,7 @@ classdef Panel < handle
             
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 1, 2);
+            names = setupDisplay(this.mainFrame);
             axis = this.uiAxis;
             
             % reset the position of the cursor in the axis' colormap
@@ -286,9 +288,8 @@ classdef Panel < handle
             end
             % delete all the lines already drawn on the axis and the legends
             delete(axis.Children(:));
-            delete(this.uiLegend);
+            this.uiLegend = [];
             
-
             hold(axis, 'on');
             for i = 1:length(polygonArray)
                 % draw the polygon on the axis
@@ -319,7 +320,7 @@ classdef Panel < handle
 
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 2, 1);
+            names = setupDisplay(this.mainFrame);
             axis = this.uiAxis;
 
             % reset the position of the cursor in the axis' colormap
@@ -339,6 +340,10 @@ classdef Panel < handle
 
             % delete all the lines already drawn on the axis
             delete(axis.Children(:));
+            if iscell(this.uiLegend)
+                delete(this.uiLegend{1});
+                this.uiLegend = [];
+            end
 
             hold(axis, 'on');
             for i = 1:length(polygonArray)
@@ -347,7 +352,7 @@ classdef Panel < handle
                                                     'ButtonDownFcn', @this.detectLineClick, ...
                                                               'tag', names{i}, ...
                                                             'color', axis.ColorOrder(polygonArray{i, 1}, :));
-
+                
                 if cellfun('isempty',lineHandles(polygonArray{i, 1}))
                     % if the factor of the signature that was just drawn has never been
                     % encountered, create a copy of this line and save it, and add the
@@ -361,12 +366,11 @@ classdef Panel < handle
             % remove all the empty cells of the levels list
             lineHandles = lineHandles(~cellfun('isempty',levels));
             levels = levels(~cellfun('isempty',levels));
-            
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
-                                                      'location', 'best', ...
-                                                 'uicontextmenu', []);
+                [this.uiLegend{1:4}] = legend(axis, [lineHandles{:}], levels, ...
+                                                          'location', 'best', ...
+                                                     'uicontextmenu', []);
             end
         end
 
@@ -386,7 +390,7 @@ classdef Panel < handle
 
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 1, 2);
+            names = setupDisplay(this.mainFrame);
             axis = this.uiAxis;
 
             % reset the position of the cursor in the axis' colormap
@@ -415,7 +419,7 @@ classdef Panel < handle
 
             % delete all the lines already drawn on the axis
             delete(axis.Children(:));
-            delete(this.uiLegend);
+            this.uiLegend = [];
             
             hold(axis, 'on');
             for i = 1:size(signatures, 1)
@@ -457,7 +461,7 @@ classdef Panel < handle
 
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 2, 1);
+            names = setupDisplay(this.mainFrame);
             axis = this.uiAxis;
 
             % get the number of levels of the selected factor
@@ -477,6 +481,10 @@ classdef Panel < handle
 
             % delete all the lines already drawn on the axis
             delete(axis.Children(:));
+            if iscell(this.uiLegend)
+                delete(this.uiLegend{1});
+                this.uiLegend = [];
+            end
 
             hold(axis, 'on');
             for i = 1:length(signatureArray)
@@ -505,9 +513,9 @@ classdef Panel < handle
 
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
-                                                   'location', 'eastoutside', ...
-                                              'uicontextmenu', []);
+                [this.uiLegend{1:4}] = legend(axis, [lineHandles{:}], levels, ...
+                                                          'location', 'eastoutside', ...
+                                                     'uicontextmenu', []);
             end
         end
         
@@ -524,11 +532,14 @@ classdef Panel < handle
             
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 1, 2, 1, this.type(4:end));
+            names = setupDisplay(this.mainFrame, 1, this.type(4:end));
 
             % delete all the lines/points and legend already drawn on the axis
-            delete(this.uiLegend);
             delete(allchild(this.uiAxis));
+            if iscell(this.uiLegend)
+                delete(this.uiLegend{1});
+                this.uiLegend = [];
+            end
 
             % memory allocation
             points = cell(length(x), 1);
@@ -540,6 +551,9 @@ classdef Panel < handle
                              'parent', this.uiAxis);
                 %set the tags of the points
                 if ~strcmp(this.type(4:end), 'Loadings')
+                    text(x(i), y(i), ['  ' names{i}], ...
+                           'parent', this.uiAxis, ...
+                            'color', 'k');
                     set(points{i}, 'tag', names{i}, ...
                          'ButtonDownFcn', @this.detectLineClick);
                 end
@@ -552,112 +566,142 @@ classdef Panel < handle
 
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
-            names = setupDisplay(this.mainFrame, 2, 1, 1, this.type(4:end));
+            names = setupDisplay(this.mainFrame, 1, this.type(4:end));
             axis = this.uiAxis;
             
-            % get the number of levels of the selected factor
-            nbSelected = length(this.mainFrame.model.selectedFactor{2});
-            
-            % reset the position of the cursor in the axis' colormap
-            set(axis, 'colororderindex', 1);
+            if ~strcmp(this.mainFrame.model.selectedFactor{1}, 'none')
+                % get the number of levels of the selected factor
+                nbSelected = length(this.mainFrame.model.selectedFactor{2});
 
-            % change the axis' colormap to get colors that are as different as
-            % possible from eachother
-            set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :));
+                % reset the position of the cursor in the axis' colormap
+                set(axis, 'colororderindex', 1);
 
-            % memory allocation for the array that'll contain the legend's lines
-            lines = cell(1, length(names));
-            lineHandles = cell(1, nbSelected);
-            levels = cell(1, nbSelected);
+                % change the axis' colormap to get colors that are as different as
+                % possible from eachother
+                set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/nbSelected:length(this.colorMap)), :));
 
-            % delete all the lines/points and legend already drawn on the axis
-            delete(this.uiLegend);
-            delete(allchild(this.uiAxis));
-            
-            hold(axis, 'on');
-            for i = 1:length(pca)
-                lines{i} = plot(pca{i, 2}, pca{i, 3}, ...
-                                  'marker', '.', ...
-                               'linestyle', 'none', ...
-                                  'parent', axis, ...
-                           'ButtonDownFcn', @this.detectLineClick, ...
-                                     'tag', names{i}, ...
-                                   'color', axis.ColorOrder(pca{i, 1}, :));
+                % memory allocation for the array that'll contain the legend's lines
+                lines = cell(1, length(names));
+                lineHandles = cell(1, nbSelected);
+                levels = cell(1, nbSelected);
 
-                if cellfun('isempty',lineHandles(pca{i, 1}))
-                    % if the factor of the signature that was just drawn has never been
-                    % encountered, create a copy of this line and save it
-                    lineHandles{pca{i, 1}} = copy(lines{i});
-                    levels{pca{i, 1}} = this.mainFrame.model.selectedFactor{2}{pca{i, 1}};
+                % delete all the lines/points and legend already drawn on the axis
+                delete(allchild(axis));
+                if iscell(this.uiLegend)
+                    delete(this.uiLegend{1});
+                    this.uiLegend = [];
                 end
+
+                hold(axis, 'on');
+                for i = 1:length(pca)
+                    lines{i} = plot(pca{i, 2}, pca{i, 3}, ...
+                                      'marker', '.', ...
+                                  'markersize', this.mainFrame.model.selectedFactor{5}, ...
+                                   'linestyle', 'none', ...
+                                      'parent', axis, ...
+                               'ButtonDownFcn', @this.detectLineClick, ...
+                                         'tag', names{i}, ...
+                                       'color', axis.ColorOrder(pca{i, 1}, :));
+
+                    if cellfun('isempty',lineHandles(pca{i, 1}))
+                        % if the factor of the signature that was just drawn has never been
+                        % encountered, create a copy of this line and save it
+                        lineHandles{pca{i, 1}} = copy(lines{i});
+                        levels{pca{i, 1}} = this.mainFrame.model.selectedFactor{2}{pca{i, 1}};
+                    end
+                end
+                levels = levels(~cellfun('isempty',levels));
+
+                if this.mainFrame.model.selectedFactor{3} == 0
+                    % if the legend must be displayed, display it
+                    [this.uiLegend{1:4}] = legend(axis, [lineHandles{:}], levels, ...
+                                                              'location', 'westoutside', ...
+                                                         'uicontextmenu', []);
+                end
+            else
+                if ~strcmp(factor, 'none')
+                    set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/max(unique(getColumn(this.mainFrame.model.factorTable, factor))):length(this.colorMap)), :));
+                end
+                lines = findobj(allchild(axis), '-not', 'marker', '.');
+                points = findobj(allchild(axis), 'marker', '.');
+
+                set(points, 'color', 'k', 'markersize', this.mainFrame.model.selectedFactor{5});
+                delete(lines);
+                if iscell(this.uiLegend)
+                    delete(this.uiLegend{1});
+                    this.uiLegend = [];
+                end
+                hold(axis, 'on');
             end
             
-            set(axis, 'colororderindex', 1);
-             
-            % get the datas of the factor that'll be used to group the
-            % points
-            factors = getColumn(this.mainFrame.model.factorTable, factor);
-            
-            % get the list of uniques values
-            uniques = unique(factors);
-            for i = 1:length(uniques)
-                inds = find(factors == uniques(i));
-                xdata = [pca{inds, 2}];
-                ydata = [pca{inds, 3}];
-                switch lower(this.mainFrame.model.selectedFactor{4})
-                    case 'none'
-                        % do nothing more...
-
-                    case 'convex hull'
-                        if length(xdata') > 2
-                            inds2   = convhull([xdata' ydata']);
-                            plot(xdata(inds2), ydata(inds2), ...
-                                           'parent', axis, ...
-                                           'marker', 'none', ...
-                                        'linestyle', '-', ...
-                                            'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
-                                    'PickableParts', 'none', ...
-                                 'handlevisibility', 'off');
-                        else
-                            plot(xdata', ydata', ...
-                                           'parent', axis, ...
-                                           'marker', 'none', ...
-                                        'linestyle', '-', ...
-                                            'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
-                                    'PickableParts', 'none', ...
-                                 'handlevisibility', 'off');
-                        end
-
-                    case 'ellipse'
-                        center  = mean([xdata' ydata']);
-                        sigma   = std([xdata' ydata']) * 1.96; 
-                        drawEllipse([center sigma 0],...
-                                            'parent', axis, ...
-                                            'marker', 'none', ...
-                                         'linestyle', '-', ...
-                                             'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
-                                     'PickableParts', 'none', ...
-                                  'handlevisibility', 'off');
-
-                    case 'inertia ellipse'
-                        elli    = inertiaEllipse([xdata' ydata']);
-                        drawEllipse(elli,...
-                                'parent', axis, ...
-                                'marker', 'none', ...
-                             'linestyle', '-',  ...
-                                 'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
-                         'PickableParts', 'none', ...
-                      'handlevisibility', 'off');
+            points = findobj(allchild(axis), 'marker', '.');
+            if this.mainFrame.model.selectedFactor{6} == 0
+                for i = 1:length(points)
+                    text(points(i).XData, points(i).YData, ['  ' points(i).Tag], ...
+                                     'parent', axis, ...
+                                      'color', points(i).Color);
                 end
             end
-            hold(axis, 'off');
-            levels = levels(~cellfun('isempty',levels));
+            if ~strcmp(factor, 'none')
+                set(axis, 'colororderindex', 1);
 
-            if this.mainFrame.model.selectedFactor{3} == 0
-                % if the legend must be displayed, display it
-                this.uiLegend = legend(axis, [lineHandles{:}], levels, ...
-                                                   'location', 'westoutside', ...
-                                              'uicontextmenu', []);
+                % get the datas of the factor that'll be used to group the
+                % points
+                factors = getColumn(this.mainFrame.model.factorTable, factor);
+
+                % get the list of uniques values
+                uniques = unique(factors);
+                for i = 1:length(uniques)
+                    inds = find(factors == uniques(i));
+                    xdata = [pca{inds, 2}];
+                    ydata = [pca{inds, 3}];
+                    switch lower(this.mainFrame.model.selectedFactor{4})
+                        case 'none'
+                            % do nothing more...
+
+                        case 'convex hull'
+                            if length(xdata') > 2
+                                inds2   = convhull([xdata' ydata']);
+                                plot(xdata(inds2), ydata(inds2), ...
+                                               'parent', axis, ...
+                                               'marker', 'none', ...
+                                            'linestyle', '-', ...
+                                                'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                        'PickableParts', 'none', ...
+                                     'handlevisibility', 'off');
+                            else
+                                plot(xdata', ydata', ...
+                                               'parent', axis, ...
+                                               'marker', 'none', ...
+                                            'linestyle', '-', ...
+                                                'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                        'PickableParts', 'none', ...
+                                     'handlevisibility', 'off');
+                            end
+
+                        case 'ellipse'
+                            center  = mean([xdata' ydata']);
+                            sigma   = std([xdata' ydata']) * 1.96; 
+                            drawEllipse([center sigma 0],...
+                                                'parent', axis, ...
+                                                'marker', 'none', ...
+                                             'linestyle', '-', ...
+                                                 'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                                         'PickableParts', 'none', ...
+                                      'handlevisibility', 'off');
+
+                        case 'inertia ellipse'
+                            elli    = inertiaEllipse([xdata' ydata']);
+                            drawEllipse(elli,...
+                                    'parent', axis, ...
+                                    'marker', 'none', ...
+                                 'linestyle', '-',  ...
+                                     'color', axis.ColorOrder(pca{inds(1), 1}, :), ...
+                             'PickableParts', 'none', ...
+                          'handlevisibility', 'off');
+                    end
+                end
+                hold(axis, 'off');
             end
         end
     end

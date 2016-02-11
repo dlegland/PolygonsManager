@@ -11,7 +11,7 @@ function saveContours(obj)
 
 if strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
     % open the file save prompt and let the user select the file where the polygons will be saved
-    [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
+    [fileName, dname] = uiputfile('*.txt');
 
     if fileName ~= 0
         % if the user did select a folder

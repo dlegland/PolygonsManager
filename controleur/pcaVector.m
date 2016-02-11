@@ -78,11 +78,14 @@ if ~strcmp(index, '?')
     % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model, fenName, ...
                   'pcaVector', 'on', ...
-                  poly(1), ...
+                  polygons, ...
                   selValues, ...
                   color);
               
-    drawPolygon(
+    panel1 = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
+    plot(panel1.uiAxis, 1:length(ld), ld, 'linewidth', 2, 'color', 'k');
+    xlim(panel1.uiAxis, [1 length(ld)]);
+              
 end
 function [index, coef, profiles] = pcaVectorPrompt(maxPC)
 %PCAVECTORPROMPT  A dialog figure on which the user can select

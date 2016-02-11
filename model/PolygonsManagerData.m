@@ -193,7 +193,7 @@ classdef PolygonsManagerData
         end
         
         function saveMacro(obj)
-            [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.log.txt');
+            [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 
             if fileName ~= 0
                 fileID = fopen(fullfile(dname, fileName), 'w');

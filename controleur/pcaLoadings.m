@@ -33,6 +33,17 @@ if isnumeric([cp1 cp2])
                   obj.model.pca.loadings(:, cp2).data);
     
     
+    ld1 = obj.model.pca.loadings(:, cp1).data';
+    ld2 = obj.model.pca.loadings(:, cp2).data';
+    
+    panel = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
+    plot(panel.uiAxis, 1:length(ld1), ld1, 'linewidth', 2, 'color', 'k');
+    xlim(panel.uiAxis, [1 length(ld1)]);
+              
+    panel = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
+    plot(panel.uiAxis, 1:length(ld2), ld2, 'linewidth', 2, 'color', 'k');
+    xlim(panel.uiAxis, [1 length(ld2)]);
+    
     % create legends
     annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 end

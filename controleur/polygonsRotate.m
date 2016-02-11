@@ -10,6 +10,10 @@ function polygonsRotate(obj, angle, type)
 %       - type : determines which polygons must be rotated
 %   Outputs : none
 
+% F = getframe(obj.handles.Panels{1}.uiAxis);
+% Image = frame2im(F);
+% imwrite(Image, 'Image.jpg')
+
 if strcmp(angle, 'customCCW')
     angle = polygonsRotatePrompt(1);
 elseif strcmp(angle, 'customCW')
@@ -106,7 +110,8 @@ function angle = polygonsRotatePrompt(direction)
 
     edit = uicontrol('parent', d,...
                    'position', [130 81 90 20], ...
-                      'style', 'edit');
+                      'style', 'edit', ...
+                   'callback', @(~,~) callback);
 
     error = uicontrol('parent', d,...
                     'position', [135 46 85 25], ...

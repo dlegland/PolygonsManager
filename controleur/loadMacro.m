@@ -7,7 +7,11 @@ function loadMacro(obj)
 
 % open the file selection prompt and let the user select the file he wants
 % to use as a macro
-[fileName, dname] = uigetfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.log.txt');
+[fileName, dname] = uigetfile('*.txt');
+
+if fileName == 0
+    return;
+end
 
 % read the content of the selected file
 fileID = fopen(fullfile(dname, fileName), 'r');

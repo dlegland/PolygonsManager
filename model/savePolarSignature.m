@@ -7,7 +7,7 @@ function savePolarSignature(obj)
 
 % open the file save prompt and let the user select the name of the file in 
 % which the factor Table will be saved
-[fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
+[fileName, dname] = uiputfile('*.txt');
 
 if fileName ~= 0
     % if the user did select a folder

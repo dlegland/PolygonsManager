@@ -39,4 +39,5 @@ else
     displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
 end
 
+% update the menus
 updateMenus(obj);

@@ -3,8 +3,9 @@ classdef PolygonArray < handle
 %must contain
 
     methods (Abstract)
-        arraySize = getPolygonNumber(poly);
-        polygon = getPolygon(poly);
-        polygons = getAllPolygons(obj)
+        arraySize = getPolygonNumber(obj);
+        polygon = getPolygon(obj);
+        polygons = getAllPolygons(obj);
+        updatePolygon(obj, row, polygon);
     end
 end

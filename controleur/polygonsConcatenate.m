@@ -38,7 +38,7 @@ if ~strcmp(number, '?')
         name = obj.model.nameList{i};
         
         % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = name;
+        obj.model.selectedPolygons = {name};
         updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
         
@@ -116,7 +116,7 @@ function number = contoursConcatPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 130);
+    pos = getMiddle(obj, 250, 130);
 
     % create the dialog box
     d = dialog('position', pos, ...
@@ -137,7 +137,6 @@ function number = contoursConcatPrompt
     error = uicontrol('parent', d,...
                     'position', [135 46 85 25], ...
                        'style', 'text',...
-                      'string', 'Invalid value', ...
              'foregroundcolor', 'r', ...
                      'visible', 'off', ...
                     'fontsize', 8);
@@ -160,13 +159,17 @@ function number = contoursConcatPrompt
         try
             % if input is numeric, get it and close the dialog box
             if ~isnan(str2double(get(edit,'String')))
-                number = str2double(get(edit,'String'));
-                delete(gcf);
+                if str2double(get(edit,'String')) < min(getColumn(obj.model.infoTable, 'Vertices'))
+                    number = str2double(get(edit,'String'));
+                    delete(gcf);
+                else
+                    set(error, 'string', 'Value too high', 'visible', 'on');
+                end
             else
-                set(error, 'visible', 'on');
+                set(error, 'string', 'Enter a number', 'visible', 'on');
             end
         catch
-            set(error, 'visible', 'on');
+            set(error, 'string', 'Invalid value', 'visible', 'on');
         end
     end
 end

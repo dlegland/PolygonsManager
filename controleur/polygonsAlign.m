@@ -72,7 +72,7 @@ if ~strcmp(axis, '?')
         name = obj.model.nameList{i};
         
         % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = name;
+        obj.model.selectedPolygons = {name};
         updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
@@ -157,7 +157,7 @@ function axe = contoursAlignPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 130);
+    pos = getMiddle(obj, 250, 130);
 
     % create the dialog box
     d = dialog('position', pos, ...

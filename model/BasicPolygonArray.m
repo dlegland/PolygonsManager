@@ -20,24 +20,24 @@ classdef BasicPolygonArray < PolygonArray
             obj.polygons = polygons;
         end
         
-        function arraySize = getPolygonNumber(obj)
+        function arraySize = getPolygonNumber(this)
             % returns the number of polygons contained in the polygon array
-            arraySize = length(obj.polygons);
+            arraySize = length(this.polygons);
         end
         
-        function polygon = getPolygon(obj, row)
+        function polygon = getPolygon(this, row)
             % returns the polygon found at the index row
-            polygon = obj.polygons{row};
+            polygon = this.polygons{row};
         end
         
-        function polygons = getAllPolygons(obj)
+        function polygons = getAllPolygons(this)
             % returns all the polygons
-            polygons = obj.polygons;
+            polygons = this.polygons;
         end
         
-        function updatePolygon(obj, row, polygon)
+        function updatePolygon(this, row, polygon)
             % replace the polygon found at the index row by a new polygon
-            obj.polygons{row} = polygon;
+            this.polygons{row} = polygon;
         end
     end
 end

@@ -4,7 +4,27 @@ classdef Panel < handle
 %   Creation : 
 %   figure = Panel(PolygonsManagerMainFrame, index, equal);
 %
-   
+    properties(Constant)
+       default_colorMap = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252; 78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
+                           100, 65 , 248; 103, 66 , 248; 106, 66 , 247; 110, 67 , 247; 113, 67 , 246; 116, 68 , 246; 119, 68 , 245; 122, 69 , 245; 125, 69 , 244; 128, 70 , 244; 131, 70 , 243; 135, 71 , 243; 138, 71 , 242; 141, 72 , 242;
+                           144, 72 , 241; 147, 73 , 241; 150, 73 , 240; 153, 74 , 240; 156, 74 , 239; 160, 75 , 239; 163, 75 , 239; 166, 76 , 238; 169, 76 , 238; 172, 77 , 237; 175, 77 , 237; 178, 78 , 236; 181, 78 , 236; 185, 79 , 235;
+                           188, 79 , 235; 191, 80 , 234; 194, 80 , 234; 197, 81 , 233; 200, 81 , 233; 203, 82 , 232; 207, 82 , 232; 210, 83 , 231; 213, 83 , 231; 216, 84 , 230; 219, 84 , 230; 222, 85 , 229; 225, 85 , 229; 228, 86 , 228;
+                           232, 86 , 228; 235, 87 , 227; 238, 87 , 227; 241, 88 , 226; 244, 89 , 226; 247, 89 , 225; 250, 90 , 225; 253, 90 , 224; 255, 90 , 224; 255, 90 , 221; 255, 90 , 219; 255, 89 , 217; 255, 89 , 214; 255, 89 , 212;
+                           255, 88 , 210; 255, 88 , 207; 255, 88 , 205; 255, 87 , 203; 255, 87 , 200; 255, 87 , 198; 255, 87 , 196; 255, 86 , 193; 255, 86 , 191; 255, 86 , 189; 255, 85 , 186; 255, 85 , 184; 255, 85 , 182; 255, 84 , 180;
+                           255, 84 , 177; 255, 84 , 175; 255, 83 , 173; 255, 83 , 170; 255, 83 , 168; 255, 82 , 166; 255, 82 , 163; 255, 82 , 161; 255, 82 , 159; 255, 81 , 156; 255, 81 , 154; 255, 81 , 152; 255, 80 , 149; 255, 80 , 147;
+                           255, 80 , 145; 255, 79 , 142; 255, 79 , 140; 255, 79 , 138; 255, 78 , 136; 255, 78 , 133; 255, 78 , 131; 255, 77 , 129; 255, 77 , 126; 255, 77 , 124; 255, 76 , 122; 255, 76 , 119; 255, 76 , 117; 255, 76 , 115;
+                           255, 75 , 112; 255, 75 , 110; 255, 75 , 108; 255, 74 , 105; 255, 74 , 103; 255, 74 , 101; 255, 73 , 98 ; 255, 73 , 96 ; 255, 73 , 94 ; 255, 72 , 92 ; 255, 72 , 89 ; 255, 72 , 87 ; 255, 71 , 85 ; 255, 71 , 82 ;
+                           255, 71 , 80 ; 255, 70 , 78 ; 255, 71 , 76 ; 255, 73 , 75 ; 255, 75 , 74 ; 255, 77 , 72 ; 255, 79 , 71 ; 255, 80 , 70 ; 255, 82 , 69 ; 255, 84 , 67 ; 255, 86 , 66 ; 255, 88 , 65 ; 255, 90 , 64 ; 255, 91 , 63 ;
+                           255, 93 , 61 ; 255, 95 , 60 ; 255, 97 , 59 ; 255, 99 , 58 ; 255, 101, 57 ; 255, 102, 56 ; 255, 104, 54 ; 255, 106, 53 ; 255, 108, 52 ; 255, 110, 51 ; 255, 112, 49 ; 255, 113, 48 ; 255, 115, 47 ; 255, 117, 46 ;
+                           255, 119, 45 ; 255, 121, 44 ; 255, 122, 42 ; 255, 124, 41 ; 255, 126, 40 ; 255, 128, 39 ; 255, 130, 38 ; 255, 132, 36 ; 255, 133, 35 ; 255, 135, 34 ; 255, 137, 33 ; 255, 139, 32 ; 255, 141, 30 ; 255, 143, 29 ;
+                           255, 144, 28 ; 255, 146, 27 ; 255, 148, 25 ; 255, 150, 24 ; 255, 152, 23 ; 255, 154, 22 ; 255, 155, 21 ; 255, 157, 20 ; 255, 159, 18 ; 255, 161, 17 ; 255, 163, 16 ; 255, 165, 15 ; 255, 166, 13 ; 255, 168, 12 ;
+                           255, 170, 11 ; 255, 172, 10 ; 255, 174, 9  ; 255, 176, 8  ; 255, 177, 6  ; 255, 179, 5  ; 255, 181, 4  ; 255, 183, 3  ; 255, 185, 1  ; 255, 187, 0  ; 254, 188, 1  ; 252, 189, 3  ; 250, 190, 5  ; 248, 191, 7  ;
+                           246, 192, 9  ; 244, 193, 11 ; 242, 194, 13 ; 240, 195, 15 ; 238, 196, 17 ; 236, 198, 19 ; 234, 199, 21 ; 232, 200, 23 ; 230, 201, 25 ; 228, 202, 27 ; 226, 203, 29 ; 224, 204, 31 ; 222, 205, 33 ; 220, 206, 35 ;
+                           218, 207, 37 ; 216, 208, 39 ; 214, 209, 41 ; 211, 210, 43 ; 209, 212, 45 ; 207, 213, 47 ; 205, 214, 49 ; 203, 215, 51 ; 201, 216, 53 ; 199, 217, 54 ; 197, 218, 56 ; 195, 219, 58 ; 193, 220, 60 ; 191, 221, 62 ;
+                           189, 222, 64 ; 187, 223, 66 ; 185, 224, 68 ; 183, 226, 70 ; 181, 227, 72 ; 179, 228, 74 ; 177, 229, 76 ; 175, 230, 78 ; 173, 231, 80 ; 171, 232, 82 ; 169, 233, 84 ; 167, 234, 86 ; 165, 235, 88 ; 163, 236, 90 ;
+                           161, 237, 92 ; 159, 239, 94 ; 157, 240, 96 ; 154, 241, 98 ; 152, 242, 100; 150, 243, 102; 148, 244, 104; 146, 245, 106; 144, 246, 108; 142, 247, 109; 140, 248, 111; 138, 249, 113; 136, 250, 115; 134, 251, 117; 
+                           132, 253, 119; 130, 254, 121; 128, 255, 123; 126, 255, 125]/255
+    end
     properties
         % instance of PolygonsManagerMainFrame
         mainFrame;
@@ -24,7 +44,7 @@ classdef Panel < handle
     end
     
     methods
-        function this = Panel(mainFrame, index, equal)
+        function this = Panel(mainFrame, varargin)
         %Constructor for the PolygonsManagerMainFrame class
         %
         %   inputs : 
@@ -38,44 +58,7 @@ classdef Panel < handle
             this.mainFrame = mainFrame;
             
             %set the colormap of the panel
-            %                 R    G    B    R    G    B    R    G    B    R    G    B    R    G    B    R    G    B    R    G    B
-            this.colorMap = [56 , 58 , 255; 60 , 58 , 255; 63 , 59 , 254; 66 , 59 , 254; 69 , 60 , 253; 72 , 61 , 253; 75 , 61 , 252;
-                             78 , 62 , 252; 81 , 62 , 251; 85 , 63 , 251; 88 , 63 , 250; 91 , 64 , 250; 94 , 64 , 249; 97 , 65 , 249;
-                             100, 65 , 248; 103, 66 , 248; 106, 66 , 247; 110, 67 , 247; 113, 67 , 246; 116, 68 , 246; 119, 68 , 245;
-                             122, 69 , 245; 125, 69 , 244; 128, 70 , 244; 131, 70 , 243; 135, 71 , 243; 138, 71 , 242; 141, 72 , 242;
-                             144, 72 , 241; 147, 73 , 241; 150, 73 , 240; 153, 74 , 240; 156, 74 , 239; 160, 75 , 239; 163, 75 , 239;
-                             166, 76 , 238; 169, 76 , 238; 172, 77 , 237; 175, 77 , 237; 178, 78 , 236; 181, 78 , 236; 185, 79 , 235;
-                             188, 79 , 235; 191, 80 , 234; 194, 80 , 234; 197, 81 , 233; 200, 81 , 233; 203, 82 , 232; 207, 82 , 232;
-                             210, 83 , 231; 213, 83 , 231; 216, 84 , 230; 219, 84 , 230; 222, 85 , 229; 225, 85 , 229; 228, 86 , 228;
-                             232, 86 , 228; 235, 87 , 227; 238, 87 , 227; 241, 88 , 226; 244, 89 , 226; 247, 89 , 225; 250, 90 , 225;
-                             253, 90 , 224; 255, 90 , 224; 255, 90 , 221; 255, 90 , 219; 255, 89 , 217; 255, 89 , 214; 255, 89 , 212;
-                             255, 88 , 210; 255, 88 , 207; 255, 88 , 205; 255, 87 , 203; 255, 87 , 200; 255, 87 , 198; 255, 87 , 196;
-                             255, 86 , 193; 255, 86 , 191; 255, 86 , 189; 255, 85 , 186; 255, 85 , 184; 255, 85 , 182; 255, 84 , 180;
-                             255, 84 , 177; 255, 84 , 175; 255, 83 , 173; 255, 83 , 170; 255, 83 , 168; 255, 82 , 166; 255, 82 , 163;
-                             255, 82 , 161; 255, 82 , 159; 255, 81 , 156; 255, 81 , 154; 255, 81 , 152; 255, 80 , 149; 255, 80 , 147;
-                             255, 80 , 145; 255, 79 , 142; 255, 79 , 140; 255, 79 , 138; 255, 78 , 136; 255, 78 , 133; 255, 78 , 131;
-                             255, 77 , 129; 255, 77 , 126; 255, 77 , 124; 255, 76 , 122; 255, 76 , 119; 255, 76 , 117; 255, 76 , 115;
-                             255, 75 , 112; 255, 75 , 110; 255, 75 , 108; 255, 74 , 105; 255, 74 , 103; 255, 74 , 101; 255, 73 , 98 ;
-                             255, 73 , 96 ; 255, 73 , 94 ; 255, 72 , 92 ; 255, 72 , 89 ; 255, 72 , 87 ; 255, 71 , 85 ; 255, 71 , 82 ;
-                             255, 71 , 80 ; 255, 70 , 78 ; 255, 71 , 76 ; 255, 73 , 75 ; 255, 75 , 74 ; 255, 77 , 72 ; 255, 79 , 71 ;
-                             255, 80 , 70 ; 255, 82 , 69 ; 255, 84 , 67 ; 255, 86 , 66 ; 255, 88 , 65 ; 255, 90 , 64 ; 255, 91 , 63 ;
-                             255, 93 , 61 ; 255, 95 , 60 ; 255, 97 , 59 ; 255, 99 , 58 ; 255, 101, 57 ; 255, 102, 56 ; 255, 104, 54 ;
-                             255, 106, 53 ; 255, 108, 52 ; 255, 110, 51 ; 255, 112, 49 ; 255, 113, 48 ; 255, 115, 47 ; 255, 117, 46 ;
-                             255, 119, 45 ; 255, 121, 44 ; 255, 122, 42 ; 255, 124, 41 ; 255, 126, 40 ; 255, 128, 39 ; 255, 130, 38 ;
-                             255, 132, 36 ; 255, 133, 35 ; 255, 135, 34 ; 255, 137, 33 ; 255, 139, 32 ; 255, 141, 30 ; 255, 143, 29 ;
-                             255, 144, 28 ; 255, 146, 27 ; 255, 148, 25 ; 255, 150, 24 ; 255, 152, 23 ; 255, 154, 22 ; 255, 155, 21 ;
-                             255, 157, 20 ; 255, 159, 18 ; 255, 161, 17 ; 255, 163, 16 ; 255, 165, 15 ; 255, 166, 13 ; 255, 168, 12 ;
-                             255, 170, 11 ; 255, 172, 10 ; 255, 174, 9  ; 255, 176, 8  ; 255, 177, 6  ; 255, 179, 5  ; 255, 181, 4  ;
-                             255, 183, 3  ; 255, 185, 1  ; 255, 187, 0  ; 254, 188, 1  ; 252, 189, 3  ; 250, 190, 5  ; 248, 191, 7  ;
-                             246, 192, 9  ; 244, 193, 11 ; 242, 194, 13 ; 240, 195, 15 ; 238, 196, 17 ; 236, 198, 19 ; 234, 199, 21 ;
-                             232, 200, 23 ; 230, 201, 25 ; 228, 202, 27 ; 226, 203, 29 ; 224, 204, 31 ; 222, 205, 33 ; 220, 206, 35 ;
-                             218, 207, 37 ; 216, 208, 39 ; 214, 209, 41 ; 211, 210, 43 ; 209, 212, 45 ; 207, 213, 47 ; 205, 214, 49 ;
-                             203, 215, 51 ; 201, 216, 53 ; 199, 217, 54 ; 197, 218, 56 ; 195, 219, 58 ; 193, 220, 60 ; 191, 221, 62 ;
-                             189, 222, 64 ; 187, 223, 66 ; 185, 224, 68 ; 183, 226, 70 ; 181, 227, 72 ; 179, 228, 74 ; 177, 229, 76 ;
-                             175, 230, 78 ; 173, 231, 80 ; 171, 232, 82 ; 169, 233, 84 ; 167, 234, 86 ; 165, 235, 88 ; 163, 236, 90 ;
-                             161, 237, 92 ; 159, 239, 94 ; 157, 240, 96 ; 154, 241, 98 ; 152, 242, 100; 150, 243, 102; 148, 244, 104;
-                             146, 245, 106; 144, 246, 108; 142, 247, 109; 140, 248, 111; 138, 249, 113; 136, 250, 115; 134, 251, 117; 
-                             132, 253, 119; 130, 254, 121; 128, 255, 123; 126, 255, 125]/255;
+            this.colorMap = this.default_colorMap;
                         
             % creation of the panel that'll contain the axis
             this.uiPanel = uipanel('parent', mainFrame.handles.tabs, ...
@@ -88,20 +71,44 @@ classdef Panel < handle
                           'colororder', this.colorMap, ...
                                  'tag', 'main', ...
                        'uicontextmenu', mainFrame.handles.menus{6});
+                   
             
-            if strcmp(equal, 'on')
-                % use the same length for the data units along each axis
-                axis(this.uiAxis, 'equal');
-            end
-                          
-            % save the new paenl in the parent PolygonsManagerMainFrame
-            mainFrame.handles.Panels{index} = this;
+            % save the new panel in the parent PolygonsManagerMainFrame
+            mainFrame.handles.Panels{length(mainFrame.handles.Panels) + 1} = this;
             
-            % add a callback to the tabpanel to call when the tab selection change
-            set(mainFrame.handles.tabs, 'selection', index, ...
-                              'SelectionChangedFcn', @(~,~) panelChange);
+            while length(varargin) > 1
+                % get parameter name and value
+                param = lower(varargin{1});
+                value = varargin{2};
 
+                switch param 
+                    case 'equal'
+                        if strcmp(value, 'on')
+                            axis(this.uiAxis, 'equal');
+                        elseif strcmp(value, 'off')
+                            axis(this.uiAxis, 'normal');
+                        else
+                            error('Invalid value');
+                        end
+                    case 'title'
+                        mainFrame.handles.tabs.TabTitles{length(mainFrame.handles.Panels)} = value;
+                    case 'type'
+                        this.type = value;
+                    case 'colormap'
+                        this.colorMap = value;
+                        this.uiAxis.ColorOrder = value;
+                    otherwise
+                        error('Panel:Panel', ...
+                            ['Unknown parameter name: ' varargin{1}]);
+                end
+                varargin(1:2) = [];
+            end
             
+            if ~strcmp(this.type, 'pcaLoadings')
+                % add a callback to the tabpanel to call when the tab selection change
+                set(mainFrame.handles.tabs, 'selection', length(mainFrame.handles.Panels), ...
+                                  'SelectionChangedFcn', @(~,~) panelChange);
+            end
             
             function panelChange
                 %SELECT  update the view depending on the selection
@@ -143,7 +150,7 @@ classdef Panel < handle
             selected = this.mainFrame.model.selectedPolygons;
             
             % get all the objects drawn onto the axis
-            allHandleList = findobj(this.uiAxis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes'); 
+            allHandleList = findobj(this.uiAxis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes');
             
             % get the tags of all these objects
             allTagList = get(allHandleList, 'tag');
@@ -253,7 +260,7 @@ classdef Panel < handle
         
     % ---------------------------------------------------------------------------- POLYGONS -------------------------------------------------------------------------------------------------------
     
-        function displayPolygons(this, polygonArray, varargin)
+        function displayPolygons(this, polygonArray)
             %DISPLAYPOLYGONS  Display polygons
             %
             %   Inputs :
@@ -269,22 +276,13 @@ classdef Panel < handle
             % reset the position of the cursor in the axis' colormap
             set(axis, 'colororderindex', 1);
             
-            if nargin > 2
-                % if the function is used to display profiles
-                if varargin{1} == 1
-                    set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
-                else
-                    set(axis, 'colororder', [0, 0, 0; 60, 60, 255]/255);
-                end
+            if length(this.colorMap) > length(names)
+                % if there's less polygons than colors in the colormap
+                % change the axis' colormap to get colors that are as different as
+                % possible from eachother
+                set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)):length(this.colorMap)), :));
             else
-                if length(this.colorMap) > length(names)
-                    % if there's less polygons than colors in the colormap
-                    % change the axis' colormap to get colors that are as different as
-                    % possible from eachother
-                    set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)):length(this.colorMap)), :));
-                else
-                    set(axis, 'colororder', this.colorMap);
-                end
+                set(axis, 'colororder', this.colorMap);
             end
             % delete all the lines already drawn on the axis and the legends
             delete(axis.Children(:));
@@ -294,17 +292,10 @@ classdef Panel < handle
             for i = 1:length(polygonArray)
                 % draw the polygon on the axis
                 line = drawPolygon(polygonArray{i}, 'parent', axis);
-                                                       
-                if nargin > 2 
-                    % if the function is used to display profiles
-                    set(line, 'handlevisibility', 'off', ...
-                                     'linewidth', 2, ...
-                                      'userdata', [polygonArray{i}], ...
-                                 'ButtonDownFcn', @this.detectVectorClick);
-                else
-                    set(line, 'tag', names{i}, ...
-                    'ButtonDownFcn', @this.detectLineClick);
-                end
+                
+                set(line, 'tag', names{i}, ...
+                'ButtonDownFcn', @this.detectLineClick);
+                uistack(line,'bottom');
             end
             uistack(axis.Children(:), 'bottom');
             hold(axis, 'off');
@@ -376,7 +367,7 @@ classdef Panel < handle
 
     % ---------------------------------------------------------------------------- SIGNATURES -------------------------------------------------------------------------------------------------------
     
-        function displayPolarSignature(this, signatures, angles, varargin)
+        function displayPolarSignature(this, signatures, angles)
             %DISPLAYPOLARSIGNATURE  Display polar signatures
             %
             %   Inputs :
@@ -403,14 +394,6 @@ classdef Panel < handle
                 set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)) :length(this.colorMap)), :));
             end
             
-            if nargin > 3
-                % if the function is used to display profiles
-                if varargin{1} == 1
-                    set(axis, 'colororder', [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255);
-                else
-                    set(axis, 'colororder', [0, 0, 0; 60, 60, 255]/255);
-                end
-            end
             if ~isempty(signatures)
                 % set the axis' limits
                 xlim(axis, [angles(1), angles(end)]);
@@ -431,16 +414,10 @@ classdef Panel < handle
 
                 % draw the line
                 line = plot(angles, signature, 'parent', axis);
-                if nargin > 3
-                    % if the function is used to display profiles
-                    set(line, 'handlevisibility', 'off', ...
-                                     'linewidth', 2, ...
-                                      'userdata', {signature(1:end-1), angles(1:end-1)}, ...
-                                 'ButtonDownFcn', @this.detectVectorClick);
-                else
-                    set(line, 'tag', names{i}, ...
-                    'ButtonDownFcn', @this.detectLineClick);
-                end
+                
+                set(line, 'tag', names{i}, ...
+                'ButtonDownFcn', @this.detectLineClick);
+                uistack(line,'bottom');
             end
             uistack(axis.Children(:), 'bottom');
             hold(axis, 'off');
@@ -499,7 +476,7 @@ classdef Panel < handle
                                             'ButtonDownFcn', @this.detectLineClick, ...
                                                       'tag', names{i}, ...
                                                     'color', axis.ColorOrder(signatureArray{i, 1}, :));
-
+                                                
                 if cellfun('isempty',lineHandles(signatureArray{i, 1}))
                     % if the factor of the signature that was just drawn has never been
                     % encountered, create a copy of this line and save it
@@ -548,12 +525,14 @@ classdef Panel < handle
             hold(this.uiAxis, 'on');
             for i = 1:length(x)
                 points{i} = plot(x(i), y(i), '.k', ...
-                             'parent', this.uiAxis);
+                             'parent', this.uiAxis, ...
+                         'markersize', 10);
                 %set the tags of the points
                 if ~strcmp(this.type(4:end), 'Loadings')
                     text(x(i), y(i), ['  ' names{i}], ...
                            'parent', this.uiAxis, ...
-                            'color', 'k');
+                            'color', 'k', ...
+                    'PickableParts', 'none');
                     set(points{i}, 'tag', names{i}, ...
                          'ButtonDownFcn', @this.detectLineClick);
                 end
@@ -622,7 +601,7 @@ classdef Panel < handle
                 if ~strcmp(factor, 'none')
                     set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/max(unique(getColumn(this.mainFrame.model.factorTable, factor))):length(this.colorMap)), :));
                 end
-                lines = findobj(allchild(axis), '-not', 'marker', '.');
+                lines = findobj(allchild(axis), '-not', 'linestyle', 'none');
                 points = findobj(allchild(axis), 'marker', '.');
 
                 set(points, 'color', 'k', 'markersize', this.mainFrame.model.selectedFactor{5});
@@ -634,12 +613,13 @@ classdef Panel < handle
                 hold(axis, 'on');
             end
             
-            points = findobj(allchild(axis), 'marker', '.');
+            points = findobj(allchild(axis), '-not', 'marker', 'none');
             if this.mainFrame.model.selectedFactor{6} == 0
                 for i = 1:length(points)
                     text(points(i).XData, points(i).YData, ['  ' points(i).Tag], ...
                                      'parent', axis, ...
-                                      'color', points(i).Color);
+                                      'color', points(i).Color, ...
+                              'PickableParts', 'none');
                 end
             end
             if ~strcmp(factor, 'none')
@@ -703,6 +683,7 @@ classdef Panel < handle
                 end
                 hold(axis, 'off');
             end
+            updateSelectedPolygonsDisplay(this);
         end
     end
 end

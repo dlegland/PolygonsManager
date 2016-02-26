@@ -1,28 +1,46 @@
-function saveContours(obj)
+function savePolygons(obj)
 %SAVECONTOURS  Saves the current polygons as separated text files in a folder
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %   Outputs : none
 %
-%   See also :
-%       
-%       savePolarSignature
 
-if strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
+if strcmp(class(obj.PolygonArray), 'CoordsPolygonArray')
     % open the file save prompt and let the user select the file where the polygons will be saved
     [fileName, dname] = uiputfile('*.txt');
 
     if fileName ~= 0
         % if the user did select a folder
         % create the columns' name
-        vars = [cellstr(num2str((1:size(obj.model.PolygonArray.polygons, 2)/2)', 'x%d'))' cellstr(num2str((1:size(obj.model.PolygonArray.polygons, 2)/2)', 'y%d'))'];
+        vars = [cellstr(num2str((1:size(obj.PolygonArray.polygons, 2)/2)', 'x%d'))' cellstr(num2str((1:size(obj.PolygonArray.polygons, 2)/2)', 'y%d'))'];
         
         % create he Table containing the polygons and save it in the
         % previously selected file
-        tab = Table.create(obj.model.PolygonArray.polygons, ...
-                            'rowNames', obj.model.nameList, ...
+        tab = Table.create(obj.PolygonArray.polygons, ...
+                            'rowNames', obj.nameList, ...
                             'colNames', vars);
+        write(tab, fullfile(dname, fileName));
+
+        % display a message to inform the user that the save worked
+        msgbox('success');
+    end
+elseif strcmp(class(obj.PolygonArray), 'PolarSignatureArray')
+    % open the file save prompt and let the user select the name of the file in 
+    % which the factor Table will be saved
+    [fileName, dname] = uiputfile('*.txt');
+
+    if fileName ~= 0
+        % if the user did select a folder
+        % get the list of angles that were used while computing the polar
+        % signature
+        colnames = cellstr(num2str(obj.PolygonArray.angleList'));
+
+        % create he Table containing the polar signatures and save it in the
+        % previously selected file
+        tab = Table.create(obj.PolygonArray.signatures, ...
+                            'rowNames', obj.nameList, ...
+                            'colNames', colnames');
         write(tab, fullfile(dname, fileName));
 
         % display a message to inform the user that the save worked
@@ -34,15 +52,15 @@ else
     [dname, fileName] = savePrompt;
 
     if ~strcmp(dname, '?')
-        for i = 1:length(obj.model.nameList)
+        for i = 1:length(obj.nameList)
             % get the name of the polygon that'll be saved
-            name = obj.model.nameList{i};
+            name = obj.nameList{i};
 
             % complete the name with the prefix/suffix
             filename = sprintf(fileName, name);
 
             % create the Table containing the polygon and save it
-            tab = Table.create(getPolygonFromName(obj.model, name), {'x', 'y'});
+            tab = Table.create(getPolygonFromName(obj, name), {'x', 'y'});
             write(tab, fullfile(dname, [filename '.txt']));
         end
         % display a message to inform the user that the save worked
@@ -65,7 +83,7 @@ function [dname, fileName] = savePrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 500, 165);
+    pos = getMiddle(obj, 500, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...

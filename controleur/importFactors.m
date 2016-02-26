@@ -77,7 +77,7 @@ end
 
     function loop = importFactorsPrompt
     %IMPORTFACTORPROMPT  A dialog figure that informs the user that the
-    %select file cannot be used as the factor Table, and let's him choose
+    %select file cannot be used as the factor Table, and let him choose
     %if he wants to select another or not
     %
     %   Inputs : none
@@ -90,7 +90,7 @@ end
 
         % get the position where the prompt will at the center of the
         % current figure
-        pos = getMiddle(gcf, 400, 130);
+        pos = getMiddle(obj, 400, 130);
 
         % create the dialog box
         d = dialog('position', pos, ...

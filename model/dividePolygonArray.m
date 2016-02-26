@@ -13,45 +13,45 @@ function dividePolygonArray(obj)
         % get the list of names of the polygons that'll be isolated
         if strcmp(method, 'Selection')
             if strcmp(factor, 'Display selected')
-                nameArray = obj.model.selectedPolygons;
+                nameArray = obj.selectedPolygons;
             else
-                nameArray = setdiff(obj.model.nameList, obj.model.selectedPolygons);
+                nameArray = setdiff(obj.nameList, obj.selectedPolygons);
             end
         else
-            nameArray = getPolygonsNameFromFactor(obj.model, factor, level);
+            nameArray = getPolygonsNameFromFactor(obj, factor, level);
         end
        
-        if strcmp(class(obj.model.factorTable), 'Table')
+        if strcmp(class(obj.factorTable), 'Table')
             % if there was already a factor Table loaded, update it to
             % match the new polygons
             
             % memory allocation
-            factorTbl = zeros(length(nameArray), columnNumber(obj.model.factorTable));
+            factorTbl = zeros(length(nameArray), columnNumber(obj.factorTable));
 
             %for each row of the imported factor Table
-            for i = 1:rowNumber(obj.model.factorTable)
+            for i = 1:rowNumber(obj.factorTable)
                 % find the polygon that contains the current row's name
                 index = not(cellfun('isempty', ...
-                        strfind(nameArray, obj.model.factorTable.rowNames{i})));
+                        strfind(nameArray, obj.factorTable.rowNames{i})));
 
                 % if one of the polygons contains the name of the current row
                 if any(index, 2) ~= 0
                     % save this row in the futur factor Table at the right
                     % index
-                    factorTbl(index, :) = getRow(obj.model.factorTable, i);
+                    factorTbl(index, :) = getRow(obj.factorTable, i);
                 end
             end
-            factorTbl = Table.create(factorTbl, 'rowNames', nameArray, 'colNames', obj.model.factorTable.colNames);
+            factorTbl = Table.create(factorTbl, 'rowNames', nameArray, 'colNames', obj.factorTable.colNames);
             
             % set the levels of the new factor Table
-            for i = 1:length(obj.model.factorTable.levels)
-                if isFactor(obj.model.factorTable, i)
-                    setFactorLevels(factorTbl, i, obj.model.factorTable.levels{i});
+            for i = 1:length(obj.factorTable.levels)
+                if isFactor(obj.factorTable, i)
+                    setFactorLevels(factorTbl, i, obj.factorTable.levels{i});
                 else
                     setAsFactor(factorTbl, i);
                 end
             end
-            factorTbl.name = obj.model.factorTable.name;
+            factorTbl.name = obj.factorTable.name;
         else
             factorTbl = [];
         end
@@ -59,39 +59,39 @@ function dividePolygonArray(obj)
         % create a new mainframe
         fen = PolygonsManagerMainFrame;
         
-        if strcmp(class(obj.model.PolygonArray), 'BasicPolygonArray')
+        if strcmp(class(obj.PolygonArray), 'BasicPolygonArray')
             % if the current polygons are Basic polygons
             polygons = cell(length(nameArray), 1);
             
             % get all the polygons
             for i = 1:length(nameArray)
-                polygons{i} = getPolygonFromName(obj.model, nameArray{i});
+                polygons{i} = getPolygonFromName(obj, nameArray{i});
             end
             
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
+        elseif strcmp(class(obj.PolygonArray), 'CoordsPolygonArray')
             % if the current polygons are already simplified polygons
-            polygons = zeros(length(nameArray), getPolygonSize(obj.model.PolygonArray));
+            polygons = zeros(length(nameArray), getPolygonSize(obj.PolygonArray));
             
             % get all the polygons
             for i = 1:length(nameArray)
-                polygons(i, :) = getPolygonRowFromName(obj.model, nameArray{i});
+                polygons(i, :) = getPolygonRowFromName(obj, nameArray{i});
             end
             
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+        elseif strcmp(class(obj.PolygonArray), 'PolarSignatureArray')
             % if the current polygons are saved as polar signatures
-            polygons = zeros(length(nameArray), getPolygonSize(obj.model.PolygonArray));
+            polygons = zeros(length(nameArray), getPolygonSize(obj.PolygonArray));
             
-            angles = obj.model.PolygonArray.angleList;
+            angles = obj.PolygonArray.angleList;
             
             % get all the polygons
             for i = 1:length(nameArray)
-                polygons(i, :) = getSignatureFromName(obj.model, nameArray{i});
+                polygons(i, :) = getSignatureFromName(obj, nameArray{i});
             end
             
             % create the data model of the new frame
@@ -120,7 +120,7 @@ function [method, factor, level] = dividePolygonArrayPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 200);
+    pos = getMiddle(obj, 250, 200);
 
     % create the dialog box
     d = dialog('Position', pos, ...
@@ -147,17 +147,22 @@ function [method, factor, level] = dividePolygonArrayPrompt
                        'bordertype', 'none', ...
                           'visible', 'on');
 
-    uicontrol('parent', group2, ...
-            'position', [30 115 210 20], ...
-               'style', 'radiobutton', ...
-              'string', 'Display selected');
+    g2b1 = uicontrol('parent', group2, ...
+                   'position', [30 115 210 20], ...
+                      'style', 'radiobutton', ...
+                     'string', 'Display selected');
 
-    uicontrol('parent', group2, ...
-            'position', [30 80 210 20], ...
-               'style', 'radiobutton', ...
-              'string', 'Display non-selected');
+    g2b2 = uicontrol('parent', group2, ...
+                   'position', [30 80 210 20], ...
+                      'style', 'radiobutton', ...
+                     'string', 'Display non-selected');
           
-    if strcmp(class(obj.model.factorTable), 'Table')
+    if isempty(obj.selectedPolygons)
+        g2b1.Enable = 'off';
+        group2.SelectedObject = g2b2;
+    end
+    
+    if strcmp(class(obj.factorTable), 'Table')
         set(b2, 'enable', 'on');
     
         factorP{1} = uicontrol('parent', d, ...
@@ -171,7 +176,7 @@ function [method, factor, level] = dividePolygonArrayPrompt
         factorP{2} = uicontrol('Parent', d, ...
                             'Position', [130 117 90 20], ...
                                'Style', 'popup', ...
-                              'string', obj.model.factorTable.colNames, ...
+                              'string', obj.factorTable.colNames, ...
                                'value', 1, ...
                              'visible', 'off', ...
                             'callback', @(~,~) popupCallback);
@@ -187,7 +192,7 @@ function [method, factor, level] = dividePolygonArrayPrompt
         factorP{4} = uicontrol('parent', d, ...
                             'position', [130 82 90 20], ...
                                'style', 'popup', ...
-                              'string', obj.model.factorTable.levels{1}, ...
+                              'string', obj.factorTable.levels{1}, ...
                              'visible', 'off');
     end
 
@@ -221,7 +226,7 @@ function [method, factor, level] = dividePolygonArrayPrompt
     end
     
     function popupCallback
-        set(factorP{4}, 'string', obj.model.factorTable.levels{factorP{2}.Value});
+        set(factorP{4}, 'string', obj.factorTable.levels{factorP{2}.Value});
     end
     
     function swapMethod

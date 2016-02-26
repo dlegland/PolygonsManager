@@ -135,7 +135,7 @@ function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 200);
+    pos = getMiddle(obj, 250, 200);
 
     % create the dialog box
     d = dialog('Position', pos, ...

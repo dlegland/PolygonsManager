@@ -23,54 +23,58 @@ else
         angleNumber = varargin{1};
     end
 end
+try
+    if ~strcmp(startAngle, '?')
+        % save the name of the function and the parameters used during
+        % its call in the log variable
+        obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
+        % determine the angles that will be used for the transformation
+        pas = 360/angleNumber;
+        angles = startAngle:pas:360+startAngle-pas;
 
-if ~strcmp(startAngle, '?')
-    % save the name of the function and the parameters used during
-    % its call in the log variable
-    obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
-    % determine the angles that will be used for the transformation
-    pas = 360/angleNumber;
-    angles = startAngle:pas:360+startAngle-pas;
-    
-    % preallocating memory
-    dat = zeros(length(obj.model.nameList), angleNumber);
-    
-    %create waitbar
-    h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
-    
-    for i = 1:length(obj.model.nameList)
+        % preallocating memory
+        dat = zeros(length(obj.model.nameList), angleNumber);
 
-        % get the name of the polygon that will be transformed
-        name = obj.model.nameList{i};
+        %create waitbar
+        h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
 
-        % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = name;
-        updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
-        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
+        for i = 1:length(obj.model.nameList)
 
-        waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
+            % get the name of the polygon that will be transformed
+            name = obj.model.nameList{i};
 
-        % get the polygon from its name
-        poly = getPolygonFromName(obj.model, name);
+            % update the waitbar and the contours selection (purely cosmetic)
+            obj.model.selectedPolygons = {name};
+            updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
+            set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
-        % calculate the polar signature of the polygon
-        sign = polygonSignature(poly, angles);
+            waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
 
-        % save all the polar signatures in a numeric array 
-        dat(i, 1:length(sign)) = sign(:);
+            % get the polygon from its name
+            poly = getPolygonFromName(obj.model, name);
+
+            % calculate the polar signature of the polygon
+            sign = polygonSignature(poly, angles);
+
+            % save all the polar signatures in a numeric array 
+            dat(i, 1:length(sign)) = sign(:);
+        end
+        waitbar(1, h);
+        % close waitbar
+        close(h);
+        % create a new PolygonsManagerMainFrame
+        fen = PolygonsManagerMainFrame;  
+
+        % create the PolygonsManagerData that'll be used as the new
+        % PolygonsManagerMainFrame's model
+        model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+
+        % prepare the new PolygonsManagerMainFrame and display the graph
+        setupNewFrame(fen, model);
     end
-    waitbar(1, h);
-    % close waitbar
-    close(h) 
-    % create a new PolygonsManagerMainFrame
-    fen = PolygonsManagerMainFrame;  
-    
-    % create the PolygonsManagerData that'll be used as the new
-    % PolygonsManagerMainFrame's model
-    model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
-    
-    % prepare the new PolygonsManagerMainFrame and display the graph
-    setupNewFrame(fen, model);
+catch
+    close(h);
+    msgbox('These polygons cannot be transformed into polar signatures.');
 end
 
 function [start, number] = contoursToSignaturePrompt
@@ -88,7 +92,7 @@ function [start, number] = contoursToSignaturePrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 165);
+    pos = getMiddle(obj, 250, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...

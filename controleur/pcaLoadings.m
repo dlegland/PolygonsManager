@@ -36,14 +36,14 @@ if isnumeric([cp1 cp2])
     ld1 = obj.model.pca.loadings(:, cp1).data';
     ld2 = obj.model.pca.loadings(:, cp2).data';
     
-    panel = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
+    panel = Panel(fen, 'equal', 'off', 'title', 'mean CP1', 'type', 'pcaLoadings');
     plot(panel.uiAxis, 1:length(ld1), ld1, 'linewidth', 2, 'color', 'k');
     xlim(panel.uiAxis, [1 length(ld1)]);
               
-    panel = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
+    panel = Panel(fen, 'equal', 'off', 'title', 'mean CP2', 'type', 'pcaLoadings');
     plot(panel.uiAxis, 1:length(ld2), ld2, 'linewidth', 2, 'color', 'k');
     xlim(panel.uiAxis, [1 length(ld2)]);
-    
+                    
     % create legends
     annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
 end
@@ -63,7 +63,7 @@ function [cp1, cp2] = pcaLoadingsPrompt(nbPC)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 165);
+    pos = getMiddle(obj, 250, 165);
 
     % create the dialog box
     d = dialog('Position', pos, ...

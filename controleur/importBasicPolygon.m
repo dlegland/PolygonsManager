@@ -8,7 +8,7 @@ function importBasicPolygon(obj)
 % open the folder selection prompt and let the user select the folder that
 % contains the polygons that will be used as the polygon array
 dname = uigetdir;
-files = dir(fullfile(dname, '*txt'));
+files = dir(fullfile(dname, '*.txt'));
 
 % memory allocation
 polygonArray = cell(1,length(files));
@@ -25,15 +25,20 @@ if dname ~= 0
             % get the name of the polygon without the '.txt' at the end
             name = files(i).name(1:end-4);
             
+            if size(Table.read(fullfile(dname, files(i).name)).data,2) ~= 2
+                continue
+            end
             % save the name
             nameArray{i} = name;
             
             % save the polygon 
             polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
+            
         end
-        
+        polygonArray = polygonArray(~cellfun('isempty', polygonArray));
+        nameArray = nameArray(~cellfun('isempty', nameArray));
         % set the new polygon array as the current polygon array
-        model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', nameArray);
+        model = PolygonsManagerData('polygonarray', BasicPolygonArray(polygonArray), 'namelist', nameArray);
         
         %setup the frame
         setupNewFrame(obj, model);

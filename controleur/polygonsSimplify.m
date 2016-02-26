@@ -25,6 +25,7 @@ if strcmp(display, 'off')
         varargout{2} = '?';
     end
 end
+disp(tolerence);
 if ~strcmp(tolerence, '?')
     % save the name of the function and the parameters used during
     % its call in the log variable
@@ -84,7 +85,7 @@ function tol = polygonsSimplifyPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 130);
+    pos = getMiddle(obj, 250, 130);
 
     % create the dialog
     d = dialog('position', pos, ...

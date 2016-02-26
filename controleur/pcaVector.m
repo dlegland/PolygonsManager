@@ -55,7 +55,7 @@ if ~strcmp(index, '?')
         poly{3} = rowToPolygon(values(3, :), 'packed');
     end
     
-    color = 1;
+    color = [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255;
     switch profiles
         case 1
             polygons = poly;
@@ -65,7 +65,7 @@ if ~strcmp(index, '?')
             polygons = {poly{1}, poly{i+1}};
             selValues(1, :) = values(1, :);
             selValues(2, :) = values(i+1, :);
-            color = 2;
+            color = [0, 0, 0; 60, 60, 255]/255;
         case 3
             [~,i] = max([sum(values(2, :)) sum(values(3,:))]);
             polygons = {poly{1}, poly{i+1}};
@@ -77,15 +77,11 @@ if ~strcmp(index, '?')
     end
     % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model, fenName, ...
-                  'pcaVector', 'on', ...
+                  'pcaVector', ...
                   polygons, ...
                   selValues, ...
-                  color);
-              
-    panel1 = Panel(fen,length(fen.handles.tabs.Children) + 1, 'off');
-    plot(panel1.uiAxis, 1:length(ld), ld, 'linewidth', 2, 'color', 'k');
-    xlim(panel1.uiAxis, [1 length(ld)]);
-              
+                  color, ...
+                  ld);
 end
 function [index, coef, profiles] = pcaVectorPrompt(maxPC)
 %PCAVECTORPROMPT  A dialog figure on which the user can select
@@ -104,7 +100,7 @@ function [index, coef, profiles] = pcaVectorPrompt(maxPC)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 200);
+    pos = getMiddle(obj, 250, 200);
 
     % create the dialog box
     d = dialog('Position', pos, ...

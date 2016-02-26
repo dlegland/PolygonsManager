@@ -9,8 +9,8 @@ function createFactors(obj)
 % that it'll contain
 [factorName, nbFactors] = createFactorPrompt1;
 
-if ~strcmp(nbFactors, '?')
-    % get the name of one of the polygons to use it as an exemple
+if ~strcmp(nbFactors, '?') && nbFactors > 0
+    % get the name of the first polygon to use it as an exemple
     sampleName = obj.model.nameList{1};
 
     % memory allocation
@@ -21,7 +21,7 @@ if ~strcmp(nbFactors, '?')
     [start, number, name] = createFactorPrompt2(1, sampleName);
     
     if ~strcmp(name, '?')
-        % create the Table that will be output
+        % create the ouput Table
         factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
 
         if nbFactors > 1
@@ -67,7 +67,7 @@ function [factorName, nbFactors] = createFactorPrompt1
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 165);
+    pos = getMiddle(obj, 250, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...
@@ -154,7 +154,7 @@ function [start, number, name] = createFactorPrompt2(index, sample)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 235);
+    pos = getMiddle(obj, 250, 235);
 
     % create the dialog box
     d = dialog('position', pos, ...

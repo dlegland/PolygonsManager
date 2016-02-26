@@ -1,20 +1,41 @@
 function saveView(obj)
- 
+%SAVEVIEW save the current display as an image file
+%
+%   Inputs :
+%       - obj : handle of the MainFrame
+%   Outputs : none
+%
+
 name = saveViewPrompt;
 
 if ~strcmp(name, '?')
+    % create a new figure
     f = figure('position', obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel.Position);
+    
+    % reproduce the content of the panel that must be saved in the new
+    % figure
     h = copyobj(obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel, f);
-    positionLeg = get(findobj(obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel, 'tag', 'legend'), 'position');
-    positionAxis = get(findobj(obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel, 'tag', 'main'), 'position');
+    
+    % if the current display contains a legend
     if iscell(obj.handles.Panels{obj.handles.tabs.Selection}.uiLegend)
+        % save the positions of the legend and the axis
+        positionLeg = get(findobj(obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel, 'tag', 'legend'), 'position');
+        positionAxis = get(findobj(obj.handles.Panels{obj.handles.tabs.Selection}.uiPanel, 'tag', 'main'), 'position');
         legendProp = obj.handles.Panels{obj.handles.tabs.Selection}.uiLegend;
+        
+        % recreate the legend in the new figure
         legend(findobj(h, 'tag', 'main'), legendProp{3}, legendProp{4}, ...
                                              'position', positionLeg, ...
                                         'uicontextmenu', []);
+        % change the position of the axis to the position it had in the
+        % display
         set(findobj(h, 'tag', 'main'), 'position', positionAxis);
     end
-    export_fig(f, name, '-nocrop');
+    
+    % export the content of the new figure
+    export_fig(f, name);
+    
+    % close the new figure
     close(f);
 end
 
@@ -32,7 +53,7 @@ function name = saveViewPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 500, 165);
+    pos = getMiddle(obj, 500, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...
@@ -80,12 +101,12 @@ function name = saveViewPrompt
 
     % create the two button to cancel or validate the inputs
     uicontrol('parent', d, ...
-            'position', [385 30 85 25], ...
+            'position', [280 30 85 25], ...
               'string', 'Validate', ...
             'callback', @(~,~) callback);
 
     uicontrol('parent', d, ...
-            'position', [280 30 85 25], ...
+            'position', [385 30 85 25], ...
               'string', 'Cancel', ...
             'callback', 'delete(gcf)');
 

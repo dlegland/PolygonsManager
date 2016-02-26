@@ -1,5 +1,5 @@
 function pcaEigen(obj)
-%PCAEIGEN Creates a new frame and displays the eigen values of the current pca on it
+%PCAEIGEN Creates a new MainFrame and displays the eigen values of the current pca on it
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
@@ -14,19 +14,33 @@ nbPC = pcaEigenPrompt(size(coord, 2));
 
 if isnumeric(nbPC)
     % create a new figure
-    figure('units', 'normalized', ...
-        'outerposition', [0.25 0.25 0.5 0.5], ...
-              'menubar', 'none', ...
-          'numbertitle', 'off', ...
-                 'Name', 'Polygons Manager | PCA - Eigen Values');
+    fen = PolygonsManagerMainFrame;
+    
+    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
+                                    'nameList', obj.model.nameList, ...
+                                 'factorTable', obj.model.factorTable, ...
+                                         'pca', obj.model.pca);
+
+    % prepare the the new PolygonsManagerMainFrame's name
+    if strcmp(class(obj.model.factorTable), 'Table')
+        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Eigen values'];
+    else
+        fenName = 'Polygons Manager | PCA - Eigen values';
+    end
+
+    % prepare the new PolygonsManagerMainFrame and display the graph
+    setupNewFrame(fen, model, fenName, ...
+                  'pcaEigenValues', 'on');
+
 
     % scree plot
-    bar(1:nbPC, values(1:nbPC, 2));
-
+    bar(fen.handles.Panels{1}.uiAxis, 1:nbPC, values(1:nbPC, 2));
+    
     % setup graph
     xlim([0 nbPC+1]);
 
     % annotations
+    title('Eigen Values')
     xlabel('Number of components');
     ylabel('Inertia (%)');
 end
@@ -44,7 +58,7 @@ function nbPC = pcaEigenPrompt(maxPC)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 130);
+    pos = getMiddle(obj, 250, 130);
 
     % create the dialog box
     d = dialog('Position', pos, ...

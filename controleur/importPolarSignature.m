@@ -58,7 +58,7 @@ function loop = importPolarSignaturePrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 400, 130);
+    pos = getMiddle(obj, 400, 130);
 
     % create the dialog box
     d = dialog('position', pos, ...

@@ -70,7 +70,7 @@ function coef = contoursResizePrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(gcf, 250, 130);
+    pos = getMiddle(obj, 250, 130);
 
     % create the dialog
     d = dialog('position', pos, ...

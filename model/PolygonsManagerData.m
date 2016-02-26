@@ -50,8 +50,8 @@ classdef PolygonsManagerData
         
             props = properties(this);
             for i = 1:length(props);
-                if  find(strcmp(props{i}, varargin))
-                    ind = find(strcmp(props{i}, varargin));
+                if  find(strcmpi(props{i}, varargin))
+                    ind = find(strcmpi(props{i}, varargin));
                     this.(props{i}) = varargin{ind+1};
                     varargin(ind+1) = [];
                     varargin(ind) = [];
@@ -192,12 +192,56 @@ classdef PolygonsManagerData
             infos = getRow(this.infoTable, name);
         end
         
-        function saveMacro(obj)
+        function saveFactors(this)
+        %SAVEFACTORS  Saves the current factors in a text file
+        %
+        %   Inputs :
+        %       - obj : handle of the MainFrame
+        %   Outputs : none
+
+            % open the file save prompt and let the user select the name of the file in 
+            % which the factor Table will be saved
+            [fileName, dname] = uiputfile('*.txt', 'Save the current factors', this.factorTable.name);
+
+            if fileName ~= 0
+                % if the user did select a folder
+                write(this.factorTable, fullfile(dname, fileName));
+
+                % display a message to inform the user that the save worked
+                msgbox('success');
+            end
+        end
+        
+        function savePca(this, field)
+        %SAVEFACTORS  Saves the current factors in a text file
+        %
+        %   Inputs :
+        %       - obj : handle of the MainFrame
+        %   Outputs : none
+
+            % open the file save prompt and let the user select the name of the file in 
+            % which the factor Table will be saved
+            [fileName, dname] = uiputfile('*.txt', 'Save the current factors', [field '.pca']);
+
+            if fileName ~= 0
+
+                if strcmp(field, 'means')
+                    write(Table.create(this.pca.(field)), fullfile(dname, fileName));
+                else
+                    write(this.pca.(field), fullfile(dname, fileName));
+                end
+
+                % display a message to inform the user that the save worked
+                msgbox('success');
+            end
+        end
+        
+        function saveMacro(this)
             [fileName, dname] = uiputfile('C:\Stage2016_Thomas\data_plos\slabs\Tests\*.txt');
 
             if fileName ~= 0
                 fileID = fopen(fullfile(dname, fileName), 'w');
-                temp = obj.usedProcess';
+                temp = this.usedProcess';
                 fprintf(fileID,'%s\n', temp{:});
                 fclose(fileID);
             end

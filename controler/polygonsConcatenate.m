@@ -1,12 +1,16 @@
 function polygonsConcatenate(obj, varargin)
-%POLYGONSCONCATENATE  Rotate all slab contours such that they are aligned with
-%one of the axis
+%POLYGONSCONCATENATE  Concatenate all polygons with the same number of vertices
+%
+%   For each polygon, resample with the same number of vertices.
 %
 %   Inputs :
 %       - obj : handle of the MainFrame
 %       - varargin : contains the parameters if the function is called from
 %       a macro
+%
 %   Outputs : none
+%
+% 
 
 % select the number of vertices that the new polygons will have
 if nargin == 1
@@ -83,7 +87,6 @@ if ~strcmp(number, '?')
             centro  = polylineCentroid(curve);
             poly2(j,:) = centro;
         end
-%         poly2 = resamplePolygon(poly, number);
 
         % fill the data table
         dat(i, :) = polygonToRow(poly2, 'packed');
@@ -98,7 +101,12 @@ if ~strcmp(number, '?')
     
     % create the PolygonsManagerData that'll be used as the new
     % PolygonsManagerMainFrame's model
-    model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(dat), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+    model = PolygonsManagerData(...
+        'PolygonArray', CoordsPolygonArray(dat), ...
+            'nameList', obj.model.nameList, ...
+         'factorTable', obj.model.factorTable, ...
+                 'pca', obj.model.pca, ...
+         'usedProcess', obj.model.usedProcess);
     
     % prepare the new PolygonsManagerMainFrame and display the graph
     setupNewFrame(fen, model);
@@ -106,7 +114,7 @@ end
 
 function number = contoursConcatPrompt
 %CONTOURSALIGNPROMPT  A dialog figure on which the user can select
-%which axis will be aligned with the contours
+% the number of points to resample the polygon
 %
 %   Inputs : none
 %   Outputs : selected axis

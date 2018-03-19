@@ -11,12 +11,12 @@ function varargout = polygonsSimplify(obj, display,  varargin)
 
 % select the tolerence of the simplification
 if nargin == 2
-    tolerence = polygonsSimplifyPrompt;
+    tolerance = polygonsSimplifyPrompt;
 else
     if ~isa(varargin{1}, 'double')
-        tolerence = str2double(varargin{1});
+        tolerance = str2double(varargin{1});
     else
-        tolerence = varargin{1};
+        tolerance = varargin{1};
     end
 end
 if strcmp(display, 'off')
@@ -25,11 +25,11 @@ if strcmp(display, 'off')
         varargout{2} = '?';
     end
 end
-disp(tolerence);
-if ~strcmp(tolerence, '?')
+disp(tolerance);
+if ~strcmp(tolerance, '?')
     % save the name of the function and the parameters used during
     % its call in the log variable
-    obj.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerence = ' num2str(tolerence)];
+    obj.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerance = ' num2str(tolerance)];
     
     % memory allocation
     polygonArray = cell(1,length(obj.model.nameList));
@@ -42,7 +42,7 @@ if ~strcmp(tolerence, '?')
         poly = getPolygonFromName(obj.model, name);
         
         % simplify the polygon
-        polyS = simplifyPolygon(poly, tolerence);
+        polyS = simplifyPolygon(poly, tolerance);
 
         polygonArray{i} = polyS;
     end
@@ -51,7 +51,7 @@ if ~strcmp(tolerence, '?')
         % if the results must be output, output them
         varargout{1} = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
         if nargout == 2
-            varargout{2} = tolerence;
+            varargout{2} = tolerance;
         end
     else
         if nargin == 2
@@ -95,7 +95,7 @@ function tol = polygonsSimplifyPrompt
     uicontrol('parent', d,...
             'position', [30 80 90 20], ...
                'style', 'text',...
-              'string', 'Tolerence :', ...
+              'string', 'Tolerance :', ...
             'fontsize', 10, ...
  'horizontalalignment', 'right');
 

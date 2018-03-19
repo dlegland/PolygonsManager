@@ -14,36 +14,42 @@ files = dir(fullfile(dname, '*.txt'));
 polygonArray = cell(1,length(files));
 nameArray = cell(1, length(files));
 
-if dname ~= 0
-    if ~isempty(files)
-        if ~isempty(obj.handles.Panels)
-        % if the figure already contains a polygon array
-            obj = PolygonsManagerMainFrame;
-        end
-        
-        for i = 1:length(files)
-            % get the name of the polygon without the '.txt' at the end
-            name = files(i).name(1:end-4);
-            
-            if size(Table.read(fullfile(dname, files(i).name)).data,2) ~= 2
-                continue
-            end
-            % save the name
-            nameArray{i} = name;
-            
-            % save the polygon 
-            polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
-            
-        end
-        polygonArray = polygonArray(~cellfun('isempty', polygonArray));
-        nameArray = nameArray(~cellfun('isempty', nameArray));
-        % set the new polygon array as the current polygon array
-        model = PolygonsManagerData('polygonarray', BasicPolygonArray(polygonArray), 'namelist', nameArray);
-        
-        %setup the frame
-        setupNewFrame(obj, model);
-    else
-        msgbox('The selected folder is empty');
+if dname == 0
+    return
+end
+
+if isempty(files)
+    msgbox('The selected folder is empty');
+    return;
+end
+
+if ~isempty(obj.handles.Panels)
+    % if the figure already contains a polygon array
+    obj = PolygonsManagerMainFrame;
+end
+
+for i = 1:length(files)
+    % get the name of the polygon without the '.txt' at the end
+    name = files(i).name(1:end-4);
+    
+    if size(Table.read(fullfile(dname, files(i).name)).data,2) ~= 2
+        continue
     end
+    
+    % save the name
+    nameArray{i} = name;
+    
+    % save the polygon
+    polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
 end
-end
+
+polygonArray = polygonArray(~cellfun('isempty', polygonArray));
+nameArray = nameArray(~cellfun('isempty', nameArray));
+
+% set the new polygon array as the current polygon array
+model = PolygonsManagerData(...
+    'polygonarray', BasicPolygonArray(polygonArray), ...
+    'namelist', nameArray);
+
+%setup the frame
+setupNewFrame(obj, model);

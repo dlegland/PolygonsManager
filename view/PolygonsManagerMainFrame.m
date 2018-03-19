@@ -127,7 +127,7 @@ classdef PolygonsManagerMainFrame < handle
                 
                 % draw the polygons on the new PolygonsManagerMainFrame
                 displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
-                if strcmp(class(this.model.PolygonArray), 'PolarSignatureArray')
+                if isa(this.model.PolygonArray, 'PolarSignatureArray')
                     % if the polygons are saved as polar signature, display
                     % the polar signatures
                     panel2 = Panel(this, 'equal', 'off', ...
@@ -159,7 +159,7 @@ classdef PolygonsManagerMainFrame < handle
                                                          'linewidth', 2, ...
                                                      'ButtonDownFcn', @panel1.detectVectorClick);
                     
-                    if strcmp(class(this.model.PolygonArray), 'PolarSignatureArray')
+                    if isa(this.model.PolygonArray, 'PolarSignatureArray')
                         panel2 = Panel(this, 'equal', 'off', ...
                                              'title',  'Signature', ...
                                               'type', varargin{1}, ...
@@ -231,21 +231,21 @@ classdef PolygonsManagerMainFrame < handle
                 
                 % memory allocation
                 polygons = cell(length(this.model.selectedPolygons), 1);
-                if strcmp(class(this.model.PolygonArray), 'PolarSignatureArray')
+                if isa(this.model.PolygonArray, 'PolarSignatureArray')
                     signatures = zeros(length(this.model.selectedPolygons), length(this.model.PolygonArray.angleList));
                 end
                 
                 % get the polygons using the names got earlier
                 for i = 1:length(this.model.selectedPolygons)
                     polygons{i} = getPolygonFromName(this.model, this.model.selectedPolygons{i});
-                    if strcmp(class(this.model.PolygonArray), 'PolarSignatureArray')
+                    if isa(this.model.PolygonArray, 'PolarSignatureArray')
                         signatures(i, :) = getSignatureFromName(this.model, this.model.selectedPolygons{i});
                     end
                 end
                 
                 % display the polygons
                 displayPolygons(this.handles.Panels{1}, polygons);
-                if strcmp(class(this.model.PolygonArray), 'PolarSignatureArray')
+                if isa(this.model.PolygonArray, 'PolarSignatureArray')
                     displayPolarSignature(this.handles.Panels{2}, signatures, this.model.PolygonArray.angleList);
                 end
                 
@@ -268,7 +268,7 @@ classdef PolygonsManagerMainFrame < handle
         %       - this : handle of the PolygonsManagerMainFrame
         %   ouputs : none
         
-            if strcmp(class(this.model), 'PolygonsManagerData')
+            if isa(this.model, 'PolygonsManagerData')
                 set(this.handles.submenus{1}{4}, 'enable', 'on');
                 if ~isempty(this.model.usedProcess) 
                     set(this.handles.submenus{1}{6}, 'enable', 'on');
@@ -277,14 +277,15 @@ classdef PolygonsManagerMainFrame < handle
                 set(this.handles.menus{2}, 'enable', 'on');
                 set(this.handles.menus{4}, 'enable', 'on');
                 set(this.handles.menus{3}, 'enable', 'on');
-                if strcmp(class(this.model.PolygonArray), 'BasicPolygonArray')
+                if isa(this.model.PolygonArray, 'BasicPolygonArray')
                     set(this.handles.submenus{1}{5}, 'enable', 'on');
                 else
                     set(this.handles.menus{3}, 'visible', 'off');
                     set(this.handles.menus{5}, 'visible', 'on');
                     set(this.handles.submenus{1}{5}, 'enable', 'on');
                 end
-                if strcmp(class(this.model.factorTable), 'Table')
+                
+                if isa(this.model.factorTable, 'Table')
                     if ~isempty(this.handles.Panels{1}.type)
                         if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                             this.handles.options{1}.TabEnables{2} = 'on';
@@ -300,7 +301,8 @@ classdef PolygonsManagerMainFrame < handle
                     set([this.handles.submenus{2}{:}], 'enable', 'on');
                     set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name]);
                 end
-                if strcmp(class(this.model.pca), 'Pca')
+                
+                if isa(this.model.pca, 'Pca')
                     set(this.handles.submenus{1}{11}, 'enable', 'on');
                     set(this.handles.submenus{5}{1}, 'checked', 'on');
                     set([this.handles.submenus{5}{:}], 'enable', 'on');
@@ -309,12 +311,13 @@ classdef PolygonsManagerMainFrame < handle
                         set([this.handles.submenus{6}{2}], 'enable', 'off');
                         if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                             this.handles.options{3}.TabEnables{2} = 'on';
-                            if strcmp(class(this.model.factorTable), 'Table')
+                            if isa(this.model.factorTable, 'Table')
                                 set(findobj(this.handles.options{3}, 'tag', 'group'), 'enable', 'on');
                             end
                         end
                     end
-                    if strcmp(class(this.model.factorTable), 'Table')
+                    
+                    if isa(this.model.factorTable, 'Table')
                         set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name ' | PCA']);
                     else
                         set(this.handles.figure, 'name', 'Polygons Manager | PCA');
@@ -355,7 +358,7 @@ classdef PolygonsManagerMainFrame < handle
                 this.handles.infoFields{3}.String = varargin{1}(3);
                 this.handles.infoFields{4}.String = this.model.infoTable.levels{4}{varargin{1}(4)};
                 
-                if strcmp(class(this.model.factorTable), 'Table')
+                if isa(this.model.factorTable, 'Table')
                     val = this.handles.infoFields{5}.Value;
                     maps = this.handles.infoFields{5}.String;
                     factor = maps{val};

@@ -245,7 +245,7 @@ function setupOptionsPanelPolygonsManager(obj)
                 delete(obj.handles.Panels{1}.uiLegend{1});
             end
             displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
-            if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+            if isa(obj.model.PolygonArray, 'PolarSignatureArray')
                 if iscell(obj.handles.Panels{2}.uiLegend)
                     delete(obj.handles.Panels{2}.uiLegend{1});
                 end

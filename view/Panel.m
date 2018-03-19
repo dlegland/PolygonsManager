@@ -377,7 +377,8 @@ classdef Panel < handle
 
             % get the list of all angles + 1 angle to make the last point match the
             % first
-            angles(end+1) = angles(end) + angles(2)-angles(1);
+            angles = angles([1:end 1]);
+%             angles(end+1) = angles(end) + angles(2)-angles(1);
 
             % get the names of all the polygons loaded and prepare the
             % panel/axis that'll be used to draw
@@ -407,10 +408,10 @@ classdef Panel < handle
             hold(axis, 'on');
             for i = 1:size(signatures, 1)
                 % get the signature that will be drawn
-                signature = signatures(i, :);
+                signature = signatures(i, [1:end 1]);
 
-                % make sure the last point matches the first
-                signature(end+1) = signature(1);
+%                 % make sure the last point matches the first
+%                 signature(end+1) = signature(1);
 
                 % draw the line
                 line = plot(angles, signature, 'parent', axis);
@@ -469,13 +470,15 @@ classdef Panel < handle
                 signature = signatureArray{i, 2};
 
                 % make sure the last point matches the first
-                signature(end+1) = signature(1);
+%                 signature(end+1) = signature(1);
+                signature = signature([1:end 1]);
 
                 % draw the line
-                lines{i} = plot(angles, signature, 'parent', axis, ...
-                                            'ButtonDownFcn', @this.detectLineClick, ...
-                                                      'tag', names{i}, ...
-                                                    'color', axis.ColorOrder(signatureArray{i, 1}, :));
+                lines{i} = plot(angles, signature, ...
+                    'parent', axis, ...
+                    'ButtonDownFcn', @this.detectLineClick, ...
+                    'tag', names{i}, ...
+                    'color', axis.ColorOrder(signatureArray{i, 1}, :));
                                                 
                 if cellfun('isempty',lineHandles(signatureArray{i, 1}))
                     % if the factor of the signature that was just drawn has never been
@@ -490,9 +493,9 @@ classdef Panel < handle
 
             if this.mainFrame.model.selectedFactor{3} == 0
                 % if the legend must be displayed, display it
-                [this.uiLegend{1:4}] = legend(axis, [lineHandles{:}], levels, ...
-                                                          'location', 'eastoutside', ...
-                                                     'uicontextmenu', []);
+                this.uiLegend{1:4} = legend(axis, lineHandles{:}, levels, ...
+                    'location', 'eastoutside', ...
+                    'uicontextmenu', []);
             end
         end
         

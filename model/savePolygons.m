@@ -6,7 +6,7 @@ function savePolygons(obj)
 %   Outputs : none
 %
 
-if strcmp(class(obj.PolygonArray), 'CoordsPolygonArray')
+if isa(obj.PolygonArray, 'CoordsPolygonArray')
     % open the file save prompt and let the user select the file where the polygons will be saved
     [fileName, dname] = uiputfile('*.txt');
 
@@ -25,7 +25,7 @@ if strcmp(class(obj.PolygonArray), 'CoordsPolygonArray')
         % display a message to inform the user that the save worked
         msgbox('success');
     end
-elseif strcmp(class(obj.PolygonArray), 'PolarSignatureArray')
+elseif isa(obj.PolygonArray, 'PolarSignatureArray')
     % open the file save prompt and let the user select the name of the file in 
     % which the factor Table will be saved
     [fileName, dname] = uiputfile('*.txt');

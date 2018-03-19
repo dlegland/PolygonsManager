@@ -262,7 +262,7 @@ end
 
 function showGrid
 %SHOWGRID  display the grids on an axis and updates the menus
-    if strcmp(v1.Checked, 'off');
+    if strcmp(v1.Checked, 'off')
         set(v1, 'checked', 'on');
         set(cp1, 'checked', 'on');
         set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis, 'xgrid', 'on');
@@ -277,7 +277,7 @@ end
 
 function showMarker
 %SHOWMARKER  display the marker on the lines of an axis and updates th menus
-    if strcmp(v2.Checked, 'off');
+    if strcmp(v2.Checked, 'off')
         set(v2, 'checked', 'on');
         set(cp2, 'checked', 'on');
         set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis.Children, 'Marker', '+');
@@ -319,7 +319,7 @@ end
 
 function zoomMode
 %ZOOMMODE activate/deactive the zoom and updates the menu
-    if strcmp(v3.Checked, 'off');
+    if strcmp(v3.Checked, 'off')
         set(v3, 'checked', 'on');
         set(cp3, 'checked', 'on');
         zoom('on');
@@ -333,10 +333,10 @@ end
 function exportToWS
 %EXPORTTOWS export the gathered datas to matlab's workspace
 
-    if strcmp(class(obj.model.PolygonArray), 'BasicPolygonArray')
+    if isa(obj.model.PolygonArray, 'BasicPolygonArray')
         % export the polygons as a cell array of cell arrays 
         assignin('base', 'polygons', obj.model.PolygonArray.polygons);
-    elseif strcmp(class(obj.model.PolygonArray), 'CoordsPolygonArray')
+    elseif isa(obj.model.PolygonArray, 'CoordsPolygonArray')
         % export the polygons as a Table
         colnames = [cellstr(num2str((1:size(obj.model.PolygonArray.polygons, 2)/2)', 'x%d'))' cellstr(num2str((1:size(obj.model.PolygonArray.polygons, 2)/2)', 'y%d'))'];
 
@@ -351,11 +351,11 @@ function exportToWS
                                                   'rowNames', obj.model.nameList, ...
                                                   'colNames', colnames'));
     end
-    if strcmp(class(obj.model.factorTable), 'Table')
+    if isa(obj.model.factorTable, 'Table')
         % if there's one, export the factor Table
         assignin('base', 'factors', obj.model.factorTable);
     end
-    if strcmp(class(obj.model.pca), 'Pca')
+    if isa(obj.model.pca, 'Pca')
         % if that PCA has been computed, export it
         assignin('base', 'pca', obj.model.pca);
     end

@@ -1,6 +1,5 @@
-classdef PolygonsManagerData
-%POLYGONSMANAGERDATA Class that contains the datas used by the polygons
-%manager application
+classdef PolygonsManagerData < handle
+%POLYGONSMANAGERDATA Class that contains the data used by the PolygonsManager application
 %
 %   Creation : 
 %   polygonArray = BasicPolygonArray(polygons, names);
@@ -49,7 +48,7 @@ classdef PolygonsManagerData
         %   cell array
         
             props = properties(this);
-            for i = 1:length(props);
+            for i = 1:length(props)
                 if  find(strcmpi(props{i}, varargin))
                     ind = find(strcmpi(props{i}, varargin));
                     this.(props{i}) = varargin{ind+1};
@@ -108,7 +107,7 @@ classdef PolygonsManagerData
 %             memory allocation
             polygons = {};
             for i = 1:length(names)
-                if strcmp(level,factorLevel{factors(i)})
+                if strcmp(level, factorLevel{factors(i)})
                     polygons{end+1} = names{i};
                 end
             end

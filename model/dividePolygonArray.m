@@ -21,7 +21,7 @@ function dividePolygonArray(obj)
             nameArray = getPolygonsNameFromFactor(obj, factor, level);
         end
        
-        if strcmp(class(obj.factorTable), 'Table')
+        if isa(obj.factorTable, 'Table')
             % if there was already a factor Table loaded, update it to
             % match the new polygons
             
@@ -59,7 +59,7 @@ function dividePolygonArray(obj)
         % create a new mainframe
         fen = PolygonsManagerMainFrame;
         
-        if strcmp(class(obj.PolygonArray), 'BasicPolygonArray')
+        if isa(obj.PolygonArray, 'BasicPolygonArray')
             % if the current polygons are Basic polygons
             polygons = cell(length(nameArray), 1);
             
@@ -71,7 +71,7 @@ function dividePolygonArray(obj)
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.PolygonArray), 'CoordsPolygonArray')
+        elseif isa(obj.PolygonArray, 'CoordsPolygonArray')
             % if the current polygons are already simplified polygons
             polygons = zeros(length(nameArray), getPolygonSize(obj.PolygonArray));
             
@@ -83,7 +83,7 @@ function dividePolygonArray(obj)
             % create the data model of the new frame
             model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(polygons), 'nameList', nameArray, 'factorTable', factorTbl);
 
-        elseif strcmp(class(obj.PolygonArray), 'PolarSignatureArray')
+        elseif isa(obj.PolygonArray, 'PolarSignatureArray')
             % if the current polygons are saved as polar signatures
             polygons = zeros(length(nameArray), getPolygonSize(obj.PolygonArray));
             
@@ -162,7 +162,7 @@ function [method, factor, level] = dividePolygonArrayPrompt
         group2.SelectedObject = g2b2;
     end
     
-    if strcmp(class(obj.factorTable), 'Table')
+    if isa(obj.factorTable, 'Table')
         set(b2, 'enable', 'on');
     
         factorP{1} = uicontrol('parent', d, ...

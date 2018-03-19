@@ -12,12 +12,12 @@ function polygonsToSignature(obj, varargin)
 if nargin == 1
     [startAngle, angleNumber] = contoursToSignaturePrompt;
 else
-    if ~strcmp(class(varargin{1}), 'double')
+    if ~isa(varargin{1}, 'double')
         startAngle = str2double(varargin{1});
     else
         startAngle = varargin{1};
     end
-    if ~strcmp(class(varargin{1}), 'double')
+    if ~isa(varargin{1}, 'double')
         angleNumber = str2double(varargin{2});
     else
         angleNumber = varargin{1};

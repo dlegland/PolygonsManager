@@ -16,7 +16,7 @@ model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
                                      'pca', obj.model.pca);
 
 % prepare the the new PolygonsManagerMainFrame's name
-if strcmp(class(obj.model.factorTable), 'Table')
+if isa(obj.model.factorTable, 'Table')
     fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Influence'];
 else
     fenName = 'Polygons Manager | PCA - Influence';

@@ -22,7 +22,7 @@ function selectFactor(obj, varargin)
     if isempty(obj.handles.Panels{1}.type)
         % display the colored polygons
         displayPolygonsFactor(obj.handles.Panels{1}, getPolygonsFromFactor(obj.model, varargin{1}));
-        if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+        if isa(obj.model.PolygonArray, 'PolarSignatureArray')
             % if the polygon array is a signature array, also display the
             % colored polar signatures
             displayPolarSignatureFactor(obj.handles.Panels{2}, getSignatureFromFactor(obj.model, varargin{1}));

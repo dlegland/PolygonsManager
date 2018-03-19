@@ -19,7 +19,7 @@ if strcmp(angle, 'customCCW')
 elseif strcmp(angle, 'customCW')
     angle = polygonsRotatePrompt(-1);
 end
-if ~strcmp(class(angle), 'double')
+if ~isa(angle, 'double')
     angle = str2double(angle);
 end
 

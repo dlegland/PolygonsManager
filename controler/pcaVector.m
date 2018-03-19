@@ -23,14 +23,14 @@ if ~strcmp(index, '?')
                                          'pca', obj.model.pca);
                                      
     % prepare the the new PolygonsManagerMainFrame's name
-    if strcmp(class(obj.model.factorTable), 'Table')
+    if isa(obj.model.factorTable, 'Table')
         fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
     else
         fenName = 'Polygons Manager | PCA - Vectors';
     end
     
     % memory allocation
-    if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
         values = zeros(3, length(obj.model.PolygonArray.angleList));
     else
         values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
@@ -45,7 +45,7 @@ if ~strcmp(index, '?')
     values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
     
     % resulting polygon
-    if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
         poly{1} = signatureToPolygon(values(1, :), obj.model.PolygonArray.angleList);
         poly{2} = signatureToPolygon(values(2, :), obj.model.PolygonArray.angleList);
         poly{3} = signatureToPolygon(values(3, :), obj.model.PolygonArray.angleList);

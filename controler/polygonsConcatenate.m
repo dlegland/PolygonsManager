@@ -12,7 +12,7 @@ function polygonsConcatenate(obj, varargin)
 if nargin == 1
     number = contoursConcatPrompt;
 else
-    if ~strcmp(class(varargin{1}), 'double')
+    if ~isa(varargin{1}, 'double')
         number = str2double(varargin{1});
     else
         number = varargin{1};
@@ -25,15 +25,15 @@ if ~strcmp(number, '?')
     obj.model.usedProcess{end+1} = ['polygonsConcatenate : number = ' num2str(number)];
     
     % get the number of polygons
-    Nf = length(obj.model.nameList);
+    nPolys = length(obj.model.nameList);
 
     % memory allocation
-    dat = zeros(Nf, 2*number);
+    dat = zeros(nPolys, 2*number);
 
     % create waitbar
-    h = waitbar(0,'Please wait...', 'name', 'Polygons concatenation');
+    h = waitbar(0, 'Please wait...', 'name', 'Polygons concatenation');
     
-    for i = 1:Nf
+    for i = 1:nPolys
         % get the name of the contours that will be converted 
         name = obj.model.nameList{i};
         
@@ -42,7 +42,7 @@ if ~strcmp(number, '?')
         updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
         set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
         
-        waitbar(i / (Nf+1), h, ['process : ' name]);
+        waitbar(i / (nPolys+1), h, ['process : ' name]);
         
         % get the polygon from its name
         poly = getPolygonFromName(obj.model, name);

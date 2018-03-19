@@ -22,7 +22,7 @@ if isnumeric([cp1 cp2])
                                          'pca', obj.model.pca);
 
     % prepare the the new PolygonsManagerMainFrame's name
-    if strcmp(class(obj.model.factorTable), 'Table')
+    if isa(obj.model.factorTable, 'Table')
         fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores'];
     else
         fenName = 'Polygons Manager | PCA - Scores';
@@ -77,7 +77,7 @@ if isnumeric([cp1 cp2])
     ld2 = obj.model.pca.loadings(:, cp2).data';
     lambda2 = obj.model.pca.eigenValues(cp2, 1).data;
     
-    if strcmp(class(obj.model.PolygonArray), 'PolarSignatureArray')
+    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
         polys{2, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
         polys{2, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
         polys{1, 1} = polys{2, 1};

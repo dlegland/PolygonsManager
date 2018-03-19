@@ -11,7 +11,7 @@ function polygonsResize(obj, varargin)
 if nargin == 1
     coef = contoursResizePrompt;
 else
-    if ~strcmp(class(varargin{1}), 'double')
+    if ~isa(varargin{1}, 'double')
         coef = str2double(varargin{1});
     else
         coef = varargin{1};

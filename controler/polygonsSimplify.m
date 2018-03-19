@@ -13,14 +13,14 @@ function varargout = polygonsSimplify(obj, display,  varargin)
 if nargin == 2
     tolerence = polygonsSimplifyPrompt;
 else
-    if ~strcmp(class(varargin{1}), 'double')
+    if ~isa(varargin{1}, 'double')
         tolerence = str2double(varargin{1});
     else
         tolerence = varargin{1};
     end
 end
 if strcmp(display, 'off')
-    varargout{1} = '?';   
+    varargout{1} = '?';
     if nargout == 2
         varargout{2} = '?';
     end

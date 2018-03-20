@@ -45,7 +45,7 @@ try
 
             % update the waitbar and the contours selection (purely cosmetic)
             obj.model.selectedPolygons = {name};
-            updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
+            updateSelectedPolygonsDisplay(getActivePanel(obj));
             set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
 
             waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);

@@ -201,7 +201,7 @@ methods
             this.model.selectedPolygons = list(selVal);
 
             %update the displayed polygons
-            updateSelectedPolygonsDisplay(this.handles.Panels{this.handles.tabs.Selection});
+            updateSelectedPolygonsDisplay(getActivePanel(this));
         end
 
         function draw
@@ -355,6 +355,11 @@ methods
         names = this.model.nameList;
     end
 
+    function panel = getActivePanel(this)
+        % Returns the active panel, or empty if there is no panel
+        panel = this.handles.Panels{this.handles.tabs.Selection};
+    end
+    
     function updateInfoBox(this, varargin)
     %UPDATEINFOBOX  update the informations concerning the selected polygon
     %

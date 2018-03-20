@@ -20,13 +20,13 @@ function toggleMarkerDisplay(frame)
 v2 = frame.menuBar.view.markers.handle;
 cp2 = frame.menuBar.contextPanel.markers.handle;
 
-selectedTabs = frame.handles.tabs.Selection;
+panel = getActivePanel(frame);
 if strcmp(v2.Checked, 'off')
     set(v2, 'checked', 'on');
     set(cp2, 'checked', 'on');
-    set(frame.handles.Panels{selectedTabs}.uiAxis.Children, 'Marker', '+');
+    set(panel.uiAxis.Children, 'Marker', '+');
 else
     set(v2, 'checked', 'off');
     set(cp2, 'checked', 'off');
-    set(frame.handles.Panels{selectedTabs}.uiAxis.Children, 'Marker', 'none');
+    set(panel.uiAxis.Children, 'Marker', 'none');
 end

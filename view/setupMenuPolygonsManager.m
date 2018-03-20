@@ -339,8 +339,7 @@ function swapSelection
     liste = obj.model.nameList;
 
     % memory allocation
-    nonSelVal=zeros(length(liste),1);
-
+    nonSelVal = zeros(length(liste), 1);
 
     for i = 1:length(liste)
         % for each polygons
@@ -358,7 +357,8 @@ function swapSelection
     obj.model.selectedPolygons = liste(nonSelVal);
 
     %update the view
-    updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
+    
+    updateSelectedPolygonsDisplay(getActivePanel(obj));
 end
 
 function exportToWS

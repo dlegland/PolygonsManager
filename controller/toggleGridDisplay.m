@@ -20,15 +20,15 @@ function toggleGridDisplay(frame)
 v1 = frame.menuBar.view.grid.handle;
 cp1 = frame.menuBar.contextPanel.grid.handle;
 
-selectedInds = frame.handles.tabs.Selection;
+panel = getActivePanel(frame);
 if strcmp(v1.Checked, 'off')
     set(v1, 'checked', 'on');
     set(cp1, 'checked', 'on');
-    set(frame.handles.Panels{selectedInds}.uiAxis, 'xgrid', 'on');
-    set(frame.handles.Panels{selectedInds}.uiAxis, 'ygrid', 'on');
+    set(panel.uiAxis, 'xgrid', 'on');
+    set(panel.uiAxis, 'ygrid', 'on');
 else
     set(v1, 'checked', 'off');
     set(cp1, 'checked', 'off');
-    set(frame.handles.Panels{selectedInds}.uiAxis, 'xgrid', 'off');
-    set(frame.handles.Panels{selectedInds}.uiAxis, 'ygrid', 'off');
+    set(panel.uiAxis, 'xgrid', 'off');
+    set(panel.uiAxis, 'ygrid', 'off');
 end

@@ -52,12 +52,17 @@ methods
         end
     end
 
+    function b = isNormalized(obj) %#ok<MANU>
+        % return true
+        b = true;
+    end
+    
     function updatePolygon(obj, row, polygon)
         % returns all the signatures
         obj.signatures(row, :) = polygonSignature(polygon, obj.angleList);
     end
 
-        function newPolygonArray = selectPolygons(obj, polygonIndices)
+    function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new PolarSignatureArray
         newSignatures = obj.signatures(polygonIndices, :);
         newPolygonArray = PolarSignatureArray(newSignatures, obj.angles);

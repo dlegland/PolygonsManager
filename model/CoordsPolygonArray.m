@@ -52,6 +52,11 @@ methods
         end
     end
 
+    function b = isNormalized(obj) %#ok<MANU>
+        % return true
+        b = true;
+    end
+    
     function updatePolygon(obj, row, polygon)
         % replace the polygon found at the index row by a new polygon
         obj.polygons(row, :) = polygonToRow(polygon, 'packed');

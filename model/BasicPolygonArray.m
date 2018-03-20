@@ -39,6 +39,11 @@ methods
         polygons = this.polygons;
     end
 
+    function b = isNormalized(obj) %#ok<MANU>
+        % return false
+        b = false;
+    end
+    
     function updatePolygon(this, row, polygon)
         % replace the polygon found at the index row by a new polygon
         this.polygons{row} = polygon;

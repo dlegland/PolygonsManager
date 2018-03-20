@@ -7,15 +7,14 @@ classdef PolygonsManagerMainFrame < handle
 
 %% Properties
 properties
-    % PolygonsManagerData that contains all the datas of the
-    % application
+    % PolygonsManagerData that contains all the data of the application
     model;
 
     % struct containing the handles of all the objects used in the
     % application
     handles;
     
-    % an arborescence of struct containing handles of menu items
+    % a struct arborescence containing handles of menu items
     menuBar;
 end
 
@@ -262,7 +261,7 @@ methods
         
         mb = this.menuBar;
         
-        set(mb.file.extractSelection.handle, 'enable', 'on');
+        set(mb.edit.extractSelection.handle, 'enable', 'on');
         if ~isempty(this.model.usedProcess)
             set(mb.file.saveMacro.handle, 'enable', 'on');
         end

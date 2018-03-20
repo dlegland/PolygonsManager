@@ -72,7 +72,8 @@ try
         % prepare the new PolygonsManagerMainFrame and display the graph
         setupNewFrame(fen, model);
     end
-catch
+catch ME
+    disp(ME);
     close(h);
     msgbox('These polygons cannot be transformed into polar signatures.');
 end

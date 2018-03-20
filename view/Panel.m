@@ -68,14 +68,14 @@ methods
         % creation of the panel that'll contain the axis
         this.uiPanel = uipanel('parent', mainFrame.handles.tabs, ...
                           'bordertype', 'none', ...
-                       'uicontextmenu', mainFrame.handles.menus{6});
+                       'uicontextmenu', mainFrame.menuBar.contextPanel.handle);
 
         % creation of the axis on which the lines will be drawn
         this.uiAxis = axes('parent', this.uiPanel, ...
                    'ButtonDownFcn', @(~,~) this.reset, ...
                       'colororder', this.colorMap, ...
                              'tag', 'main', ...
-                   'uicontextmenu', mainFrame.handles.menus{6});
+                   'uicontextmenu', mainFrame.menuBar.contextPanel.handle);
 
 
         % save the new panel in the parent PolygonsManagerMainFrame
@@ -118,16 +118,23 @@ methods
         function panelChange
             %SELECT  update the view depending on the selection
 
-            updateSelectedPolygonsDisplay(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection});
-            set(mainFrame.handles.submenus{4}{1}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
-            set(mainFrame.handles.submenus{6}{1}, 'checked', get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis, 'xgrid'));
-            if ~isempty(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis.Children)
-                if strcmp(get(mainFrame.handles.Panels{mainFrame.handles.tabs.Selection}.uiAxis.Children(1), 'Marker'), '+')
-                    set(mainFrame.handles.submenus{4}{2}, 'checked', 'on');
-                    set(mainFrame.handles.submenus{6}{2}, 'checked', 'on');
+            selectedTab = mainFrame.handles.tabs.Selection;
+            selectedPanel = mainFrame.handles.Panels{selectedTab};
+            updateSelectedPolygonsDisplay(selectedPanel);
+            
+            % toggle grid widgets
+            gridFlag = get(selectedPanel.uiAxis, 'xgrid');
+            set(mainFrame.menuBar.view.grid.handle, 'checked', gridFlag);
+            set(mainFrame.menuBar.contextPanel.grid.handle, 'checked', gridFlag);
+            
+            % eventually update possibility to toggle markers
+            if ~isempty(selectedPanel.uiAxis.Children)
+                if strcmp(get(selectedPanel.uiAxis.Children(1), 'Marker'), '+')
+                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'on');
+                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'on');
                 else
-                    set(mainFrame.handles.submenus{4}{2}, 'checked', 'off');
-                    set(mainFrame.handles.submenus{6}{2}, 'checked', 'off');
+                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'off');
+                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'off');
                 end
             end
         end
@@ -288,11 +295,13 @@ methods
         if length(this.colorMap) > length(names)
             % if there's less polygons than colors in the colormap
             % change the axis' colormap to get colors that are as different as
-            % possible from eachother
-            set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/(length(names)):length(this.colorMap)), :));
+            % possible from each other
+            nColors = length(this.colorMap);
+            set(axis, 'colororder', this.colorMap(floor(1:nColors/(length(names)):nColors), :));
         else
             set(axis, 'colororder', this.colorMap);
         end
+        
         % delete all the lines already drawn on the axis and the legends
         delete(axis.Children(:));
         this.uiLegend = [];
@@ -492,7 +501,8 @@ methods
             if cellfun('isempty',lineHandles(signatureArray{i, 1}))
                 % if the factor of the signature that was just drawn has never been
                 % encountered, create a copy of this line and save it
-                lineHandles{signatureArray{i, 1}} = copy(lines{i});
+%                 lineHandles{signatureArray{i, 1}} = copy(lines{i});
+                lineHandles{signatureArray{i, 1}} = lines{i};
                 levels{signatureArray{i, 1}} = this.mainFrame.model.selectedFactor{2}{signatureArray{i, 1}};
             end
         end
@@ -502,9 +512,11 @@ methods
 
         if this.mainFrame.model.selectedFactor{3} == 0
             % if the legend must be displayed, display it
-            this.uiLegend{1:4} = legend(axis, lineHandles{:}, levels, ...
-                'location', 'eastoutside', ...
-                'uicontextmenu', []);
+%             this.uiLegend{1:4} = legend(axis, lineHandles{:}, levels, ...
+%                 'location', 'eastoutside', ...
+%                 'uicontextmenu', []);
+            this.uiLegend = legend([lineHandles{:}], levels, ...
+                'location', 'northeast');
         end
     end
 

@@ -98,7 +98,7 @@ methods
         % fill the selection list of the new PolygonsManagerMainFrame
         set(this.handles.list, 'string', model.nameList, ...
                              'callback', @(~,~) select, ...
-                        'uicontextmenu', this.handles.menus{7});
+                        'uicontextmenu', this.menuBar.contextList.handle);
 
         if ~isempty(varargin)
             this.handles.figure.Name = varargin{1};
@@ -249,31 +249,38 @@ end
 %% Processing methods
 methods
     function updateMenus(this)
-    %UPDATEMENUS  update the menus depending on the current datas of the model
+    %UPDATEMENUS update the menus depending on the current data of the model
     %
-    %   inputs :
-    %       - this : handle of the PolygonsManagerMainFrame
-    %   ouputs : none
+    %   inputs:
+    %       - this: handle of the PolygonsManagerMainFrame
+    %   ouputs: none
 
         % check if frame contains a valid data model
         if ~isa(this.model, 'PolygonsManagerData')
             return;
         end
         
-        set(this.handles.submenus{1}{4}, 'enable', 'on');
+        mb = this.menuBar;
+        
+        set(mb.file.extractSelection.handle, 'enable', 'on');
         if ~isempty(this.model.usedProcess)
-            set(this.handles.submenus{1}{6}, 'enable', 'on');
+            set(mb.file.saveMacro.handle, 'enable', 'on');
         end
-        set([this.handles.submenus{1}{7:9}], 'enable', 'on');
-        set(this.handles.menus{2}, 'enable', 'on');
-        set(this.handles.menus{4}, 'enable', 'on');
-        set(this.handles.menus{3}, 'enable', 'on');
-        if isa(this.model.PolygonArray, 'BasicPolygonArray')
-            set(this.handles.submenus{1}{5}, 'enable', 'on');
+        set(mb.file.saveMacro.handle, 'enable', 'on');
+        set(mb.file.loadMacro.handle, 'enable', 'on');
+        set(mb.file.exportToWorkspace.handle, 'enable', 'on');
+        
+        set(mb.factors.handle, 'enable', 'on');
+        set(mb.view.handle, 'enable', 'on');
+        set(mb.process.handle, 'enable', 'on');
+        
+        % some features are not available if polygons are not normalized
+        if ~isNormalized(this.model.PolygonArray)
+            set(mb.file.savePolygons.handle, 'enable', 'off');
         else
-            set(this.handles.menus{3}, 'visible', 'off');
-            set(this.handles.menus{5}, 'visible', 'on');
-            set(this.handles.submenus{1}{5}, 'enable', 'on');
+            set(mb.process.handle, 'visible', 'on');
+            set(mb.pca.handle, 'visible', 'on');
+            set(mb.file.savePolygons.handle, 'enable', 'on');
         end
         
         % enables or not menu items depending on the factor table
@@ -289,19 +296,33 @@ methods
                 this.handles.options{2}.TabEnables{2} = 'on';
                 set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factorTable.colNames]);
             end
-            set(this.handles.submenus{2}{1}, 'checked', 'on');
-            set([this.handles.submenus{2}{:}], 'enable', 'on');
+            
+            % update the 'factors submenus'
+            set(mb.factors.import.handle, 'checked', 'on');
+            set(mb.factors.create.handle, 'enable', 'on');
+            set(mb.factors.save.handle, 'enable', 'on');
+            set(mb.factors.display.handle, 'enable', 'on');
+            set(mb.edit.showInfo.handle, 'enable', 'on');
             set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name]);
         end
         
         % enables or not menu items depending on PCA
         if isa(this.model.pca, 'Pca')
-            set(this.handles.submenus{1}{11}, 'enable', 'on');
-            set(this.handles.submenus{5}{1}, 'checked', 'on');
-            set([this.handles.submenus{5}{:}], 'enable', 'on');
+            set(mb.pca.computePCA.handle, 'checked', 'on');
+            set(mb.pca.computePCA.handle, 'enable', 'on');
+            set(mb.pca.displayEigenValues.handle, 'enable', 'on');
+            set(mb.pca.displayScores.handle, 'enable', 'on');
+            set(mb.pca.displayLoadings.handle, 'enable', 'on');
+            set(mb.pca.influencePlot.handle, 'enable', 'on');
+            set(mb.pca.displayProfiles.handle, 'enable', 'on');
+            set(mb.pca.displayScoresAndProfiles.handle, 'enable', 'on');
+            set(mb.pca.savePca.handle, 'enable', 'on');
+            
             if ~isempty(this.handles.Panels{1}.type)
-                set([this.handles.submenus{4}{2}], 'enable', 'off');
-                set([this.handles.submenus{6}{2}], 'enable', 'off');
+                % disable display of markers
+                set([mb.view.markers.handle], 'enable', 'off');
+                set([mb.contextPanel.markers.handle], 'enable', 'off');
+                
                 if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                     this.handles.options{3}.TabEnables{2} = 'on';
                     if isa(this.model.factorTable, 'Table')
@@ -355,7 +376,8 @@ methods
                 maps = this.handles.infoFields{5}.String;
                 factor = maps{val};
                 if ~strcmp(factor, 'none')
-                    this.handles.infoFields{6}.String = getLevel(this.model.factorTable, this.model.selectedPolygons, factor);
+                    levels = getLevel(this.model.factorTable, this.model.selectedPolygons, factor);
+                    this.handles.infoFields{6}.String = levels;
                 else
                     this.handles.infoFields{6}.String = '';
                 end

@@ -10,21 +10,13 @@ viewMenu = uimenu(obj.handles.figure, 'label', '&View', 'enable', 'off');
 contPmenu = uicontextmenu; 
 contLmenu = uicontextmenu; 
 
-% add the menus' handles to the list of handles
-obj.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu, pcaMenu, contPmenu, contLmenu};
-
 % build menubar data structure
 menubar.file.handle = fileMenu;
 menubar.factors.handle = editMenu;
 menubar.process.handle = foncMenu;
 menubar.view.handle = viewMenu;
 menubar.pca.handle = pcaMenu;
-% menubar.contP.handle = contPmenu;
-% menubar.contL.handle = contLmenu;
 
-
-% create the space that will contain all the submenus
-obj.handles.submenus = {};
 
 %               ----------------------------------------------------------- FILE
 
@@ -49,17 +41,6 @@ f5 = uimenu(fileMenu, 'label', 'Save polygons', ...
                 'accelerator', 'S', ...
                   'separator', 'on');
               
-% PCA sub-menu
-f12 = uimenu(fileMenu, 'label', 'Save pca', ...
-                     'enable', 'off');
-           uimenu(f12, 'label', '&Means', ...
-                    'callback', @(~,~) savePca(obj.model, 'means'));
-           uimenu(f12, 'label', '&Scores', ...
-                    'callback', @(~,~) savePca(obj.model, 'scores'));
-           uimenu(f12, 'label', '&Loadings', ...
-                    'callback', @(~,~) savePca(obj.model, 'loadings'));
-           uimenu(f12, 'label', '&Eigen values', ...
-                    'callback', @(~,~) savePca(obj.model, 'eigenValues'));
 
 f7 = uimenu(fileMenu, 'label', 'Save &macro', ...
                    'callback', @(~,~) saveMacro(obj.model), ...
@@ -84,8 +65,6 @@ f11 = uimenu(fileMenu, 'label', '&Close', ...
                   'separator', 'on', ...
                 'accelerator', 'p');
 
-obj.handles.submenus{1} = {f1, f2, f3, f4, f5, f7, f8, f9, f10, f11, f12};
-
 menubar.file.openFolder.handle = f1;
 menubar.file.openFile.handle = f2;
 menubar.file.openPolarSignatures.handle = f3;
@@ -97,10 +76,6 @@ menubar.file.loadMacro.handle = f8;
 menubar.file.exportToWorkspace.handle = f9;
 menubar.file.exportDisplay.handle = f10;
 menubar.file.close.handle = f11;
-
-menubar.file.savePca.handle = f12;
-
-
 
 %               ----------------------------------------------------------- FACTORS
 
@@ -125,8 +100,6 @@ e5 = uimenu(editMenu, 'label', 'Display &Infos', ...
                    'callback', @(~,~) showTable(obj.model.infoTable), ...
                      'enable', 'on', ...
                   'separator', 'on');
-
-obj.handles.submenus{2} = {e1, e2, e3, e4, e5};
 
 menubar.factors.import.handle = e1;
 menubar.factors.create.handle = e2;
@@ -182,8 +155,6 @@ fc8 = uimenu(foncMenu, 'label', 'C&oncatenate Polygons', ...
 fc7 = uimenu(foncMenu, 'label', 'Compute Polar S&ignatures', ...
               'callback', @(~,~) polygonsToSignature(obj));
          
-obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7, fc8};
-
 menubar.process.recenter.handle = fc3;
 menubar.process.rotateAll.handle = fc1;
 menubar.process.rotateSelected.handle = fc2;
@@ -220,8 +191,18 @@ pca7 = uimenu(pcaMenu, 'label', '&Display scores + profiles', ...
                     'callback', @(~,~) pcaScoresProfiles(obj), ...
                       'enable', 'off', ...
                    'separator', 'on');
+% PCA sub-menu
+pca8 = uimenu(pcaMenu, 'label', 'Save pca', ...
+                     'enable', 'off');
+           uimenu(pca8, 'label', '&Means', ...
+                    'callback', @(~,~) savePca(obj.model, 'means'));
+           uimenu(pca8, 'label', '&Scores', ...
+                    'callback', @(~,~) savePca(obj.model, 'scores'));
+           uimenu(pca8, 'label', '&Loadings', ...
+                    'callback', @(~,~) savePca(obj.model, 'loadings'));
+           uimenu(pca8, 'label', '&Eigen values', ...
+                    'callback', @(~,~) savePca(obj.model, 'eigenValues'));
 
-obj.handles.submenus{5} = {pca1, pca2, pca3, pca4, pca5, pca6, pca7};
 menubar.pca.computePCA.handle = pca1;
 menubar.pca.displayEigenValues.handle = pca2;
 menubar.pca.displayScores.handle = pca3;
@@ -230,12 +211,11 @@ menubar.pca.influencePlot.handle = pca5;
 menubar.pca.displayProfiles.handle = pca6;
 menubar.pca.displayScoresAndProfiles.handle = pca7;
 
+menubar.pca.savePca.handle = pca8;
+
 %               ----------------------------------------------------------- VIEW
 
 % create all the submenus of the 'view' menu
-% v1 = uimenu(viewMenu, 'label', '&Grid', ...
-%                    'callback', @(~,~) showGrid, ...
-%                 'accelerator', 'V');
 v1 = uimenu(viewMenu, 'label', '&Grid', ...
                    'callback', @(~,~) toggleGridDisplay(obj), ...
                 'accelerator', 'G');
@@ -250,7 +230,7 @@ v3 = uimenu(viewMenu, 'label', '&Zoom', ...
 v4 = uimenu(viewMenu, 'label', '&Reset zoom', ...
                    'callback', @(~,~) zoom('out'));
 
-obj.handles.submenus{4} = {v1, v2, v3, v4};
+% obj.handles.submenus{4} = {v1, v2, v3, v4};
 menubar.view.grid.handle = v1;
 menubar.view.markers.handle = v2;
 menubar.view.zoom.handle = v3;
@@ -270,7 +250,8 @@ cp3 = uimenu(contPmenu, 'label', '&Zoom', ...
 cp4 = uimenu(contPmenu, 'label', '&Reset zoom', ...
                      'callback', @(~,~) zoom('out'));
 
-obj.handles.submenus{6} = {cp1, cp2, cp3, cp4};
+% obj.handles.submenus{6} = {cp1, cp2, cp3, cp4};
+menubar.contextPanel.handle = contPmenu;
 menubar.contextPanel.grid.handle = cp1;
 menubar.contextPanel.markers.handle = cp2;
 menubar.contextPanel.zoom.handle = cp3;
@@ -282,7 +263,8 @@ menubar.contextPanel.resetZoom.handle = cp4;
 cl1 = uimenu(contLmenu, 'label', '&Swap selection', ...
                      'callback', @(~,~) swapSelection);
 
-obj.handles.submenus{7} = {cl1};
+% obj.handles.submenus{7} = {cl1};
+menubar.contextList.handle = contLmenu;
 menubar.contextList.swapSelection.handle = cl1;
 
 obj.menuBar = menubar;

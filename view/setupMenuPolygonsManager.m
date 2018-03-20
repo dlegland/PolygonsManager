@@ -13,6 +13,16 @@ contLmenu = uicontextmenu;
 % add the menus' handles to the list of handles
 obj.handles.menus = {fileMenu, editMenu, foncMenu, viewMenu, pcaMenu, contPmenu, contLmenu};
 
+% build menubar data structure
+menubar.file.handle = fileMenu;
+menubar.factors.handle = editMenu;
+menubar.process.handle = foncMenu;
+menubar.view.handle = viewMenu;
+menubar.pca.handle = pcaMenu;
+% menubar.contP.handle = contPmenu;
+% menubar.contL.handle = contLmenu;
+
+
 % create the space that will contain all the submenus
 obj.handles.submenus = {};
 
@@ -76,6 +86,22 @@ f11 = uimenu(fileMenu, 'label', '&Close', ...
 
 obj.handles.submenus{1} = {f1, f2, f3, f4, f5, f7, f8, f9, f10, f11, f12};
 
+menubar.file.openFolder.handle = f1;
+menubar.file.openFile.handle = f2;
+menubar.file.openPolarSignatures.handle = f3;
+menubar.file.extractSelection.handle = f4;
+menubar.file.savePolygons.handle = f5;
+% menubar.file.x.handle = f6;
+menubar.file.saveMacro.handle = f7;
+menubar.file.loadMacro.handle = f8;
+menubar.file.exportToWorkspace.handle = f9;
+menubar.file.exportDisplay.handle = f10;
+menubar.file.close.handle = f11;
+
+menubar.file.savePca.handle = f12;
+
+
+
 %               ----------------------------------------------------------- FACTORS
 
 % create all the submenus of the 'factors' menu
@@ -101,6 +127,13 @@ e5 = uimenu(editMenu, 'label', 'Display &Infos', ...
                   'separator', 'on');
 
 obj.handles.submenus{2} = {e1, e2, e3, e4, e5};
+
+menubar.factors.import.handle = e1;
+menubar.factors.create.handle = e2;
+menubar.factors.save.handle = e3;
+menubar.factors.display.handle = e4;
+
+menubar.edit.showInfo.handle = e5;
 
 %               ----------------------------------------------------------- PROCESS
 
@@ -151,6 +184,15 @@ fc7 = uimenu(foncMenu, 'label', 'Compute Polar S&ignatures', ...
          
 obj.handles.submenus{3} = {fc1, fc2, fc3, fc4, fc5, fc6, fc7, fc8};
 
+menubar.process.recenter.handle = fc3;
+menubar.process.rotateAll.handle = fc1;
+menubar.process.rotateSelected.handle = fc2;
+menubar.process.resizePolygons.handle = fc4;
+menubar.process.simplifyPolygons.handle = fc5;
+menubar.process.alignAroundAxis.handle = fc6;
+menubar.process.concatenatePolygons.handle = fc8;
+menubar.process.computeSignatures.handle = fc7;
+
 %               ----------------------------------------------------------- PCA
 
 % create all the submenus of the 'pca' menu
@@ -164,11 +206,11 @@ pca2 = uimenu(pcaMenu, 'label', 'Display &eigen values', ...
 pca3 = uimenu(pcaMenu, 'label', 'Display &scores', ...
                     'callback', @(~,~) pcaScores(obj), ...
                       'enable', 'off');
-pca5 = uimenu(pcaMenu, 'label', '&Influence Plot', ...
-                    'callback', @(~,~) pcaInfluence(obj), ...
-                      'enable', 'off');
 pca4 = uimenu(pcaMenu, 'label', 'Display &loadings', ...
                     'callback', @(~,~) pcaLoadings(obj), ...
+                      'enable', 'off');
+pca5 = uimenu(pcaMenu, 'label', '&Influence Plot', ...
+                    'callback', @(~,~) pcaInfluence(obj), ...
                       'enable', 'off');
 pca6 = uimenu(pcaMenu, 'label', 'Display &profiles', ...
                     'callback', @(~,~) pcaVector(obj), ...
@@ -180,41 +222,59 @@ pca7 = uimenu(pcaMenu, 'label', '&Display scores + profiles', ...
                    'separator', 'on');
 
 obj.handles.submenus{5} = {pca1, pca2, pca3, pca4, pca5, pca6, pca7};
+menubar.pca.computePCA.handle = pca1;
+menubar.pca.displayEigenValues.handle = pca2;
+menubar.pca.displayScores.handle = pca3;
+menubar.pca.displayLoadings.handle = pca4;
+menubar.pca.influencePlot.handle = pca5;
+menubar.pca.displayProfiles.handle = pca6;
+menubar.pca.displayScoresAndProfiles.handle = pca7;
 
 %               ----------------------------------------------------------- VIEW
 
 % create all the submenus of the 'view' menu
+% v1 = uimenu(viewMenu, 'label', '&Grid', ...
+%                    'callback', @(~,~) showGrid, ...
+%                 'accelerator', 'V');
 v1 = uimenu(viewMenu, 'label', '&Grid', ...
-                   'callback', @(~,~) showGrid, ...
-                'accelerator', 'V');
+                   'callback', @(~,~) toggleGridDisplay(obj), ...
+                'accelerator', 'G');
 v2 = uimenu(viewMenu, 'label', '&Markers', ...
-                   'callback', @(~,~) showMarker, ...
-                'accelerator', 'B');
+                   'callback', @(~,~) toggleMarkerDisplay(obj), ...
+                'accelerator', 'M');
 
 v3 = uimenu(viewMenu, 'label', '&Zoom', ...
-                   'callback', @(~,~) zoomMode, ...
+                   'callback', @(~,~) toggleZoomMode(obj), ...
                   'separator', 'on', ...
                 'accelerator', 'Z');
 v4 = uimenu(viewMenu, 'label', '&Reset zoom', ...
                    'callback', @(~,~) zoom('out'));
 
 obj.handles.submenus{4} = {v1, v2, v3, v4};
+menubar.view.grid.handle = v1;
+menubar.view.markers.handle = v2;
+menubar.view.zoom.handle = v3;
+menubar.view.resetZoom.handle = v4;
 
 %               ----------------------------------------------------------- 
 
 % create all the submenus of the context menu of the futur
 cp1 = uimenu(contPmenu, 'label', '&Grid', ...
-                     'callback', @(~,~) showGrid);
+                     'callback', @(~,~) toggleGridDisplay(obj));
 cp2 = uimenu(contPmenu, 'label', '&Markers', ...
-                     'callback', @(~,~) showMarker);
+                     'callback', @(~,~) toggleMarkerDisplay(obj));
 
 cp3 = uimenu(contPmenu, 'label', '&Zoom', ...
-                     'callback', @(~,~) zoomMode, ...
+                     'callback', @(~,~) toggleZoomMode(obj), ...
                     'separator', 'on');
 cp4 = uimenu(contPmenu, 'label', '&Reset zoom', ...
                      'callback', @(~,~) zoom('out'));
 
 obj.handles.submenus{6} = {cp1, cp2, cp3, cp4};
+menubar.contextPanel.grid.handle = cp1;
+menubar.contextPanel.markers.handle = cp2;
+menubar.contextPanel.zoom.handle = cp3;
+menubar.contextPanel.resetZoom.handle = cp4;
 
 %               ----------------------------------------------------------- 
 
@@ -223,6 +283,10 @@ cl1 = uimenu(contLmenu, 'label', '&Swap selection', ...
                      'callback', @(~,~) swapSelection);
 
 obj.handles.submenus{7} = {cl1};
+menubar.contextList.swapSelection.handle = cl1;
+
+obj.menuBar = menubar;
+
 
 % -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 % ---------------------------------------------------------------------------- MENU CALLBACKS -----------------------------------------------------------------------------------------------------
@@ -265,34 +329,6 @@ function showTable(table)
     hf.Position = pos;
 end
 
-function showGrid
-%SHOWGRID  display the grids on an axis and updates the menus
-    if strcmp(v1.Checked, 'off')
-        set(v1, 'checked', 'on');
-        set(cp1, 'checked', 'on');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis, 'xgrid', 'on');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis, 'ygrid', 'on');
-    else
-        set(v1, 'checked', 'off');
-        set(cp1, 'checked', 'off');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis, 'xgrid', 'off');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis, 'ygrid', 'off');
-    end 
-end
-
-function showMarker
-%SHOWMARKER  display the marker on the lines of an axis and updates th menus
-    if strcmp(v2.Checked, 'off')
-        set(v2, 'checked', 'on');
-        set(cp2, 'checked', 'on');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis.Children, 'Marker', '+');
-    else
-        set(v2, 'checked', 'off');
-        set(cp2, 'checked', 'off');
-        set(obj.handles.Panels{obj.handles.tabs.Selection}.uiAxis.Children, 'Marker', 'none');
-    end
-end
-
 function swapSelection
 %SWAPSELECTION  unselects all the selected polygons and selects all the unselected
 
@@ -320,19 +356,6 @@ function swapSelection
 
     %update the view
     updateSelectedPolygonsDisplay(obj.handles.Panels{obj.handles.tabs.Selection});
-end
-
-function zoomMode
-%ZOOMMODE activate/deactive the zoom and updates the menu
-    if strcmp(v3.Checked, 'off')
-        set(v3, 'checked', 'on');
-        set(cp3, 'checked', 'on');
-        zoom('on');
-    else
-        set(v3, 'checked', 'off');
-        set(cp3, 'checked', 'off');
-        zoom('off');
-    end
 end
 
 function exportToWS

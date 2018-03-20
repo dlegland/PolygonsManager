@@ -14,6 +14,9 @@ properties
     % struct containing the handles of all the objects used in the
     % application
     handles;
+    
+    % an arborescence of struct containing handles of menu items
+    menuBar;
 end
 
 %% Construction methods

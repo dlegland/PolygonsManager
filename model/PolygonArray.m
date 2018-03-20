@@ -7,5 +7,8 @@ classdef PolygonArray < handle
         polygon = getPolygon(obj);
         polygons = getAllPolygons(obj);
         updatePolygon(obj, row, polygon);
+        
+        % extract the selected polygons in a new PolygonArray
+        newPolygonArray = selectPolygons(obj, polygonIndices);
     end
 end

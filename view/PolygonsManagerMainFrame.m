@@ -20,9 +20,10 @@ classdef PolygonsManagerMainFrame < handle
         function this = PolygonsManagerMainFrame
         %POLYGONSMANAGERMAINFRAME Constructor for the PolygonsManagerMainFrame class
         %
-        %   inputs : none
-        %   ouputs : 
-        %       - this : PolygonsManagerMainFrame instance
+        %   inputs: 
+        %       - none
+        %   ouputs: 
+        %       - this: PolygonsManagerMainFrame instance
             
             % creation of the main figure
             fen = figure('units', 'normalized', ...

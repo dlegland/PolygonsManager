@@ -1,5 +1,5 @@
-function polygonsConcatenate(frame, varargin)
-%POLYGONSCONCATENATE  Concatenate all polygons with the same number of vertices
+function polygonsResampleByLength(frame, varargin)
+%POLYGONSCONCATENATE Resample each polygon with a specific sampling length
 %
 %   For each polygon, resample with the same number of vertices.
 %
@@ -15,27 +15,27 @@ function polygonsConcatenate(frame, varargin)
 % select the number of vertices that the new polygons will have
 if nargin == 1
 %     number = contoursConcatPrompt;
-     number = promptVertexNumber(frame);
+     samplingLength = promptVertexNumber(frame);
 else
     if ~isa(varargin{1}, 'double')
-        number = str2double(varargin{1});
+        samplingLength = str2double(varargin{1});
     else
-        number = varargin{1};
+        samplingLength = varargin{1};
     end
 end
 
 % save the name of the function and the parameters used during
 % its call in the log variable
-frame.model.usedProcess{end+1} = ['polygonsConcatenate : number = ' num2str(number)];
+frame.model.usedProcess{end+1} = ['polygonsResampleByLength : number = ' num2str(samplingLength)];
 
 % get the number of polygons
 nPolys = length(frame.model.nameList);
 
 % memory allocation
-dat = zeros(nPolys, 2*number);
+dat = cell(1, nPolys);
 
 % create waitbar
-h = waitbar(0, 'Please wait...', 'name', 'Polygons concatenation');
+h = waitbar(0, 'Please wait...', 'name', 'Polygons resampling');
 
 for i = 1:nPolys
     % get the name of the contours that will be converted 
@@ -50,8 +50,6 @@ for i = 1:nPolys
 
     % get the polygon from its name
     poly = getPolygonFromName(frame.model, name);
-
-    np = size(poly, 1);
 
     % index of points above x-axis
     indSup = find(poly(:,2) > 0);
@@ -74,22 +72,10 @@ for i = 1:nPolys
     poly = poly([1:end 1], :);
 
     % cut polygon into same number of pieces
-
-    % index of the curves' end
-    inds = round(linspace(1, np+1, number+1));
-
-    % memory allocation for the new polygon
-    poly2 = zeros(number, 2);
-
-    % compute each curves' fragment's centroid
-    for j = 1:number
-        curve   = poly(inds(j):inds(j+1), :);
-        centro  = polylineCentroid(curve);
-        poly2(j,:) = centro;
-    end
+    poly2 = resamplePolygonByLength(poly, samplingLength);
 
     % fill the data table
-    dat(i, :) = polygonToRow(poly2, 'packed');
+    dat{i} = poly2;
 end
 waitbar(1, h);
 
@@ -102,7 +88,7 @@ fen = PolygonsManagerMainFrame;
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
 model = PolygonsManagerData(...
-    'PolygonArray', CoordsPolygonArray(dat), ...
+    'PolygonArray', BasicPolygonArray(dat), ...
         'nameList', frame.model.nameList, ...
      'factorTable', frame.model.factorTable, ...
              'pca', frame.model.pca, ...
@@ -114,9 +100,9 @@ setupNewFrame(fen, model);
 
 function number = promptVertexNumber(frame)
     
-prompt = {'New number of vertices:'};
-title = 'Input vertex number';
-defaultanswer = {'200'};
+prompt = {'Choose sampling length:'};
+title = 'Input sampling length';
+defaultanswer = {'1'};
 options.Resize = 'on';
 
 while true

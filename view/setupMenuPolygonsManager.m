@@ -159,6 +159,8 @@ fc4 = uimenu(foncMenu, 'label', '&Resize polygons', ...
 fc5 = uimenu(foncMenu, 'label', 'Sim&plify polygons', ...
               'callback', @(~,~) polygonsSimplify(obj, 'on'), ...
              'separator', 'on');
+fc5b = uimenu(foncMenu, 'label', 'Resample by length', ...
+              'callback', @(~,~) polygonsResampleByLength(obj));
 fc6 = uimenu(foncMenu, 'label', 'A&lign around symmetry axis');
            uimenu(fc6, 'label', '&Precise', ...
                     'callback', @(~,~) polygonsAlign(obj, 'precise'));
@@ -178,6 +180,7 @@ menubar.process.rotateAll.handle = fc1;
 menubar.process.rotateSelected.handle = fc2;
 menubar.process.resizePolygons.handle = fc4;
 menubar.process.simplifyPolygons.handle = fc5;
+menubar.process.resamplePolygonsByLength.handle = fc5b;
 menubar.process.alignAroundAxis.handle = fc6;
 menubar.process.concatenatePolygons.handle = fc8;
 menubar.process.computeSignatures.handle = fc7;

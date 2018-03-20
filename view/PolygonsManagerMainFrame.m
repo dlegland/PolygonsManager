@@ -20,14 +20,28 @@ end
 
 %% Construction methods
 methods
-    function this = PolygonsManagerMainFrame
+    function this = PolygonsManagerMainFrame(varargin)
     %POLYGONSMANAGERMAINFRAME Constructor for the PolygonsManagerMainFrame class
     %
     %   inputs: 
-    %       - none
+    %       - none, or an instance of PolygonsManagerData
     %   ouputs: 
     %       - this: PolygonsManagerMainFrame instance
 
+        % create the widgets, without initialisation
+        setupLayout(this);
+        setupMenuPolygonsManager(this);
+        setupOptionsPanelPolygonsManager(this);
+    
+        if ~isempty(varargin) && isa(varargin{1}, 'PolygonsManagerData')
+            model = varargin{1};
+            setupNewFrame(this, model)
+        end
+    end
+    
+    function setupLayout(this, varargin)
+        % Create the different widgets that populate the main frame
+        
         % creation of the main figure
         fen = figure('units', 'normalized', ...
              'outerposition', [0.25 0.25 0.5 0.5], ...
@@ -75,13 +89,8 @@ methods
 
         % create spaces that will be used by other elements later
         this.handles.Panels = {};
-
-        % create the menu
-        setupMenuPolygonsManager(this);
-
-        setupOptionsPanelPolygonsManager(this);
     end
-
+    
     function setupNewFrame(this, model, varargin)
     %SETUPNEWFRAME  fill a PolygonsManagerMainFrame with the parameters given
     %

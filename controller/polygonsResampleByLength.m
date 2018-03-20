@@ -82,9 +82,6 @@ waitbar(1, h);
 % close waitbar
 close(h) 
 
-% create a new PolygonsManagerMainFrame
-fen = PolygonsManagerMainFrame;  
-
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
 model = PolygonsManagerData(...
@@ -94,8 +91,9 @@ model = PolygonsManagerData(...
              'pca', frame.model.pca, ...
      'usedProcess', frame.model.usedProcess);
 
-% prepare the new PolygonsManagerMainFrame and display the graph
-setupNewFrame(fen, model);
+% create a new PolygonsManagerMainFrame
+PolygonsManagerMainFrame(model);  
+
 
 
 function number = promptVertexNumber(frame)

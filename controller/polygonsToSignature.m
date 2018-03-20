@@ -62,15 +62,16 @@ try
         waitbar(1, h);
         % close waitbar
         close(h);
-        % create a new PolygonsManagerMainFrame
-        fen = PolygonsManagerMainFrame;  
-
+        
         % create the PolygonsManagerData that'll be used as the new
         % PolygonsManagerMainFrame's model
-        model = PolygonsManagerData('PolygonArray', PolarSignatureArray(dat, angles), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
+        newArray = PolarSignatureArray(dat, angles);
+        model = PolygonsManagerData('PolygonArray', newArray, 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
 
-        % prepare the new PolygonsManagerMainFrame and display the graph
-        setupNewFrame(fen, model);
+        % create a new PolygonsManagerMainFrame
+        PolygonsManagerMainFrame(model);  
+
+
     end
 catch ME
     disp(ME);

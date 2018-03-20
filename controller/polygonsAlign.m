@@ -126,17 +126,11 @@ else
 
     if nargin == 2
         % create a new PolygonsManagerMainFrame
-        fen = PolygonsManagerMainFrame;  
-
-        % prepare the new PolygonsManagerMainFrame and display the graph
-        setupNewFrame(fen, model);
+        PolygonsManagerMainFrame(model);
     else
         if strcmp(varargin{2}, 'off')
             % create a new PolygonsManagerMainFrame
-            fen = PolygonsManagerMainFrame;
-
-            % prepare the new PolygonsManagerMainFrame and display the graph
-            setupNewFrame(fen, model);
+            PolygonsManagerMainFrame(model);
         else
             % update the model of the current PolygonsManagerMainFrame
             obj.model = model;

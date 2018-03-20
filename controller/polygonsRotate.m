@@ -37,50 +37,52 @@ switch type
         polygonArray = obj.model.selectedPolygons;
 end 
 
-if ~isempty(polygonArray)
-    
-    for i = 1:length(polygonArray)
-        % get the name of the contours that will be rotated
-        name = polygonArray{i};
+if isempty(polygonArray)
+   return;
+end
 
-        % get the polygon from its name
-        poly = getPolygonFromName(obj.model, name);
-        
-        % rotate the polygon
-        switch angle
-            case 90
-                % 90°
-                polyRot = [poly(:,2) -poly(:,1)];
-            case 270
-                % 270 °
-                polyRot = [-poly(:,2) poly(:,1)];
-            case 180
-                % 180°
-                polyRot = [-poly(:,1) -poly(:,2)];
-            otherwise
-                polyRot = transformPoint(poly, createRotation(angle));
-        end
-        
-        %update the polygon
-        updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
-        updatePolygonInfos(obj.model, name)
-    end
-    
-    % get the selected factor
-    sf = obj.model.selectedFactor;
+for i = 1:length(polygonArray)
+    % get the name of the contours that will be rotated
+    name = polygonArray{i};
 
-    % if a factor was selected prior to the conversion
-    if iscell(sf)
-        % display the contours colored depending on the selected factor
-        polygonList = getPolygonsFromFactor(obj.model, sf{1});
-        displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
-    else
-        % display the contours without special coloration
-        displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
+    % get the polygon from its name
+    poly = getPolygonFromName(obj.model, name);
+
+    % rotate the polygon
+    switch angle
+        case 90
+            % 90°
+            polyRot = [poly(:,2) -poly(:,1)];
+        case 270
+            % 270 °
+            polyRot = [-poly(:,2) poly(:,1)];
+        case 180
+            % 180°
+            polyRot = [-poly(:,1) -poly(:,2)];
+        otherwise
+            polyRot = transformPoint(poly, createRotation(angle));
     end
+
+    %update the polygon
+    updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
+    updatePolygonInfos(obj.model, name)
+end
+
+% get the selected factor
+sf = obj.model.selectedFactor;
+
+% if a factor was selected prior to the conversion
+if iscell(sf)
+    % display the contours colored depending on the selected factor
+    polygonList = getPolygonsFromFactor(obj.model, sf{1});
+    displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
+else
+    % display the contours without special coloration
+    displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
 end
 
 updateMenus(obj);
+
 
 function angle = polygonsRotatePrompt(direction)
 %CONTOURSROTATEPROMPT  A dialog figure on which the user can enter the

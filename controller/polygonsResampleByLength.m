@@ -43,7 +43,7 @@ for i = 1:nPolys
 
     % update the waitbar and the contours selection (purely cosmetic)
     frame.model.selectedPolygons = {name};
-    updateSelectedPolygonsDisplay(frame.handles.Panels{frame.handles.tabs.Selection});
+    updateSelectedPolygonsDisplay(getActivePanel(frame));
     set(frame.handles.list, 'value', find(strcmp(name, frame.model.nameList)));
 
     waitbar(i / (nPolys+1), h, ['process : ' name]);
@@ -84,12 +84,7 @@ close(h)
 
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
-model = PolygonsManagerData(...
-    'PolygonArray', BasicPolygonArray(dat), ...
-        'nameList', frame.model.nameList, ...
-     'factorTable', frame.model.factorTable, ...
-             'pca', frame.model.pca, ...
-     'usedProcess', frame.model.usedProcess);
+model = PolygonsManagerData(BasicPolygonArray(dat), 'parent', frame.model);
 
 % create a new PolygonsManagerMainFrame
 PolygonsManagerMainFrame(model);  

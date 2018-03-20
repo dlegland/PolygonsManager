@@ -18,45 +18,47 @@ else
     end
 end
 
-if ~strcmp(coef, '?')
-    
-    % save the name of the function and the parameters used during
-    % its call in the log variable
-    obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(coef)];
-
-    % memory allocation
-    polygonList = cell(1, length(obj.model.nameList));
-
-    for i = 1:length(polygonList)
-        % get the name of the polygon that will be converted
-        name = obj.model.nameList{i};
-
-        % get the polygon from its name
-        poly = getPolygonFromName(obj.model, name);
-        
-        % convert the polygon
-        polyMm = poly * coef;
-
-        %update the polygon
-        updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
-        updatePolygonInfos(obj.model, name)
-    end
-    
-    % get the selected factor
-    sf = obj.model.selectedFactor;
-
-    % if a factor was selected prior to the conversion
-    if iscell(sf)
-        % display the contours colored depending on the selected factor
-        polygonList = getPolygonsFromFactor(obj.model, sf{1});
-        displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
-    else
-        % display the contours without special coloration
-        displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
-    end
-    
-    updateMenus(obj);
+if strcmp(coef, '?')
+    return;
 end
+    
+% save the name of the function and the parameters used during
+% its call in the log variable
+obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(coef)];
+
+% memory allocation
+polygonList = cell(1, length(obj.model.nameList));
+
+for i = 1:length(polygonList)
+    % get the name of the polygon that will be converted
+    name = obj.model.nameList{i};
+
+    % get the polygon from its name
+    poly = getPolygonFromName(obj.model, name);
+
+    % convert the polygon
+    polyMm = poly * coef;
+
+    %update the polygon
+    updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
+    updatePolygonInfos(obj.model, name)
+end
+
+% get the selected factor
+sf = obj.model.selectedFactor;
+
+% if a factor was selected prior to the conversion
+if iscell(sf)
+    % display the contours colored depending on the selected factor
+    polygonList = getPolygonsFromFactor(obj.model, sf{1});
+    displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
+else
+    % display the contours without special coloration
+    displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
+end
+
+updateMenus(obj);
+
 
 function coef = contoursResizePrompt
 %CONTOURSRESIZEPROMPT  A dialog figure on which the user can select type

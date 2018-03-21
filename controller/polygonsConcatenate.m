@@ -14,8 +14,10 @@ function polygonsConcatenate(frame, varargin)
 
 % select the number of vertices that the new polygons will have
 if nargin == 1
-%     number = contoursConcatPrompt;
      number = promptVertexNumber(frame);
+     if isempty(number)
+         return;
+     end
 else
     if ~isa(varargin{1}, 'double')
         number = str2double(varargin{1});

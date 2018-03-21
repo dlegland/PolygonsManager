@@ -82,10 +82,9 @@ methods
                       'colororder', this.colorMap, ...
                              'tag', 'main', ...
                    'uicontextmenu', mainFrame.menuBar.contextPanel.handle);
-
-
-        % save the new panel in the parent PolygonsManagerMainFrame
-        mainFrame.handles.Panels{length(mainFrame.handles.Panels) + 1} = this;
+        
+        % default title
+        title = 'Panel';
 
         while length(varargin) > 1
             % get parameter name and value
@@ -102,7 +101,7 @@ methods
                         error('Invalid value');
                     end
                 case 'title'
-                    mainFrame.handles.tabs.TabTitles{length(mainFrame.handles.Panels)} = value;
+                    title = value;
                 case 'type'
                     this.type = value;
                 case 'colormap'
@@ -115,35 +114,7 @@ methods
             varargin(1:2) = [];
         end
 
-        if ~strcmp(this.type, 'pcaLoadings')
-            % add a callback to the tabpanel to call when the tab selection change
-            set(mainFrame.handles.tabs, 'selection', length(mainFrame.handles.Panels), ...
-                              'SelectionChangedFcn', @(~,~) panelChange);
-        end
-
-        function panelChange
-            %SELECT  update the view depending on the selection
-
-            selectedTab = mainFrame.handles.tabs.Selection;
-            selectedPanel = mainFrame.handles.Panels{selectedTab};
-            updateSelectedPolygonsDisplay(selectedPanel);
-            
-            % toggle grid widgets
-            gridFlag = get(selectedPanel.uiAxis, 'xgrid');
-            set(mainFrame.menuBar.view.grid.handle, 'checked', gridFlag);
-            set(mainFrame.menuBar.contextPanel.grid.handle, 'checked', gridFlag);
-            
-            % eventually update possibility to toggle markers
-            if ~isempty(selectedPanel.uiAxis.Children)
-                if strcmp(get(selectedPanel.uiAxis.Children(1), 'Marker'), '+')
-                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'on');
-                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'on');
-                else
-                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'off');
-                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'off');
-                end
-            end
-        end
+        addPanel(mainFrame, this, title);
     end
 end
 

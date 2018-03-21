@@ -40,11 +40,11 @@ methods
         % call constructor of parent class
         this = this@DisplayPanel(frame);
     
-%         % set the 'parent' of the panel
-%         this.mainFrame = mainFrame;
-
         % set the colormap of the panel
         this.colorMap = Panel.default_colorMap;
+        
+        % default title
+        title = 'polygons';
 
         % creation of the panel that will contain the axis
         this.handles.uiPanel = uipanel('parent', frame.handles.tabs, ...
@@ -58,10 +58,6 @@ methods
                              'tag', 'main', ...
                    'uicontextmenu', frame.menuBar.contextPanel.handle);
 
-
-        % save the new panel in the parent PolygonsManagerMainFrame
-        frame.handles.Panels{length(frame.handles.Panels) + 1} = this;
-
         % setup specific to polygons display panel
         axis(this.handles.uiAxis, 'equal');
           
@@ -72,7 +68,7 @@ methods
 
             switch param 
                 case 'title'
-                    frame.handles.tabs.TabTitles{length(frame.handles.Panels)} = value;
+                    title = value;
                 case 'colormap'
                     this.colorMap = value;
                     this.uiAxis.ColorOrder = value;
@@ -83,34 +79,12 @@ methods
             varargin(1:2) = [];
         end
 
-        % add a callback to the tabpanel to call when the tab selection changes
-        set(frame.handles.tabs, 'selection', length(frame.handles.Panels), ...
-            'SelectionChangedFcn', @(~,~) panelChange);
-        
-        function panelChange
-            %SELECT  update the view depending on the selection
+        % save the new panel in the parent PolygonsManagerMainFrame
+        addPanel(frame, this, title);
 
-            % TODO: replace by this
-            selectedTab = this.frame.handles.tabs.Selection;
-            selectedPanel = this.frame.handles.Panels{selectedTab};
-            updateSelectedPolygonsDisplay(selectedPanel);
-            
-            % toggle grid widgets
-            gridFlag = get(selectedPanel.handles.uiAxis, 'xgrid');
-            set(this.frame.menuBar.view.grid.handle, 'checked', gridFlag);
-            set(this.frame.menuBar.contextPanel.grid.handle, 'checked', gridFlag);
-            
-            % eventually update possibility to toggle markers
-            if ~isempty(selectedPanel.handles.uiAxis.Children)
-                if strcmp(get(selectedPanel.handles.uiAxis.Children(1), 'Marker'), '+')
-                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'on');
-                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'on');
-                else
-                    set(mainFrame.menuBar.view.markers.handle, 'checked', 'off');
-                    set(mainFrame.menuBar.contextPanel.markers.handle, 'checked', 'off');
-                end
-            end
-        end
+        % add a callback to the tabpanel to call when the tab selection changes
+        set(frame.handles.tabs, 'selection', length(frame.handles.Panels));
+        
     end
 
 end % end constructor methods
@@ -192,7 +166,6 @@ methods
         
         % get the names of all the polygons loaded and prepare the
         % panel/axis that'll be used to draw
-%         names = setupDisplay(this.mainFrame);
         names = getPolygonNames(this.frame.model);
         nPolys = length(names);
         
@@ -218,7 +191,6 @@ methods
         hold(axis, 'on');
         for i = 1:getPolygonNumber(polygonArray)
             % draw the polygon on the axis
-%             line = drawPolygon(polygonArray{i}, 'parent', axis);
             poly = getPolygon(polygonArray, i);
             line = drawPolygon(poly, 'parent', axis);
 
@@ -276,7 +248,6 @@ methods
     function refreshDisplay(this)
         disp('Refresh polygons display panel');
         displayPolygons(this);
-%         updateSelectedPolygonsDisplay(this);
     end
 end
 

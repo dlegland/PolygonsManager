@@ -74,7 +74,8 @@ methods
 
         % box containing the panels on which the polygons are drawn
         tab_box = uix.TabPanel('parent', main_box, ...
-                             'tabwidth', 100);
+                             'tabwidth', 100, ...
+                             'SelectionChangedFcn', @(i1,i2) onSelectedTabChanged(this, i1, i2));
 
         main_box.Widths = [200 -1];
         left_box.Heights = [-1 162];
@@ -121,6 +122,7 @@ methods
 
             % draw the polygons on the new PolygonsManagerMainFrame
             displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
+            
             if isa(this.model.PolygonArray, 'PolarSignatureArray')
                 % if the polygons are saved as polar signature, display
                 % the polar signatures
@@ -365,11 +367,6 @@ methods
         names = this.model.nameList;
     end
 
-    function panel = getActivePanel(this)
-        % Returns the active panel, or empty if there is no panel
-        panel = this.handles.Panels{this.handles.tabs.Selection};
-    end
-    
     function names = getPolygonNames(this)
         % Returns the names of the polygons stored in this frame
         names = this.model.nameList;
@@ -413,6 +410,29 @@ methods
     end
 end
 
+%% Management of panels
+methods
+    function nPanels = getPanelNumber(this)
+        nPanels = length(this.handles.Panels);
+    end
+    
+    function setActivePanelIndex(this, index)
+        set(this.handles.tabs, 'Selection', index);
+    end
+    
+    function panel = getActivePanel(this)
+        % Returns the active panel, or empty if there is no panel
+        panel = this.handles.Panels{this.handles.tabs.Selection};
+    end
+    
+    function addPanel(this, panel, title)
+        index = length(this.handles.Panels) + 1;
+        this.handles.Panels{index} = panel;
+        this.handles.tabs.TabTitles{index} = title;
+    end
+end
+
+
 %% Utility methods
 methods
     function pos = getMiddle(this, width, height)
@@ -433,6 +453,49 @@ methods
         pos(2) = pos(2) + (pos(4)/2) - (height/2);
         pos(3) = width;
         pos(4) = height;
+    end
+end
+
+%% GUI callbacks
+methods
+    function onSelectedTabChanged(this, varargin)
+        % called when the current tab is changed
+        disp('change selected tab.');
+       
+        if ~isfield(this.handles, 'Panels')
+            return;
+        end
+        if isempty(this.handles.Panels)
+            return;
+        end
+            
+        selectedTab = this.handles.tabs.Selection;
+        panel = this.handles.Panels{selectedTab};
+        updateSelectedPolygonsDisplay(panel);
+        
+        % get handle to panel axis
+        if isfield(panel, 'handles')
+            axis = panel.handles.uiAxis;
+        else
+            axis = panel.uiAxis;
+        end
+        
+        % toggle grid widgets
+        gridFlag = get(axis, 'xgrid');
+        set(this.menuBar.view.grid.handle, 'checked', gridFlag);
+        set(this.menuBar.contextPanel.grid.handle, 'checked', gridFlag);
+        
+        % eventually update possibility to toggle markers
+        if ~isempty(axis.Children)
+            if strcmp(get(axis.Children(1), 'Marker'), '+')
+                set(this.menuBar.view.markers.handle, 'checked', 'on');
+                set(this.menuBar.contextPanel.markers.handle, 'checked', 'on');
+            else
+                set(this.menuBar.view.markers.handle, 'checked', 'off');
+                set(this.menuBar.contextPanel.markers.handle, 'checked', 'off');
+            end
+        end
+
     end
 end
 

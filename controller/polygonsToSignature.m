@@ -76,11 +76,6 @@ try
     PolygonsManagerMainFrame(model);  
 catch ME
     disp(ME);
-    
-    if ~isempty(h)
-        close(h);
-    end
-    
     msgbox('These polygons cannot be transformed into polar signatures.');
 end
 

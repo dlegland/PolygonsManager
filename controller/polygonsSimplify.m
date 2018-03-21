@@ -51,12 +51,12 @@ for i = 1:length(polygonList)
 end
 
 newArray = BasicPolygonArray(polygonList);
-frame = PolygonsManagerMainFrame(PolygonsManagerData(newArray, 'parent', obj.model));
+data = PolygonsManagerData(newArray, 'parent', obj.model);
 
 if nargout == 1
-    varargout = {frame};
+    varargout = {data};
 elseif nargout == 2
-    varargout = {frame, tolerance};
+    varargout = {data, tolerance};
 end
     
 % if strcmp(display, 'off')

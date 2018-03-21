@@ -180,11 +180,10 @@ methods
         for i = 1:nPolys
             maxValue = max(maxValue, max(getPolarSignature(this.signatureArray, i)));
         end
-%         if ~isempty(signatures)
-            % set the axis' limits
-            xlim(axis, [angles(1), angles(end)]);
-            ylim(axis, [0 maxValue+.5]);
-%         end
+        
+        % set the axis' limits
+        xlim(axis, [angles(1) angles(end)]);
+        ylim(axis, [0 maxValue+.5]);
         
         % delete all the lines already drawn on the axis
         delete(axis.Children(:));
@@ -203,6 +202,7 @@ methods
                 'ButtonDownFcn', @this.onSignatureObjectClicked);
             uistack(line,'bottom');
         end
+        
         uistack(axis.Children(:), 'bottom');
         hold(axis, 'off');
     end

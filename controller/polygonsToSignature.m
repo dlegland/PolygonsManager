@@ -25,59 +25,54 @@ else
 end
 
 
-% try
-    if strcmp(startAngle, '?')
-        return;
-    end
+if strcmp(startAngle, '?')
+    return;
+end
+
+% save the name of the function and the parameters used during
+% its call in the log variable
+obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
+
+% determine the angles that will be used for the transformation
+pas = 360/angleNumber;
+angles = startAngle:pas:360+startAngle-pas;
+
+% preallocating memory
+dat = zeros(length(obj.model.nameList), angleNumber);
+
+%create waitbar
+h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
+
+for i = 1:length(obj.model.nameList)
     
-    % save the name of the function and the parameters used during
-    % its call in the log variable
-    obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
+    % get the name of the polygon that will be transformed
+    name = obj.model.nameList{i};
     
-    % determine the angles that will be used for the transformation
-    pas = 360/angleNumber;
-    angles = startAngle:pas:360+startAngle-pas;
-
-    % preallocating memory
-    dat = zeros(length(obj.model.nameList), angleNumber);
-
-    %create waitbar
-    h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
-
-    for i = 1:length(obj.model.nameList)
-
-        % get the name of the polygon that will be transformed
-        name = obj.model.nameList{i};
-
-        % update the waitbar and the contours selection (purely cosmetic)
-        obj.model.selectedPolygons = {name};
-        updateSelectedPolygonsDisplay(getActivePanel(obj));
-        set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
-
-        waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
-
-        % get the polygon from its name
-        poly = getPolygonFromName(obj.model, name);
-
-        % save all the polar signatures in a numeric array 
-        dat(i, :) = polygonSignature(poly, angles);
-    end
-    waitbar(1, h);
+    % update the waitbar and the contours selection (purely cosmetic)
+    obj.model.selectedPolygons = {name};
+    updateSelectedPolygonsDisplay(getActivePanel(obj));
+    set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
     
-    % close waitbar
-    close(h);
+    waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
+    
+    % get the polygon from its name
+    poly = getPolygonFromName(obj.model, name);
+    
+    % save all the polar signatures in a numeric array
+    dat(i, :) = polygonSignature(poly, angles);
+end
+waitbar(1, h);
 
-    % create the PolygonsManagerData that'll be used as the new
-    % PolygonsManagerMainFrame's model
-    newArray = PolarSignatureArray(dat, angles);
-    model = PolygonsManagerData(newArray, 'parent', obj.model);
+% close waitbar
+close(h);
 
-    % create a new PolygonsManagerMainFrame
-    PolygonsManagerMainFrame(model);  
-% catch ME
-%     disp(ME);
-%     msgbox('These polygons cannot be transformed into polar signatures.');
-% end
+% create the PolygonsManagerData that'll be used as the new
+% PolygonsManagerMainFrame's model
+newArray = PolarSignatureArray(dat, angles);
+model = PolygonsManagerData(newArray, 'parent', obj.model);
+
+% create a new PolygonsManagerMainFrame
+PolygonsManagerMainFrame(model);
 
 function [start, number] = contoursToSignaturePrompt
 %CONTOURSTOSIGNATUREPROMPT  A dialog figure on which the user can select

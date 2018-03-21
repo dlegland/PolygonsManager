@@ -454,6 +454,19 @@ methods
         pos(3) = width;
         pos(4) = height;
     end
+    
+    function updateSelectedPolygonsDisplay(this)
+         panel = getActivePanel(this);
+         if ~isempty(panel)
+             updateSelectedPolygonsDisplay(panel);
+         end
+         
+         % match the selection of the name list to the selection of the axis
+         if strcmp(get(this.handles.list, 'visible'), 'on')
+             indices = getSelectedPolygonIndices(this.model);
+             set(this.handles.list, 'value', indices);
+         end
+    end
 end
 
 %% GUI callbacks

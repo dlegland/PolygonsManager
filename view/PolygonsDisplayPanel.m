@@ -22,13 +22,6 @@ properties
     colorMap;
 
     handles;
-%     % uipanel instance
-%     uiPanel;
-%     % axes instance 
-%     uiAxis;
-%     % legend of the uiAxis
-%     uiLegend;
-
 end % end properties
 
 
@@ -53,7 +46,7 @@ methods
 
         % creation of the axis on which the lines will be drawn
         this.handles.uiAxis = axes('parent', this.handles.uiPanel, ...
-                   'ButtonDownFcn', @(~,~) this.reset, ...
+                   'ButtonDownFcn', @(~,~) this.onAxisClicked, ...
                       'colororder', this.colorMap, ...
                              'tag', 'main', ...
                    'uicontextmenu', frame.menuBar.contextPanel.handle);
@@ -71,7 +64,7 @@ methods
                     title = value;
                 case 'colormap'
                     this.colorMap = value;
-                    this.uiAxis.ColorOrder = value;
+                    this.handles.uiAxis.ColorOrder = value;
                 otherwise
                     error('Panel:Panel', ...
                         ['Unknown parameter name: ' varargin{1}]);
@@ -91,7 +84,7 @@ end % end constructor methods
 
 %% GUI methods
 methods
-    function detectLineClick(this, h, ~)
+    function onPolygonObjectClicked(this, hObj, ~)
         %DETECTLINECLICK  callback used when the user clicks on one of the axis' line
         %
         %   Inputs :
@@ -100,54 +93,43 @@ methods
         %       - ~ (not used) : input automatically send by matlab during a callback
         %   Outputs : none
 
+
+        % get the tag of the clicked object, to identify its name
+        tag = get(hObj, 'tag');
         model = this.frame.model;
         
         if ismember(this.frame.handles.figure.SelectionType, {'alt', 'open'})
             % if the user is pressing the 'ctrl' key or using the right
             % mouse-button
-            if find(strcmp(get(h,'tag'), this.frame.model.selectedPolygons))
+            if isSelectedPolygon(model, tag)
                 % if the clicked line was already selected, deselect it
-                model.selectedPolygons(strcmp(get(h,'tag'), model.selectedPolygons)) = [];
+                removeSelectedPolygons(model, tag);
             else
                 % if the clicked line wasn't selected, add it to the list of
                 % selected lines
-                model.selectedPolygons{end+1} = model.nameList{strcmp(get(h,'tag'), model.nameList)};
+                addSelectedPolygons(model, tag);
             end
         else
             % if the user didn't press 'ctrl' or click the right mouse-button
-            if find(strcmp(get(h,'tag'), model.selectedPolygons))
-                % if the clicked line was already selected
-                if length(model.selectedPolygons) == 1
-                    % if the clicked line was the only selected line, deselect it
-                    model.selectedPolygons(strcmp(get(h,'tag'), model.selectedPolygons)) = [];
-                else
-                    % if the clicked line wasn't the only selected line, set it as the only selected line
-                    model.selectedPolygons = model.nameList(strcmp(get(h,'tag'), model.nameList));
-                end
-            else
-                % if the line wasn't already selected, set it as the only selected line
-                model.selectedPolygons = model.nameList(strcmp(get(h,'tag'), model.nameList));
-            end
+            % set the clicked line as the only one selected
+            clearPolygonSelection(model);
+            addSelectedPolygons(model, tag);
         end
-        %update the lines displayed
-        updateSelectedPolygonsDisplay(this);
-
-        % match the selection of the name list to the selection of the axis
-        set(this.frame.handles.list, 'value', find(ismember(model.nameList, model.selectedPolygons)));
+        
+        updateSelectedPolygonsDisplay(this.frame);
     end
     
-    function reset(this)
+    function onAxisClicked(this)
         %RESET  set the current selection to void
         
         if ~ismember(this.frame.handles.figure.SelectionType, {'alt', 'open'})
             % if the user is not pressing the 'ctrl' key or right-clicking
 
-            %empty the selection lists and update the view
-            this.frame.model.selectedPolygons = {};
-            set(this.frame.handles.list, 'value', []);
-
-            % update the view
-            updateSelectedPolygonsDisplay(this);
+            % empty the selection lists
+            clearPolygonSelection(this.frame.model);
+            
+            % update the views
+            updateSelectedPolygonsDisplay(this.frame);
         end
     end
 end
@@ -168,9 +150,8 @@ methods
         % panel/axis that'll be used to draw
         names = getPolygonNames(this.frame.model);
         nPolys = length(names);
-        
-        
-        % reset the position of the cursor in the axis' colormap
+                
+        % reset the position of the cursor in the axis colormap
         axis = this.handles.uiAxis;
         set(axis, 'colororderindex', 1);
 
@@ -195,8 +176,8 @@ methods
             line = drawPolygon(poly, 'parent', axis);
 
             set(line, 'tag', names{i}, ...
-            'ButtonDownFcn', @this.detectLineClick);
-            uistack(line,'bottom');
+                'ButtonDownFcn', @this.onPolygonObjectClicked);
+            uistack(line, 'bottom');
         end
         uistack(axis.Children(:), 'bottom');
         hold(axis, 'off');
@@ -232,7 +213,7 @@ methods
             end
         end
 
-        %update the infobox
+        % update the infobox
         if length(selected) == 1
             updateInfoBox(this.frame, getInfoFromName(this.frame.model, selected));
         else

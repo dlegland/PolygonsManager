@@ -23,6 +23,7 @@ properties
     % selected
     selectedPolygons = {};
 
+    
     % 1-by-3 Cell array that contains informations neccessary to the
     % coloration of polygons
     % the cells contains :
@@ -98,7 +99,52 @@ methods
         names = this.nameList;
     end
     
+   
+    function nameList = getSelectedPolygonNames(this)
+        nameList = this.selectedPolygons;
+    end
     
+    function indices = getSelectedPolygonIndices(this)
+        indices = find(ismember(this.nameList, this.selectedPolygons));
+    end
+    
+    function clearPolygonSelection(this)
+        this.selectedPolygons = {};
+    end
+    
+    function b = isSelectedPolygon(this, names)
+        b = strcmp(names, this.selectedPolygons);
+    end
+    
+    function addSelectedPolygons(this, names)
+        checkNamesExist(this, names);
+        this.selectedPolygons = [this.selectedPolygons, names];
+    end
+    
+    function removeSelectedPolygons(this, names)
+        checkNamesExist(this, names);
+        this.selectedPolygons(strcmp(this.selectedPolygons, names)) = [];
+    end
+    
+    function checkNamesExist(this, names)
+        % Checks that all names in the given list are polygon names, 
+        % and returns an error if not.
+        
+        if ischar(names) && size(names, 1)==1
+            checkSingleNameExist(this, names);
+        elseif iscell(names)
+            for i = 1:length(names)
+                checkSingleNameExist(this, names{i});
+            end
+        end
+    end
+    
+    function checkSingleNameExist(this, name)
+        if all(~strcmp(name, this.nameList))
+            errnames = names(~strcmp(names, this.nameList));
+            error(['some names do not belong to name list: ' errnames]);
+        end
+    end
 end
 
 %% Old methods

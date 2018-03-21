@@ -43,8 +43,12 @@ end % end constructor methods
 
 %% Abstract Methods
 methods (Abstract)
+    % refresh the whole display of this panel
     refreshDisplay(this)
-        
+    
+    % update the display of selected polygons
+    updateSelectionDisplay(this);
+    
 end % end abstract methods
 
 end % end classdef

@@ -71,6 +71,17 @@ end
 
 %% Methods specific to PolarSignatureArray
 methods
+    function signature = getPolarSignature(obj, row)
+        % returns the signature found at the index row
+        signature = obj.signatures(row, :);
+    end
+
+    function angles = getSignatureAngles(obj)
+        % returns the signature found at the index row
+        angles = obj.angleList;
+    end
+
+
     function array = getDatas(obj)
         array = obj.signatures;
     end

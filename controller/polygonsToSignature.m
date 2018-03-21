@@ -25,7 +25,7 @@ else
 end
 
 
-try
+% try
     if strcmp(startAngle, '?')
         return;
     end
@@ -74,10 +74,10 @@ try
 
     % create a new PolygonsManagerMainFrame
     PolygonsManagerMainFrame(model);  
-catch ME
-    disp(ME);
-    msgbox('These polygons cannot be transformed into polar signatures.');
-end
+% catch ME
+%     disp(ME);
+%     msgbox('These polygons cannot be transformed into polar signatures.');
+% end
 
 function [start, number] = contoursToSignaturePrompt
 %CONTOURSTOSIGNATUREPROMPT  A dialog figure on which the user can select

@@ -1,10 +1,10 @@
-classdef PolygonsDisplayPanel < DisplayPanel
-%POLYGONSDISPLAYPANEL A panel for display of a collection of polygons
+classdef SignatureDisplayPanel < DisplayPanel
+%SIGNATUREDISPLAYPANEL A panel for displaying a collection of polar signatures 
 %
-%   Class PolygonsDisplayPanel
+%   Class SignatureDisplayPanel
 %
 %   Example
-%   PolygonsDisplayPanel
+%   SignatureDisplayPanel
 %
 %   See also
 %
@@ -21,23 +21,31 @@ properties
     % N-by-3 numeric vector containing values of range 0 to 1
     colorMap;
 
+    signatureArray;
+    
     handles;
 end % end properties
 
 
 %% Constructor
 methods
-    function this = PolygonsDisplayPanel(frame, varargin)
-    % Constructor for PolygonsDisplayPanel class
-    
+    function this = SignatureDisplayPanel(frame, varargin)
+    % Constructor for SignatureDisplayPanel class
+     
         % call constructor of parent class
         this = this@DisplayPanel(frame);
     
+        polygonArray = frame.model.PolygonArray;
+        if ~isa(polygonArray, 'PolarSignatureArray')
+            error('Requires the main frame to contains a polar signature array');
+        end
+        this.signatureArray = polygonArray;
+        
         % set the colormap of the panel
         this.colorMap = Panel.default_colorMap;
         
         % default title
-        title = 'polygons';
+        title = 'signatures';
 
         % creation of the panel that will contain the axis
         this.handles.uiPanel = uipanel('parent', frame.handles.tabs, ...
@@ -51,8 +59,8 @@ methods
                              'tag', 'main', ...
                    'uicontextmenu', frame.menuBar.contextPanel.handle);
 
-        % setup specific to polygons display panel
-        axis(this.handles.uiAxis, 'equal');
+        % setup specific to signature display panel
+        axis(this.handles.uiAxis, 'normal');
           
         while length(varargin) > 1
             % get parameter name and value
@@ -77,14 +85,13 @@ methods
 
         % add a callback to the tabpanel to call when the tab selection changes
         set(frame.handles.tabs, 'selection', length(frame.handles.Panels));
-        
     end
 
-end % end constructor methods
+end % end constructors
 
 %% GUI methods
 methods
-    function onPolygonObjectClicked(this, hObj, ~)
+    function onSignatureObjectClicked(this, hObj, ~)
         %DETECTLINECLICK  callback used when the user clicks on one of the axis' line
         %
         %   Inputs :
@@ -136,15 +143,18 @@ end
 
 %% Methods
 methods
-    function displayPolygons(this, polygonArray)
-        %DISPLAYPOLYGONS  Display polygons
-        %
-        %   Inputs :
-        %       - obj : handle of the MainFrame
-        %       - polygonArray : a N-by-1 cell array containing the polygons
-        %   Outputs : none
-
-        polygonArray = this.frame.model.PolygonArray;
+    function displayPolarSignature(this)
+    %DISPLAYPOLARSIGNATURE  Display polar signatures
+    %
+    %   Inputs :
+    %       - obj : handle of the MainFrame
+    %       - signatureArray : a N-by-M cell array containing the polar signatures
+    %   Outputs : none
+        
+        % get the list of all angles + 1 angle to make the last point match the
+        % first
+        angles = getSignatureAngles(this.signatureArray);
+        angles(end+1) = angles(end) + angles(2)-angles(1);
         
         % get the names of all the polygons loaded and prepare the
         % panel/axis that'll be used to draw
@@ -165,26 +175,45 @@ methods
             set(axis, 'colororder', this.colorMap);
         end
         
-        % delete all the lines already drawn on the axis and the legends
+        % determine max signature value
+        maxValue = 0;
+        for i = 1:nPolys
+            maxValue = max(maxValue, max(getPolarSignature(this.signatureArray, i)));
+        end
+%         if ~isempty(signatures)
+            % set the axis' limits
+            xlim(axis, [angles(1), angles(end)]);
+            ylim(axis, [0 maxValue+.5]);
+%         end
+        
+        % delete all the lines already drawn on the axis
         delete(axis.Children(:));
         this.handles.uiLegend = [];
-
+        
         hold(axis, 'on');
-        for i = 1:getPolygonNumber(polygonArray)
-            % draw the polygon on the axis
-            poly = getPolygon(polygonArray, i);
-            line = drawPolygon(poly, 'parent', axis);
-
+        for i = 1:nPolys
+            % get the signature that will be drawn
+            signature = getPolarSignature(this.signatureArray, i);
+            signature = signature([1:end 1]);
+            
+            % draw the line
+            line = plot(angles, signature, 'parent', axis);
+            
             set(line, 'tag', names{i}, ...
-                'ButtonDownFcn', @this.onPolygonObjectClicked);
-            uistack(line, 'bottom');
+                'ButtonDownFcn', @this.onSignatureObjectClicked);
+            uistack(line,'bottom');
         end
         uistack(axis.Children(:), 'bottom');
         hold(axis, 'off');
     end
+    
+end % end methods
 
-    function updateSelectedPolygonsDisplay(this)
-        updateSelectionDisplay(this);
+%% Methods Implementing the DisplayPanel interface
+methods
+    function refreshDisplay(this)
+        disp('Refresh polygons display panel');
+        displayPolarSignatures(this);
     end
     
     function updateSelectionDisplay(this)
@@ -225,15 +254,6 @@ methods
         end
     end
 
-
-end % end methods
-
-%% Methods implementing the DisplayPanel interface
-methods
-    function refreshDisplay(this)
-        disp('Refresh polygons display panel');
-        displayPolygons(this);
-    end
 end
 
 end % end classdef

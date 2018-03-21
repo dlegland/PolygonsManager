@@ -119,16 +119,19 @@ methods
 %             panel1 = Panel(this, 'equal', 'on', ...
 %                                  'title', 'Polygons');
             panel1 = PolygonsDisplayPanel(this, 'title', 'Polygons');
+            refreshDisplay(panel1);
 
-            % draw the polygons on the new PolygonsManagerMainFrame
-            displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
+%             % draw the polygons on the new PolygonsManagerMainFrame
+%             displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
             
             if isa(this.model.PolygonArray, 'PolarSignatureArray')
                 % if the polygons are saved as polar signature, display
                 % the polar signatures
-                panel2 = Panel(this, 'equal', 'off', ...
-                                     'title', 'Signature');
-                displayPolarSignature(panel2, this.model.PolygonArray.signatures, this.model.PolygonArray.angleList);
+%                 panel2 = Panel(this, 'equal', 'off', ...
+%                                      'title', 'Signature');
+%                 displayPolarSignature(panel2, this.model.PolygonArray.signatures, this.model.PolygonArray.angleList);
+                panel2 = SignatureDisplayPanel(this, 'title', 'Signatures');
+                displayPolarSignature(panel2);
             end
         else
             % if the mainframe must display one of the results of a PCA
@@ -219,6 +222,8 @@ methods
         function draw
         %DRAW  draw polygons depending on the current selection
 
+        disp('draw');
+        
             % get the list of selected polygons
             list = cellstr(this.handles.list.String);
             selVal = this.handles.list.Value;
@@ -369,6 +374,7 @@ methods
 
     function names = getPolygonNames(this)
         % Returns the names of the polygons stored in this frame
+        warning('deprecated: use PolygonsManagerData methods instead')
         names = this.model.nameList;
     end
     
@@ -458,7 +464,7 @@ methods
     function updateSelectedPolygonsDisplay(this)
          panel = getActivePanel(this);
          if ~isempty(panel)
-             updateSelectedPolygonsDisplay(panel);
+             updateSelectionDisplay(panel);
          end
          
          % match the selection of the name list to the selection of the axis
@@ -484,10 +490,10 @@ methods
             
         selectedTab = this.handles.tabs.Selection;
         panel = this.handles.Panels{selectedTab};
-        updateSelectedPolygonsDisplay(panel);
+        updateSelectionDisplay(panel);
         
         % get handle to panel axis
-        if isfield(panel, 'handles')
+        if  isprop(panel, 'handles')
             axis = panel.handles.uiAxis;
         else
             axis = panel.uiAxis;

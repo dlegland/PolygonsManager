@@ -74,11 +74,13 @@ try
 
     % create a new PolygonsManagerMainFrame
     PolygonsManagerMainFrame(model);  
-
-
 catch ME
     disp(ME);
-    close(h);
+    
+    if ~isempty(h)
+        close(h);
+    end
+    
     msgbox('These polygons cannot be transformed into polar signatures.');
 end
 

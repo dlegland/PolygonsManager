@@ -1,4 +1,4 @@
-classdef Panel < handle
+classdef Panel < DisplayPanel
 %PANEL Class that creates a panel and setup its contents
 %
 %   Creation: 
@@ -44,6 +44,10 @@ properties
     uiLegend;
 
     % string containing the type of data displayed in the uiAxis
+    % Can be one of:
+    % * pcaLoadings
+    % * pcaEigenValues
+    % * pcaVector
     type;
 end
 
@@ -59,6 +63,8 @@ methods
     %   ouputs : 
     %       - this : Panel instance
 
+        this = this@DisplayPanel(mainFrame);
+        
         % set the 'parent' of the panel
         this.mainFrame = mainFrame;
 

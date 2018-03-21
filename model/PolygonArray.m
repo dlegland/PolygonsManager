@@ -1,10 +1,14 @@
 classdef PolygonArray < handle
-%POLYGONARRAY Interface that defines the methods that any polygon array
-%must contain
+%POLYGONARRAY Interface that defines an abstract collection of polygons
 
     methods (Abstract)
+        % returns the number of polygons stored within this array
         arraySize = getPolygonNumber(obj);
-        polygon = getPolygon(obj);
+        
+        % return the polygon at the given index
+        polygon = getPolygon(obj, index);
+        
+        % returns the list of all polygons
         polygons = getAllPolygons(obj);
         
         % Checks if all the polygons in this array have the same vertex  number

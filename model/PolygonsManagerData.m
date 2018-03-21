@@ -90,8 +90,19 @@ methods
     end
 end
 
+%% New methods
+% (Methods after refactoring by D. Legland)
+methods
+    function names = getPolygonNames(this)
+        % Returns the names of the polygons stored in this frame
+        names = this.nameList;
+    end
+    
+    
+end
 
-%% General methods
+%% Old methods
+% (Methods from T. Corcel)
 methods
     function index = getPolygonIndexFromName(this, name)
         % returns the index of the polygon that corresponds to the name input

@@ -115,8 +115,9 @@ methods
 
         if isempty(varargin)
             % creation of a panel on which the polygons will be drawn
-            panel1 = Panel(this, 'equal', 'on', ...
-                                 'title', 'Polygons');
+%             panel1 = Panel(this, 'equal', 'on', ...
+%                                  'title', 'Polygons');
+            panel1 = PolygonsDisplayPanel(this, 'title', 'Polygons');
 
             % draw the polygons on the new PolygonsManagerMainFrame
             displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
@@ -367,6 +368,11 @@ methods
     function panel = getActivePanel(this)
         % Returns the active panel, or empty if there is no panel
         panel = this.handles.Panels{this.handles.tabs.Selection};
+    end
+    
+    function names = getPolygonNames(this)
+        % Returns the names of the polygons stored in this frame
+        names = this.model.nameList;
     end
     
     function updateInfoBox(this, varargin)

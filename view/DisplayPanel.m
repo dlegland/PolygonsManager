@@ -39,12 +39,13 @@ methods
         end
     end
 
-end % end constructors
+end % end constructor methods
 
-
-%% Methods
-methods
-end % end methods
+%% Abstract Methods
+methods (Abstract)
+    refreshDisplay(this)
+        
+end % end abstract methods
 
 end % end classdef
 

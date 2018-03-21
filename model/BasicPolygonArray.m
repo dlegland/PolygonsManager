@@ -29,9 +29,9 @@ methods
         arraySize = length(this.polygons);
     end
 
-    function polygon = getPolygon(this, row)
-        % returns the polygon found at the index row
-        polygon = this.polygons{row};
+    function polygon = getPolygon(this, index)
+        % returns the polygon at the given index
+        polygon = this.polygons{index};
     end
 
     function polygons = getAllPolygons(this)

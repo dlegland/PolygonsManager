@@ -717,4 +717,10 @@ methods
     end
 end
 
+%% Implementation of Panel methods
+methods
+    function refreshDisplay(this) %#ok<MANU>
+        disp('refresh Panel');
+    end
+end
 end

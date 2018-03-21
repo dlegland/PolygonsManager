@@ -8,7 +8,7 @@ function computePCA(frame)
 % extract data from polygon array, depending on its class
 array = frame.model.PolygonArray;
 if isa(array, 'CoordsPolygonArray')
-    data = array.coords;
+    data = array.polygons;
 elseif isa(array, 'PolarSignatureArray')
     data = array.signatures;
 else

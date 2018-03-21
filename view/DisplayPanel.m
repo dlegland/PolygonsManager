@@ -20,6 +20,10 @@ classdef DisplayPanel < handle
 properties
     % the instance of PolygonsManagerMainFrame that contains this panel
     frame;
+    
+    % the type of panel (to be removed)
+    type;
+    
 end % end properties
 
 

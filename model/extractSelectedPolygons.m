@@ -16,7 +16,7 @@ if isa(model.factorTable, 'Table')
     % if there was already a factor Table loaded, update it to
     % match the new polygons
     
-    factorTbl = model.factorTbl(selectedInds, :);
+    factorTbl = model.factorTable(selectedIndices, :);
 end
 
 newData = selectPolygons(model.PolygonArray, selectedIndices);

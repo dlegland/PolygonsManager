@@ -48,7 +48,8 @@ properties
     % * pcaLoadings
     % * pcaEigenValues
     % * pcaVector
-    type;
+    % (the type is already defined in parent class)
+%     type;
 end
 
 %% Construction methods
@@ -692,6 +693,9 @@ end
 methods
     function refreshDisplay(this) %#ok<MANU>
         disp('refresh Panel');
+    end
+    
+    function updateSelectionDisplay(this) %#ok<MANU>
     end
 end
 end

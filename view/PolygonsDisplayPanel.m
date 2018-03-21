@@ -35,6 +35,7 @@ methods
     
         % set the colormap of the panel
         this.colorMap = Panel.default_colorMap;
+        this.type = 'polygons';
         
         % default title
         title = 'polygons';
@@ -191,7 +192,7 @@ methods
         %UPDATESELECTEDPOLYGONSDISPLAY  display the lines of the current axis differently if they're selected or not
 
         % get the nameList of selected polygons
-        selected = this.frame.model.selectedPolygons;
+        selected = getSelectedPolygonNames(this.frame.model);
 
         % get all the objects drawn onto the axis
         allHandleList = findobj(this.handles.uiAxis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes');
@@ -217,12 +218,12 @@ methods
             end
         end
 
-        % update the infobox
-        if length(selected) == 1
-            updateInfoBox(this.frame, getInfoFromName(this.frame.model, selected));
-        else
-            updateInfoBox(this.frame);
-        end
+%         % update the infobox
+%         if length(selected) == 1
+%             updateInfoBox(this.frame, getInfoFromName(this.frame.model, selected));
+%         else
+%             updateInfoBox(this.frame);
+%         end
     end
 
 

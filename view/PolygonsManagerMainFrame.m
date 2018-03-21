@@ -377,9 +377,46 @@ methods
         warning('deprecated: use PolygonsManagerData methods instead')
         names = this.model.nameList;
     end
+
+    function updatePolygonInfoPanel(this)
+        
+        selected = getSelectedPolygonNames(this.model);
+        
+        if length(selected) == 1
+            % if there's only one polygon selected display its
+            % informations
+            infos = getInfoFromName(this.model, selected);
+            this.handles.infoFields{1}.String = infos(1);
+            this.handles.infoFields{2}.String = infos(2);
+            this.handles.infoFields{3}.String = infos(3);
+            this.handles.infoFields{4}.String = this.model.infoTable.levels{4}{infos(4)};
+
+            if isa(this.model.factorTable, 'Table')
+                val = this.handles.infoFields{5}.Value;
+                maps = this.handles.infoFields{5}.String;
+                factor = maps{val};
+                if ~strcmp(factor, 'none')
+                    levels = getLevel(this.model.factorTable, this.model.selectedPolygons, factor);
+                    this.handles.infoFields{6}.String = levels;
+                else
+                    this.handles.infoFields{6}.String = '';
+                end
+            end
+        else
+            %if there's multiple/no polygons selected display nothing
+            this.handles.infoFields{1}.String = '';
+            this.handles.infoFields{2}.String = '';
+            this.handles.infoFields{3}.String = '';
+            this.handles.infoFields{4}.String = '';
+
+            this.handles.infoFields{6}.String = '';
+        end
+    end
     
     function updateInfoBox(this, varargin)
     %UPDATEINFOBOX  update the informations concerning the selected polygon
+    %
+    %   Replaced by "updatePolygonInfoPanel"
     %
     %   inputs :
     %       - this : handle of the PolygonsManagerMainFrame
@@ -462,16 +499,19 @@ methods
     end
     
     function updateSelectedPolygonsDisplay(this)
-         panel = getActivePanel(this);
-         if ~isempty(panel)
-             updateSelectionDisplay(panel);
-         end
-         
-         % match the selection of the name list to the selection of the axis
-         if strcmp(get(this.handles.list, 'visible'), 'on')
-             indices = getSelectedPolygonIndices(this.model);
-             set(this.handles.list, 'value', indices);
-         end
+        panel = getActivePanel(this);
+        if ~isempty(panel)
+            updateSelectionDisplay(panel);
+        end
+        
+        % match the selection of the name list to the selection of the axis
+        if strcmp(get(this.handles.list, 'visible'), 'on')
+            indices = getSelectedPolygonIndices(this.model);
+            set(this.handles.list, 'value', indices);
+        end
+        
+        % update the panel containing info about current polygon
+        updatePolygonInfoPanel(this);
     end
 end
 

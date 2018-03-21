@@ -104,7 +104,7 @@ menubar.factors.save.handle = uimenu(factMenu, 'label', '&Save factors', ...
                   'separator', 'on');
 
 menubar.factors.display.handle = uimenu(factMenu, 'label', '&Display factors', ...
-                   'callback', @(~,~) showTable(obj.model.factorTable), ...
+                   'callback', @(~,~) showTable(obj), ...
                      'enable', 'off', ...
                   'separator', 'on');
 
@@ -186,7 +186,7 @@ menubar.pca.displayScores.handle = uimenu(pcaMenu, 'label', 'Display &Scores', .
 menubar.pca.displayLoadings.handle = uimenu(pcaMenu, 'label', 'Display &Loadings', ...
                     'callback', @(~,~) pcaLoadings(obj), ...
                       'enable', 'off');
-menubar.pca.displayProfiles.handle = uimenu(pcaMenu, 'label', '&Influence Plot', ...
+menubar.pca.influencePlot.handle = uimenu(pcaMenu, 'label', '&Influence Plot', ...
                     'callback', @(~,~) pcaInfluence(obj), ...
                       'enable', 'off');
 menubar.pca.displayProfiles.handle = uimenu(pcaMenu, 'label', 'Display &profiles', ...
@@ -258,7 +258,7 @@ obj.menuBar = menubar;
 % ---------------------------------------------------------------------------- MENU CALLBACKS -----------------------------------------------------------------------------------------------------
 % -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function showTable(table)
+function showTable(obj, varargin)
 %SHOWFACTORS  open a new figure that displays the current factor Table
 %
 %   inputs :
@@ -266,6 +266,7 @@ function showTable(table)
 %   ouputs : none
 
     % create a figure and display the Table in it
+    table = obj.model.factorTable;
     [hf, ht] = show(table);
     ht.Units = 'pixel';
 
@@ -278,7 +279,6 @@ function showTable(table)
         % uiTable and get the position where the figure
         % will be at the center of the MainFrame
         ht.Position = ht.Extent;
-%         pos = getMiddle(obj.handles.figure, ht.Position(3), ht.Position(4));
         pos = getMiddle(obj, ht.Position(3), ht.Position(4));
         
     else
@@ -287,7 +287,7 @@ function showTable(table)
         % as the MainFrame and make the uiTable take all
         % the place it can
                                             % +16 = scrollbar
-        pos = getMiddle(obj.handles.figure, ht.Extent(3)+16, obj.handles.figure.Position(4));
+        pos = getMiddle(obj, ht.Extent(3)+16, obj.handles.figure.Position(4));
         ht.Units = 'normalized';
         ht.Position = [0 0 1 1];
     end

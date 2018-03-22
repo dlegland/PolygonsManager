@@ -373,7 +373,6 @@ methods
 
         % get the list of all angles + 1 angle to make the last point match the
         % first
-%             angles = angles([1:end 1]);
         angles(end+1) = angles(end) + angles(2)-angles(1);
 
         % get the names of all the polygons loaded and prepare the
@@ -405,9 +404,6 @@ methods
         for i = 1:size(signatures, 1)
             % get the signature that will be drawn
             signature = signatures(i, [1:end 1]);
-
-%                 % make sure the last point matches the first
-%                 signature(end+1) = signature(1);
 
             % draw the line
             line = plot(angles, signature, 'parent', axis);
@@ -464,9 +460,6 @@ methods
         for i = 1:length(signatureArray)
             % get the signature that will be drawn
             signature = signatureArray{i, 2};
-
-            % make sure the last point matches the first
-%                 signature(end+1) = signature(1);
             signature = signature([1:end 1]);
 
             % draw the line
@@ -479,7 +472,6 @@ methods
             if cellfun('isempty',lineHandles(signatureArray{i, 1}))
                 % if the factor of the signature that was just drawn has never been
                 % encountered, create a copy of this line and save it
-%                 lineHandles{signatureArray{i, 1}} = copy(lines{i});
                 lineHandles{signatureArray{i, 1}} = lines{i};
                 levels{signatureArray{i, 1}} = this.mainFrame.model.selectedFactor{2}{signatureArray{i, 1}};
             end
@@ -490,9 +482,6 @@ methods
 
         if this.mainFrame.model.selectedFactor{3} == 0
             % if the legend must be displayed, display it
-%             this.uiLegend{1:4} = legend(axis, lineHandles{:}, levels, ...
-%                 'location', 'eastoutside', ...
-%                 'uicontextmenu', []);
             this.uiLegend = legend([lineHandles{:}], levels, ...
                 'location', 'northeast');
         end

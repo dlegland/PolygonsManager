@@ -216,7 +216,7 @@ methods
             this.model.selectedPolygons = list(selVal);
 
             %update the displayed polygons
-            updateSelectedPolygonsDisplay(getActivePanel(this));
+            updateSelectionDisplay(getActivePanel(this));
         end
 
         function draw

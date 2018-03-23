@@ -9,46 +9,47 @@ function createFactors(obj)
 % that it'll contain
 [factorName, nbFactors] = createFactorPrompt1;
 
-if ~strcmp(nbFactors, '?') && nbFactors > 0
-    % get the name of the first polygon to use it as an exemple
-    sampleName = obj.model.nameList{1};
+if strcmp(nbFactors, '?') || nbFactors == 0
+    return;
+end
 
-    % memory allocation
-    rowNames = Table.create(zeros(length(obj.model.nameList), 1), 'rowNames',  obj.model.nameList);
+% get the name of the first polygon to use it as an exemple
+sampleName = obj.model.nameList{1};
+
+% memory allocation
+rowNames = Table.create(zeros(length(obj.model.nameList), 1), 'rowNames', obj.model.nameList(:));
+
+% for the 1st factor, enter it's name, index of its first character, and
+% number of characters
+[start, number, name] = createFactorPrompt2(1, sampleName);
+
+if ~strcmp(name, '?')
+    % create the ouput Table
+    factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
     
-    % for the 1st factor, enter it's name, index of its first character, and
-    % number of characters
-    [start, number, name] = createFactorPrompt2(1, sampleName);
-    
-    if ~strcmp(name, '?')
-        % create the ouput Table
-        factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
-
-        if nbFactors > 1
-            % if there's more than 1 factor
-            for i = 2:nbFactors
-                % for each factor, enter it's name, index of its first character, and
-                % number of characters
-                [start, number, name] = createFactorPrompt2(i, sampleName);
-
-                if strcmp(name, '?')
-                    return;
-                end
-                % add the new factor to the factor table
-                factorTbl = horzcat(factorTbl, parseFactorFromRowNames(rowNames, start, number, name));
+    if nbFactors > 1
+        % if there's more than 1 factor
+        for i = 2:nbFactors
+            % for each factor, enter it's name, index of its first character, and
+            % number of characters
+            [start, number, name] = createFactorPrompt2(i, sampleName);
+            
+            if strcmp(name, '?')
+                return;
             end
+            % add the new factor to the factor table
+            factorTbl = horzcat(factorTbl, parseFactorFromRowNames(rowNames, start, number, name));
         end
-    
-        % set the factor Table name
-        factorTbl.name = factorName;
-
-        % set the new factor Table as the current factor Table
-        obj.model.factorTable = factorTbl;
-
-        %update the menus
-        updateMenus(obj);
     end
     
+    % set the factor Table name
+    factorTbl.name = factorName;
+    
+    % set the new factor Table as the current factor Table
+    obj.model.factorTable = factorTbl;
+    
+    %update the menus
+    updateMenus(obj);
 end
 
 

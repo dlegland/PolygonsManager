@@ -490,7 +490,7 @@ methods
 % ---------------------------------------------------------------------------- PCA RESULTS -------------------------------------------------------------------------------------------------------
 
     function displayPca(this, x, y)
-    %DISPLAYPCA  Display points
+    %DISPLAYPCA  Display points (e.g. score plot)
     %
     %   Inputs :
     %       - obj : handle of the MainFrame

@@ -153,9 +153,12 @@ methods
         inds = getSelectedPolygonIndices(this);
         keepInds(inds) = [];
 
-        this.PolygonArray = removeAll(this.PolygonArray, inds);
+        removeAll(this.PolygonArray, inds);
         
-        this.factorTable = this.factorTable(keepInds, :);
+        if ~isempty(this.factorTable)
+            this.factorTable = this.factorTable(keepInds, :);
+        end
+        
         this.nameList = this.nameList(keepInds);
         this.selectedPolygons = {};
     end

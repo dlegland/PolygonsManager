@@ -106,7 +106,7 @@ methods
 
         % fill the selection list of the new PolygonsManagerMainFrame
         set(this.handles.list, 'string', model.nameList, ...
-                             'callback', @(~,~) select, ...
+                             'callback', @(~,~) onListSelectionUpdated(this), ...
                         'uicontextmenu', this.menuBar.contextList.handle);
 
         if ~isempty(varargin)
@@ -206,18 +206,6 @@ methods
         end
 
         updateMenus(this);
-   
-        function select
-        %SELECT  change the display depending on the selected polygons
-
-            %get the list of selected polygons
-            list = cellstr(this.handles.list.String);
-            selVal = this.handles.list.Value;
-            this.model.selectedPolygons = list(selVal);
-
-            %update the displayed polygons
-            updateSelectionDisplay(getActivePanel(this));
-        end
 
         function draw
         %DRAW  draw polygons depending on the current selection
@@ -265,7 +253,7 @@ end
 %% Processing methods
 methods
     function updateMenus(this)
-    %UPDATEMENUS update the menus depending on the current data of the model
+    %UPDATEMENUS update the menus depending on the current state of the datamodel
     %
     %   inputs:
     %       - this: handle of the PolygonsManagerMainFrame
@@ -279,6 +267,7 @@ methods
         mb = this.menuBar;
         
         set(mb.edit.extractSelection.handle, 'enable', 'on');
+        set(mb.edit.clearSelection.handle, 'enable', 'on');
         if ~isempty(this.model.usedProcess)
             set(mb.file.saveMacro.handle, 'enable', 'on');
         end
@@ -498,6 +487,20 @@ methods
         pos(4) = height;
     end
     
+    function refreshDisplay(this)
+        % refresh the display of visible panels
+        
+        panel = getActivePanel(this);
+        if ~isempty(panel)
+            refreshDisplay(panel);
+            updateSelectionDisplay(panel);
+        end
+        
+        updateMenus(this);
+
+        set(this.handles.list, 'string', getPolygonNames(this.model));
+    end
+    
     function updateSelectedPolygonsDisplay(this)
         panel = getActivePanel(this);
         if ~isempty(panel)
@@ -517,6 +520,18 @@ end
 
 %% GUI callbacks
 methods
+    function onListSelectionUpdated(this, varargin)
+        %SELECT  change the display depending on the selected polygons
+        
+        %get the list of selected polygons
+        list = cellstr(this.handles.list.String);
+        selVal = this.handles.list.Value;
+        this.model.selectedPolygons = list(selVal);
+        
+        %update the displayed polygons
+        updateSelectionDisplay(getActivePanel(this));
+    end
+
     function onSelectedTabChanged(this, varargin)
         % called when the current tab is changed
         disp('change selected tab.');

@@ -162,6 +162,16 @@ methods
         this.nameList = this.nameList(keepInds);
         this.selectedPolygons = {};
     end
+    
+    function res = duplicate(this)
+        % duplicates the polygons and the associated data
+        polys = duplicate(this.PolygonArray);
+        
+        res = PolygonsManagerData(polys, 'nameList', this.nameList);
+        res.factorTable = this.factorTable;
+        res.selectedPolygons = this.selectedPolygons;
+        res.selectedFactor = this.selectedFactor;
+    end
 end
 
 %% Old methods

@@ -268,6 +268,7 @@ methods
         
         set(mb.edit.extractSelection.handle, 'enable', 'on');
         set(mb.edit.clearSelection.handle, 'enable', 'on');
+        set(mb.edit.duplicate.handle, 'enable', 'on');
         if ~isempty(this.model.usedProcess)
             set(mb.file.saveMacro.handle, 'enable', 'on');
         end

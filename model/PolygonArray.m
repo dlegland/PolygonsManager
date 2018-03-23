@@ -17,7 +17,16 @@ classdef PolygonArray < handle
         % updates the coordinates of the specified polygon
         updatePolygon(obj, row, polygon);
         
+        % removes from the array all the polygons specified by index list
+        removeAll(obj, inds);
+        
+        % keeps only the polygons specified by index list
+        retainAll(obj, inds);
+        
+        % duplicates this array
+        dup = duplicate(this);
+        
         % extract the selected polygons in a new PolygonArray
-        newPolygonArray = selectPolygons(obj, polygonIndices);
+        newArray = selectPolygons(obj, polygonIndices);
     end
 end

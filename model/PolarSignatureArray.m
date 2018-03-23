@@ -35,10 +35,6 @@ methods
         arraySize = size(obj.signatures, 1);
     end
 
-    function polygonSize = getPolygonSize(obj)
-        polygonSize = size(obj.signatures, 2);
-    end
-
     function polygon = getPolygon(obj, row)
         % computes the polygon found at the index row
         polygon = signatureToPolygon(getSignature(obj, row), obj.angleList);
@@ -62,6 +58,23 @@ methods
         obj.signatures(row, :) = polygonSignature(polygon, obj.angleList);
     end
 
+    
+    function removeAll(obj, inds)
+        % removes from the array all the polygons specified by index list
+        obj.signatures(inds, :) = [];
+    end
+    
+    function retainAll(obj, inds)
+        % keeps only the polygons specified by a index list
+        obj.signatures = obj.signatures(inds, :);
+    end
+    
+    function dup = duplicate(obj)
+        % duplicates this array
+        dup = PolarSignatureArray(obj.polygons);
+    end
+    
+
     function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new PolarSignatureArray
         newSignatures = obj.signatures(polygonIndices, :);
@@ -71,6 +84,10 @@ end
 
 %% Methods specific to PolarSignatureArray
 methods
+    function polygonSize = getPolygonSize(obj)
+        polygonSize = size(obj.signatures, 2);
+    end
+
     function signature = getPolarSignature(obj, row)
         % returns the signature found at the index row
         signature = obj.signatures(row, :);

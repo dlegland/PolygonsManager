@@ -62,6 +62,22 @@ methods
         obj.polygons(row, :) = polygonToRow(polygon, 'packed');
     end
     
+    function removeAll(obj, inds)
+        % removes from the array all the polygons specified by index list
+        obj.polygons(inds, :) = [];
+    end
+    
+    function retainAll(obj, inds)
+        % keeps only the polygons specified by a index list
+        obj.polygons = obj.polygons(inds, :);
+    end
+    
+    function dup = duplicate(obj)
+        % duplicates this array
+        dup = CoordsPolygonArray(obj.polygons);
+    end
+    
+    
     function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new CoordsPolygonArray
         newCoords = obj.polygons(polygonIndices, :);

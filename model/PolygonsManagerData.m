@@ -116,12 +116,12 @@ methods
         b = strcmp(names, this.selectedPolygons);
     end
     
-    function addSelectedPolygons(this, names)
+    function addPolygonsToSelection(this, names)
         checkNamesExist(this, names);
         this.selectedPolygons = [this.selectedPolygons, names];
     end
     
-    function removeSelectedPolygons(this, names)
+    function removePolygonsFromSelection(this, names)
         checkNamesExist(this, names);
         this.selectedPolygons(strcmp(this.selectedPolygons, names)) = [];
     end
@@ -144,6 +144,20 @@ methods
             errnames = names(~strcmp(names, this.nameList));
             error(['some names do not belong to name list: ' errnames]);
         end
+    end
+    
+    function removeSelectedPolygons(this)
+        % remove the selected polygons from this data object
+
+        keepInds = 1:getPolygonNumber(this.PolygonArray);
+        inds = getSelectedPolygonIndices(this);
+        keepInds(inds) = [];
+
+        this.PolygonArray = removeAll(this.PolygonArray, inds);
+        
+        this.factorTable = this.factorTable(keepInds, :);
+        this.nameList = this.nameList(keepInds);
+        this.selectedPolygons = {};
     end
 end
 

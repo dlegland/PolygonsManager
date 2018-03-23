@@ -111,17 +111,17 @@ methods
             % mouse-button
             if isSelectedPolygon(model, tag)
                 % if the clicked line was already selected, deselect it
-                removeSelectedPolygons(model, tag);
+                removePolygonsFromSelection(model, tag);
             else
                 % if the clicked line wasn't selected, add it to the list of
                 % selected lines
-                addSelectedPolygons(model, tag);
+                addPolygonsToSelection(model, tag);
             end
         else
             % if the user didn't press 'ctrl' or click the right mouse-button
             % set the clicked line as the only one selected
             clearPolygonSelection(model);
-            addSelectedPolygons(model, tag);
+            addPolygonsToSelection(model, tag);
         end
         
         updateSelectedPolygonsDisplay(this.frame);

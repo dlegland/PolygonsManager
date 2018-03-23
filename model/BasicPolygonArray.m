@@ -40,21 +40,38 @@ methods
     end
 
     function b = isNormalized(obj) %#ok<MANU>
-        % return false
+        % returns false
         b = false;
     end
     
-    function updatePolygon(this, row, polygon)
-        % replace the polygon found at the index row by a new polygon
-        this.polygons{row} = polygon;
+    function updatePolygon(this, index, polygon)
+        % replaces the polygon found at the given index by a new polygon
+        this.polygons{index} = polygon;
     end
+    
+    function removeAll(obj, inds)
+        % removes from the array all the polygons specified by index list
+        obj.polygons(inds) = [];
+    end
+    
+    function retainAll(obj, inds)
+        % keeps only the polygons specified by a index list
+        obj.polygons = obj.polygons(inds);
+    end
+    
+    function dup = duplicate(obj)
+        % duplicates this array
+        newPolys = cell(1, length(obj.polygons));
+        newPolys(:) = obj.polygons(:);
+        dup = BasicPolygonArray(newPolys);
+    end
+
     
     function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new BasicPolygonArray
         newPolygons = obj.polygons(polygonIndices);
         newPolygonArray = BasicPolygonArray(newPolygons);
     end
-
 end
 
 end

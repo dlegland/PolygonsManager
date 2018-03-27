@@ -88,7 +88,12 @@ end
 
 %% Methods specific to this class
 methods
+    function array = getDataArray(obj)
+        array = obj.polygons;
+    end
+    
     function array = getDatas(obj)
+        warning('deprecated, use getDataArray instead');
         array = obj.polygons;
     end
 end

@@ -98,8 +98,12 @@ methods
         angles = obj.angleList;
     end
 
+    function array = getDataArray(obj)
+        array = obj.signatures;
+    end
 
     function array = getDatas(obj)
+        warning('deprecated, use getDataArray instead');
         array = obj.signatures;
     end
     

@@ -6,6 +6,10 @@ function removeSelectedPolygons(frame)
 %
 %   Outputs: none
 
+if strcmp(get(frame.handles.list, 'visible'), 'on')
+    set(frame.handles.list, 'value', []);
+end
+
 model = frame.model;
 removeSelectedPolygons(model);
 

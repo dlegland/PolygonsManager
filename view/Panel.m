@@ -593,7 +593,7 @@ methods
             end
         else
             if ~strcmp(factor, 'none')
-                set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/max(unique(getColumn(this.mainFrame.model.factorTable, factor))):length(this.colorMap)), :));
+                set(axis, 'colororder', this.colorMap(floor(1:length(this.colorMap)/max(unique(getColumn(this.mainFrame.model.factors, factor))):length(this.colorMap)), :));
             end
             lines = findobj(allchild(axis), '-not', 'linestyle', 'none');
             points = findobj(allchild(axis), 'marker', '.');
@@ -621,7 +621,7 @@ methods
 
             % get the datas of the factor that'll be used to group the
             % points
-            factors = getColumn(this.mainFrame.model.factorTable, factor);
+            factors = getColumn(this.mainFrame.model.factors, factor);
 
             % get the list of uniques values
             uniques = unique(factors);

@@ -290,17 +290,17 @@ methods
         end
         
         % enables or not menu items depending on the factor table
-        if isa(this.model.factorTable, 'Table')
+        if isa(this.model.factors, 'Table')
             if ~isempty(this.handles.Panels{1}.type)
                 if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                     this.handles.options{1}.TabEnables{2} = 'on';
                     this.handles.options{2}.TabEnables{2} = 'on';
-                    set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factorTable.colNames]);
+                    set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factors.colNames]);
                 end
             else
                 this.handles.options{1}.TabEnables{2} = 'on';
                 this.handles.options{2}.TabEnables{2} = 'on';
-                set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factorTable.colNames]);
+                set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factors.colNames]);
             end
             
             % update the 'factors submenus'
@@ -309,7 +309,7 @@ methods
             set(mb.factors.save.handle, 'enable', 'on');
             set(mb.factors.display.handle, 'enable', 'on');
             set(mb.edit.showInfo.handle, 'enable', 'on');
-            set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name]);
+            set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name]);
         end
         
         % enables or not menu items depending on PCA
@@ -331,14 +331,14 @@ methods
                 
                 if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                     this.handles.options{3}.TabEnables{2} = 'on';
-                    if isa(this.model.factorTable, 'Table')
+                    if isa(this.model.factors, 'Table')
                         set(findobj(this.handles.options{3}, 'tag', 'group'), 'enable', 'on');
                     end
                 end
             end
             
-            if isa(this.model.factorTable, 'Table')
-                set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factorTable.name ' | PCA']);
+            if isa(this.model.factors, 'Table')
+                set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name ' | PCA']);
             else
                 set(this.handles.figure, 'name', 'Polygons Manager | PCA');
             end
@@ -381,12 +381,12 @@ methods
             this.handles.infoFields{3}.String = infos(3);
             this.handles.infoFields{4}.String = this.model.infoTable.levels{4}{infos(4)};
 
-            if isa(this.model.factorTable, 'Table')
+            if isa(this.model.factors, 'Table')
                 val = this.handles.infoFields{5}.Value;
                 maps = this.handles.infoFields{5}.String;
                 factor = maps{val};
                 if ~strcmp(factor, 'none')
-                    levels = getLevel(this.model.factorTable, this.model.selectedPolygons, factor);
+                    levels = getLevel(this.model.factors, this.model.selectedPolygons, factor);
                     this.handles.infoFields{6}.String = levels;
                 else
                     this.handles.infoFields{6}.String = '';
@@ -420,12 +420,12 @@ methods
             this.handles.infoFields{3}.String = varargin{1}(3);
             this.handles.infoFields{4}.String = this.model.infoTable.levels{4}{varargin{1}(4)};
 
-            if isa(this.model.factorTable, 'Table')
+            if isa(this.model.factors, 'Table')
                 val = this.handles.infoFields{5}.Value;
                 maps = this.handles.infoFields{5}.String;
                 factor = maps{val};
                 if ~strcmp(factor, 'none')
-                    levels = getLevel(this.model.factorTable, this.model.selectedPolygons, factor);
+                    levels = getLevel(this.model.factors, this.model.selectedPolygons, factor);
                     this.handles.infoFields{6}.String = levels;
                 else
                     this.handles.infoFields{6}.String = '';

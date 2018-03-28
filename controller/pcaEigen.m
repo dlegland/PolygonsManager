@@ -12,38 +12,38 @@ values  = obj.model.pca.eigenValues.data;
 % select the number of principal component the must be displayed
 nbPC = pcaEigenPrompt(size(coord, 2));
 
-if isnumeric(nbPC)
-    % create a new figure
-    fen = PolygonsManagerMainFrame;
-    
-    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', obj.model.nameList, ...
-                                 'factorTable', obj.model.factorTable, ...
-                                         'pca', obj.model.pca);
-
-    % prepare the the new PolygonsManagerMainFrame's name
-    if isa(obj.model.factorTable, 'Table')
-        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Eigen values'];
-    else
-        fenName = 'Polygons Manager | PCA - Eigen values';
-    end
-
-    % prepare the new PolygonsManagerMainFrame and display the graph
-    setupNewFrame(fen, model, fenName, ...
-                  'pcaEigenValues', 'on');
-
-
-    % scree plot
-    bar(fen.handles.Panels{1}.uiAxis, 1:nbPC, values(1:nbPC, 2));
-    
-    % setup graph
-    xlim([0 nbPC+1]);
-
-    % annotations
-    title('Eigen Values')
-    xlabel('Number of components');
-    ylabel('Inertia (%)');
+if ~isnumeric(nbPC)
+    return;
 end
+
+% create a new figure
+fen = PolygonsManagerMainFrame;
+
+model = duplicate(obj.model);
+
+% prepare the the new PolygonsManagerMainFrame's name
+if isa(obj.model.factors, 'Table')
+    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Eigen values'];
+else
+    fenName = 'Polygons Manager | PCA - Eigen values';
+end
+
+% prepare the new PolygonsManagerMainFrame and display the graph
+setupNewFrame(fen, model, fenName, ...
+              'pcaEigenValues', 'on');
+
+
+% scree plot
+bar(fen.handles.Panels{1}.uiAxis, 1:nbPC, values(1:nbPC, 2));
+
+% setup graph
+xlim([0 nbPC+1]);
+
+% annotations
+title('Eigen Values')
+xlabel('Number of components');
+ylabel('Inertia (%)');
+
 
 function nbPC = pcaEigenPrompt(maxPC)
 %PCAEIGENPROMPT  A dialog figure on which the user can select the number of principal components he wants to see on the graph

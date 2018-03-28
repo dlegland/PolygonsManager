@@ -10,8 +10,8 @@ function selectFactor(obj, varargin)
     
     if ~strcmp(varargin{1}, 'none')
         % get the levels of the selected factor
-        x = columnIndex(obj.model.factorTable, varargin{1});
-        levels = obj.model.factorTable.levels{x};
+        x = columnIndex(obj.model.factors, varargin{1});
+        levels = obj.model.factors.levels{x};
     else
         levels = 0;
     end

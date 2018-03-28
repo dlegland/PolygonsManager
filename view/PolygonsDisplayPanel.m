@@ -178,9 +178,7 @@ methods
 
             set(line, 'tag', names{i}, ...
                 'ButtonDownFcn', @this.onPolygonObjectClicked);
-            uistack(line, 'bottom');
         end
-        uistack(axis.Children(:), 'bottom');
         hold(axis, 'off');
     end
 

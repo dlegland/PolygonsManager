@@ -276,7 +276,7 @@ function showTable(obj, varargin)
 %   ouputs : none
 
     % create a figure and display the Table in it
-    table = obj.model.factorTable;
+    table = obj.model.factors;
     [hf, ht] = show(table);
     ht.Units = 'pixel';
 
@@ -358,9 +358,9 @@ function exportToWS
                                                   'colNames', colnames'));
     end
     
-    if isa(obj.model.factorTable, 'Table')
+    if isa(obj.model.factors, 'Table')
         % if there's one, export the factor Table
-        assignin('base', 'factors', obj.model.factorTable);
+        assignin('base', 'factors', obj.model.factors);
     end
     
     if isa(obj.model.pca, 'Pca')

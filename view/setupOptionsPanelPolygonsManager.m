@@ -230,7 +230,7 @@ function setupOptionsPanelPolygonsManager(obj)
         textFactor.String = [factor ' :'];
         
         if length(obj.model.selectedPolygons) == 1 && ~strcmp(factor,'none')
-            fields{6}.String = getLevel(obj.model.factorTable, obj.model.selectedPolygons, factor);
+            fields{6}.String = getLevel(obj.model.factors, obj.model.selectedPolygons, factor);
         else
             fields{6}.String = '';
         end

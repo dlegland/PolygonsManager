@@ -10,114 +10,114 @@ function pcaScoresProfiles(obj)
 % variable that defines if the axis must be equalized
 [cp1, cp2, equal] = pcaScoresPrompt(length(obj.model.pca.scores.rowNames));
 
-if isnumeric([cp1 cp2])
-    % create a new PolygonsManagerMainFrame
-    fen = PolygonsManagerMainFrame;
-
-    % create the PolygonsManagerData that'll be used as the new
-    % PolygonsManagerMainFrame's model
-    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', obj.model.nameList, ...
-                                 'factorTable', obj.model.factorTable, ...
-                                         'pca', obj.model.pca);
-
-    % prepare the the new PolygonsManagerMainFrame's name
-    if isa(obj.model.factorTable, 'Table')
-        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Scores'];
-    else
-        fenName = 'Polygons Manager | PCA - Scores';
-    end
-
-    % prepare the new PolygonsManagerMainFrame and display the graph
-    setupNewFrame(fen, model, fenName, ...
-                  'pcaScoresProfiles', equal, ...
-                  obj.model.pca.scores(:, cp1).data, ...
-                  obj.model.pca.scores(:, cp2).data);
-
-    delete(fen.handles.Panels{1}.uiAxis);
-    fen.handles.Panels{1}.uiAxis = [];
-
-    grid = uix.Grid('parent', fen.handles.Panels{1}.uiPanel);
-
-    hbox = uix.HBox('parent', grid, 'padding', 5);
-    uix.Empty('parent', hbox);
-    axisArray{1} = axes('parent', hbox, 'ActivePositionProperty', 'Position');
-    uix.Empty('parent', hbox);
-    axisArray{2} = axes('parent', hbox, 'ActivePositionProperty', 'Position');
-    uix.Empty('parent', hbox);
-
-    pan = uipanel('parent', grid, 'bordertype', 'none');
-    fen.handles.Panels{1}.uiAxis = axes('parent', pan, ...
-                                 'ButtonDownFcn', @(~,~) reset(fen.handles.Panels{1}), ...
-                                    'colororder', fen.handles.Panels{1}.colorMap, ...
-                                           'tag', 'main', ...
-                                 'uicontextmenu', fen.handles.menus{6});
-
-    uix.Empty('parent', grid);
-
-    vbox = uix.VBox('parent', grid, 'padding', 15);
-    uix.Empty('parent', vbox);
-    axisArray{3} = axes('parent', vbox, 'ActivePositionProperty', 'Position');
-    uix.Empty('parent', vbox);
-    axisArray{4} = axes('parent', vbox, 'ActivePositionProperty', 'Position');
-    uix.Empty('parent', vbox);
-    
-    hbox.Widths = [-9 150 -10 150 -7];
-    vbox.Heights = [-1 150 -1 150 -1];
-    
-    grid.Heights = [150 -1]; 
-    grid.Widths = [-1 170]; 
-    
-    set([axisArray{:}], 'XTick', [], 'YTick', [], 'YColor','w' , 'XColor','w', 'Xlim', [-10 10], 'Ylim', [-10 10]);
-    axis([axisArray{:}], 'equal');
-
-    ld1 = obj.model.pca.loadings(:, cp1).data';
-    lambda1 = obj.model.pca.eigenValues(cp1, 1).data;
-    
-    ld2 = obj.model.pca.loadings(:, cp2).data';
-    lambda2 = obj.model.pca.eigenValues(cp2, 1).data;
-    
-    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        polys{2, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
-        polys{2, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
-        polys{1, 1} = polys{2, 1};
-        polys{1, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
-
-        polys{3, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
-        polys{3, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
-        polys{4, 1} = polys{3, 1};
-        polys{4, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
-    else
-        polys{2, 1} = rowToPolygon(obj.model.pca.means, 'packed');
-        polys{2, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, 'packed');
-        polys{1, 1} = polys{2, 1};
-        polys{1, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, 'packed');
-
-        polys{3, 1} = rowToPolygon(obj.model.pca.means, 'packed');
-        polys{3, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, 'packed');
-        polys{4, 1} = polys{3, 1};
-        polys{4, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, 'packed');
-    end
-    
-    for i = 1:length(axisArray)
-        hold(axisArray{i}, 'on');
-        drawPolygon(polys{i, 1}, 'parent', axisArray{i}, 'color', 'k');
-        drawPolygon(polys{i, 2}, 'parent', axisArray{i}, 'color', 'r', 'linewidth', 2);
-        hold(axisArray{i}, 'off');
-    end
-    
-    displayPca(fen.handles.Panels{1}, ...
-               fen.model.pca.scores(:, cp1).data, ...
-               fen.model.pca.scores(:, cp2).data);
-           
-    % save the two principal components that were selected in the axis
-    fen.handles.Panels{1}.uiAxis.UserData = {cp1, cp2};
-    
-    % create legends
-    annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
-
+if ~isnumeric([cp1 cp2])
+    return;
 end
-function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
+
+% create a new PolygonsManagerMainFrame
+fen = PolygonsManagerMainFrame;
+
+% create the PolygonsManagerData that'll be used as the new
+% PolygonsManagerMainFrame's model
+model = duplicate(obj.model);
+
+% prepare the the new PolygonsManagerMainFrame's name
+if isa(obj.model.factors, 'Table')
+    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Scores'];
+else
+    fenName = 'Polygons Manager | PCA - Scores';
+end
+
+% prepare the new PolygonsManagerMainFrame and display the graph
+setupNewFrame(fen, model, fenName, ...
+              'pcaScoresProfiles', equal, ...
+              obj.model.pca.scores(:, cp1).data, ...
+              obj.model.pca.scores(:, cp2).data);
+
+delete(fen.handles.Panels{1}.uiAxis);
+fen.handles.Panels{1}.uiAxis = [];
+
+grid = uix.Grid('parent', fen.handles.Panels{1}.uiPanel);
+
+hbox = uix.HBox('parent', grid, 'padding', 5);
+uix.Empty('parent', hbox);
+axisArray{1} = axes('parent', hbox, 'ActivePositionProperty', 'Position');
+uix.Empty('parent', hbox);
+axisArray{2} = axes('parent', hbox, 'ActivePositionProperty', 'Position');
+uix.Empty('parent', hbox);
+
+pan = uipanel('parent', grid, 'bordertype', 'none');
+fen.handles.Panels{1}.uiAxis = axes('parent', pan, ...
+                             'ButtonDownFcn', @(~,~) reset(fen.handles.Panels{1}), ...
+                                'colororder', fen.handles.Panels{1}.colorMap, ...
+                                       'tag', 'main', ...
+                             'uicontextmenu', fen.handles.menus{6});
+
+uix.Empty('parent', grid);
+
+vbox = uix.VBox('parent', grid, 'padding', 15);
+uix.Empty('parent', vbox);
+axisArray{3} = axes('parent', vbox, 'ActivePositionProperty', 'Position');
+uix.Empty('parent', vbox);
+axisArray{4} = axes('parent', vbox, 'ActivePositionProperty', 'Position');
+uix.Empty('parent', vbox);
+
+hbox.Widths = [-9 150 -10 150 -7];
+vbox.Heights = [-1 150 -1 150 -1];
+
+grid.Heights = [150 -1]; 
+grid.Widths = [-1 170]; 
+
+set([axisArray{:}], 'XTick', [], 'YTick', [], 'YColor','w' , 'XColor','w', 'Xlim', [-10 10], 'Ylim', [-10 10]);
+axis([axisArray{:}], 'equal');
+
+ld1 = obj.model.pca.loadings(:, cp1).data';
+lambda1 = obj.model.pca.eigenValues(cp1, 1).data;
+
+ld2 = obj.model.pca.loadings(:, cp2).data';
+lambda2 = obj.model.pca.eigenValues(cp2, 1).data;
+
+if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+    polys{2, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
+    polys{2, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
+    polys{1, 1} = polys{2, 1};
+    polys{1, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, obj.model.PolygonArray.angleList);
+
+    polys{3, 1} = signatureToPolygon(obj.model.pca.means, obj.model.PolygonArray.angleList);
+    polys{3, 2} = signatureToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
+    polys{4, 1} = polys{3, 1};
+    polys{4, 2} = signatureToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, obj.model.PolygonArray.angleList);
+else
+    polys{2, 1} = rowToPolygon(obj.model.pca.means, 'packed');
+    polys{2, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda1) * ld1, 'packed');
+    polys{1, 1} = polys{2, 1};
+    polys{1, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda1) * ld1, 'packed');
+
+    polys{3, 1} = rowToPolygon(obj.model.pca.means, 'packed');
+    polys{3, 2} = rowToPolygon(obj.model.pca.means + sqrt(lambda2) * ld2, 'packed');
+    polys{4, 1} = polys{3, 1};
+    polys{4, 2} = rowToPolygon(obj.model.pca.means - sqrt(lambda2) * ld2, 'packed');
+end
+
+for i = 1:length(axisArray)
+    hold(axisArray{i}, 'on');
+    drawPolygon(polys{i, 1}, 'parent', axisArray{i}, 'color', 'k');
+    drawPolygon(polys{i, 2}, 'parent', axisArray{i}, 'color', 'r', 'linewidth', 2);
+    hold(axisArray{i}, 'off');
+end
+
+displayPca(fen.handles.Panels{1}, ...
+           fen.model.pca.scores(:, cp1).data, ...
+           fen.model.pca.scores(:, cp2).data);
+
+% save the two principal components that were selected in the axis
+fen.handles.Panels{1}.uiAxis.UserData = {cp1, cp2};
+
+% create legends
+annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
+
+
+    function [cp1, cp2, equal] = pcaScoresPrompt(nbPC)
 %PCASCOREPROMPT  A dialog figure on which the user can select
 %which principal components he wants to oppose and if the axis must be
 %equalized

@@ -58,8 +58,8 @@ while loop == 0
             end
             
             % set the new factor Table as the current factor Table
-            obj.model.factorTable = factorTbl;
-            obj.model.factorTable.name = fName;
+            obj.model.factors = factorTbl;
+            obj.model.factors.name = fName;
             
             % update the menus
             updateMenus(obj);

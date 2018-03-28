@@ -46,7 +46,7 @@ if ~strcmp(name, '?')
     factorTbl.name = factorName;
     
     % set the new factor Table as the current factor Table
-    obj.model.factorTable = factorTbl;
+    obj.model.factors = factorTbl;
     
     %update the menus
     updateMenus(obj);

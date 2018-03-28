@@ -8,45 +8,45 @@ function pcaLoadings(obj)
 % select the two principal component we want to compare
 [cp1, cp2] = pcaLoadingsPrompt(length(obj.model.pca.loadings.rowNames));
 
-if isnumeric([cp1 cp2])
-    % create a new PolygonsManagerMainFrame
-    fen = PolygonsManagerMainFrame;
-    
-    % create the PolygonsManagerData that'll be used as the new
-    % PolygonsManagerMainFrame's model
-    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', obj.model.nameList, ...
-                                 'factorTable', obj.model.factorTable, ...
-                                         'pca', obj.model.pca);
-
-    % prepare the the new PolygonsManagerMainFrame's name
-    if isa(obj.model.factorTable, 'Table')
-        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Loadings'];
-    else
-        fenName = 'Polygons Manager | PCA - Loadings';
-    end
-    
-    % prepare the new PolygonsManagerMainFrame and display the graph
-    setupNewFrame(fen, model, fenName, ...
-                  'pcaLoadings', 'off', ...
-                  obj.model.pca.loadings(:, cp1).data, ...
-                  obj.model.pca.loadings(:, cp2).data);
-    
-    
-    ld1 = obj.model.pca.loadings(:, cp1).data';
-    ld2 = obj.model.pca.loadings(:, cp2).data';
-    
-    panel = Panel(fen, 'equal', 'off', 'title', 'mean CP1', 'type', 'pcaLoadings');
-    plot(panel.uiAxis, 1:length(ld1), ld1, 'linewidth', 2, 'color', 'k');
-    xlim(panel.uiAxis, [1 length(ld1)]);
-              
-    panel = Panel(fen, 'equal', 'off', 'title', 'mean CP2', 'type', 'pcaLoadings');
-    plot(panel.uiAxis, 1:length(ld2), ld2, 'linewidth', 2, 'color', 'k');
-    xlim(panel.uiAxis, [1 length(ld2)]);
-                    
-    % create legends
-    annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
+if ~isnumeric([cp1 cp2])
+    return;
 end
+
+% create a new PolygonsManagerMainFrame
+fen = PolygonsManagerMainFrame;
+
+% create the PolygonsManagerData that'll be used as the new
+% PolygonsManagerMainFrame's model
+model = duplicate(obj.model);
+
+% prepare the the new PolygonsManagerMainFrame's name
+if isa(obj.model.factors, 'Table')
+    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Loadings'];
+else
+    fenName = 'Polygons Manager | PCA - Loadings';
+end
+
+% prepare the new PolygonsManagerMainFrame and display the graph
+setupNewFrame(fen, model, fenName, ...
+              'pcaLoadings', 'off', ...
+              obj.model.pca.loadings(:, cp1).data, ...
+              obj.model.pca.loadings(:, cp2).data);
+
+
+ld1 = obj.model.pca.loadings(:, cp1).data';
+ld2 = obj.model.pca.loadings(:, cp2).data';
+
+panel = Panel(fen, 'equal', 'off', 'title', 'mean CP1', 'type', 'pcaLoadings');
+plot(panel.uiAxis, 1:length(ld1), ld1, 'linewidth', 2, 'color', 'k');
+xlim(panel.uiAxis, [1 length(ld1)]);
+
+panel = Panel(fen, 'equal', 'off', 'title', 'mean CP2', 'type', 'pcaLoadings');
+plot(panel.uiAxis, 1:length(ld2), ld2, 'linewidth', 2, 'color', 'k');
+xlim(panel.uiAxis, [1 length(ld2)]);
+
+% create legends
+annotateFactorialPlot(fen.model.pca, fen.handles.Panels{1}.uiAxis, cp1, cp2);
+
 
 function [cp1, cp2] = pcaLoadingsPrompt(nbPC)
 %PCALOADINGSPROMPT  A dialog figure on which the user can select

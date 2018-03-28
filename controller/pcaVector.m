@@ -11,78 +11,85 @@ function [poly, values] = pcaVector(obj)
 % the calculus
 [index, coef, profiles] = pcaVectorPrompt(length(obj.model.pca.loadings.rowNames));
 
-if ~strcmp(index, '?')
-    % create a new PolygonsManagerMainFrame
-    fen = PolygonsManagerMainFrame;
-    
-    % create the PolygonsManagerData that'll be used as the new
-    % PolygonsManagerMainFrame's model
-    model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                    'nameList', obj.model.nameList, ...
-                                 'factorTable', obj.model.factorTable, ...
-                                         'pca', obj.model.pca);
-                                     
-    % prepare the the new PolygonsManagerMainFrame's name
-    if isa(obj.model.factorTable, 'Table')
-        fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
-    else
-        fenName = 'Polygons Manager | PCA - Vectors';
-    end
-    
-    % memory allocation
-    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        values = zeros(3, length(obj.model.PolygonArray.angleList));
-    else
-        values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
-    end
-    poly = {};
-    
-    % compute eigen vector with appropriate coeff
-    ld = obj.model.pca.loadings(:, index).data';
-    lambda = obj.model.pca.eigenValues(index, 1).data;
-    values(1, :) = obj.model.pca.means;
-    values(2, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
-    values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
-    
-    % resulting polygon
-    if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-        poly{1} = signatureToPolygon(values(1, :), obj.model.PolygonArray.angleList);
-        poly{2} = signatureToPolygon(values(2, :), obj.model.PolygonArray.angleList);
-        poly{3} = signatureToPolygon(values(3, :), obj.model.PolygonArray.angleList);
-    else
-        poly{1} = rowToPolygon(values(1, :), 'packed');
-        poly{2} = rowToPolygon(values(2, :), 'packed');
-        poly{3} = rowToPolygon(values(3, :), 'packed');
-    end
-    
-    color = [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255;
-    switch profiles
-        case 1
-            polygons = poly;
-            selValues = values;
-        case 2
-            [~,i] = min([sum(values(2, :)) sum(values(3,:))]);
-            polygons = {poly{1}, poly{i+1}};
-            selValues(1, :) = values(1, :);
-            selValues(2, :) = values(i+1, :);
-            color = [0, 0, 0; 60, 60, 255]/255;
-        case 3
-            [~,i] = max([sum(values(2, :)) sum(values(3,:))]);
-            polygons = {poly{1}, poly{i+1}};
-            selValues(1, :) = values(1, :);
-            selValues(2, :) = values(i+1, :);
-        case 4
-            polygons = poly(1);
-            selValues(1, :) = values(1, :);
-    end
-    % prepare the new PolygonsManagerMainFrame and display the graph
-    setupNewFrame(fen, model, fenName, ...
-                  'pcaVector', ...
-                  polygons, ...
-                  selValues, ...
-                  color, ...
-                  ld);
+if strcmp(index, '?')
+    return;
 end
+
+% create a new PolygonsManagerMainFrame
+fen = PolygonsManagerMainFrame;
+
+% create the PolygonsManagerData that'll be used as the new
+% PolygonsManagerMainFrame's model
+model = duplicate(obj.model); 
+% PolygonsManagerData(obj.model.PolygonArray, ...
+%                                 'nameList', obj.model.nameList, ...
+%                              'factorTable', obj.model.factorTable, ...
+%                                      'pca', obj.model.pca);
+
+% prepare the the new PolygonsManagerMainFrame's name
+if isa(obj.model.factorTable, 'Table')
+    fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
+else
+    fenName = 'Polygons Manager | PCA - Vectors';
+end
+
+% memory allocation
+if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+    values = zeros(3, length(obj.model.PolygonArray.angleList));
+else
+    values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
+end
+poly = {};
+
+% compute eigen vector with appropriate coeff
+ld = obj.model.pca.loadings(:, index).data';
+lambda = obj.model.pca.eigenValues(index, 1).data;
+values(1, :) = obj.model.pca.means;
+values(2, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
+values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
+
+% resulting polygon
+if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+    poly{1} = signatureToPolygon(values(1, :), obj.model.PolygonArray.angleList);
+    poly{2} = signatureToPolygon(values(2, :), obj.model.PolygonArray.angleList);
+    poly{3} = signatureToPolygon(values(3, :), obj.model.PolygonArray.angleList);
+else
+    poly{1} = rowToPolygon(values(1, :), 'packed');
+    poly{2} = rowToPolygon(values(2, :), 'packed');
+    poly{3} = rowToPolygon(values(3, :), 'packed');
+end
+
+color = [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255;
+switch profiles
+    case 1
+        polygons = poly;
+        selValues = values;
+    case 2
+        [~,i] = min([sum(values(2, :)) sum(values(3,:))]);
+        polygons = {poly{1}, poly{i+1}};
+        selValues(1, :) = values(1, :);
+        selValues(2, :) = values(i+1, :);
+        color = [0, 0, 0; 60, 60, 255]/255;
+    case 3
+        [~,i] = max([sum(values(2, :)) sum(values(3,:))]);
+        polygons = {poly{1}, poly{i+1}};
+        selValues(1, :) = values(1, :);
+        selValues(2, :) = values(i+1, :);
+    case 4
+        polygons = poly(1);
+        selValues(1, :) = values(1, :);
+end
+
+% prepare the new PolygonsManagerMainFrame and display the graph
+setupNewFrame(fen, model, fenName, ...
+              'pcaVector', ...
+              polygons, ...
+              selValues, ...
+              color, ...
+              ld);
+end
+
+
 function [index, coef, profiles] = pcaVectorPrompt(maxPC)
 %PCAVECTORPROMPT  A dialog figure on which the user can select
 %which principal component's vector he wants to display and the coefficient of the
@@ -186,6 +193,4 @@ function [index, coef, profiles] = pcaVectorPrompt(maxPC)
         % delete the dialog
         delete(gcf);
     end
-end
-
 end

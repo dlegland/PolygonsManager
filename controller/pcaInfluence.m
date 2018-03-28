@@ -10,14 +10,11 @@ fen = PolygonsManagerMainFrame;
 
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
-model = PolygonsManagerData('PolygonArray', obj.model.PolygonArray, ...
-                                'nameList', obj.model.nameList, ...
-                             'factorTable', obj.model.factorTable, ...
-                                     'pca', obj.model.pca);
+model = duplicate(obj.model);
 
 % prepare the the new PolygonsManagerMainFrame's name
-if isa(obj.model.factorTable, 'Table')
-    fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Influence'];
+if isa(obj.model.factors, 'Table')
+    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Influence'];
 else
     fenName = 'Polygons Manager | PCA - Influence';
 end

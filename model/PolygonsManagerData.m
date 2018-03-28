@@ -10,7 +10,8 @@ properties
     PolygonArray;
 
     % Table that contains the factor of the polygon array
-    factorTable;
+    factors;
+%     factors;
 
     % 1-by-N Cell array that contains the names of the polygons
     nameList;
@@ -66,7 +67,7 @@ methods
         if ~isempty(ind)
             that = varargin{ind+1};
             if getPolygonNumber(this.PolygonArray) == getPolygonNumber(that.PolygonArray)
-                this.factorTable = that.factorTable;
+                this.factors = that.factors;
                 this.nameList = that.nameList;
                 this.infoTable = that.infoTable;
                 this.selectedPolygons = that.selectedPolygons;
@@ -155,8 +156,8 @@ methods
 
         removeAll(this.PolygonArray, inds);
         
-        if ~isempty(this.factorTable)
-            this.factorTable = this.factorTable(keepInds, :);
+        if ~isempty(this.factors)
+            this.factors = this.factors(keepInds, :);
         end
         
         this.nameList = this.nameList(keepInds);
@@ -168,9 +169,10 @@ methods
         polys = duplicate(this.PolygonArray);
         
         res = PolygonsManagerData(polys, 'nameList', this.nameList);
-        res.factorTable = this.factorTable;
+        res.factors = this.factors;
         res.selectedPolygons = this.selectedPolygons;
         res.selectedFactor = this.selectedFactor;
+        res.pca = this.pca;
     end
 end
 
@@ -201,12 +203,12 @@ methods
         names = this.nameList;
 
         % get all the values input factor's column
-        factors = getColumn(this.factorTable, factor);
+        facts = getColumn(this.factors, factor);
 
         % memory allocation
         polygons = cell(length(names), 2);
         for i = 1:length(names)
-            polygons{i, 1} = factors(i);
+            polygons{i, 1} = facts(i);
             polygons{i, 2} = getPolygonFromName(this, names{i});
         end
     end
@@ -219,12 +221,12 @@ methods
         names = this.nameList;
 
         % get all the values input factor's column
-        factors = getColumn(this.factorTable, factor);
-        factorLevel = factorLevels(this.factorTable, factor);
+        facts = getColumn(this.factors, factor);
+        factorLevel = factorLevels(this.factors, factor);
 
         polygons = {};
         for i = 1:length(names)
-            if strcmp(level, factorLevel{factors(i)})
+            if strcmp(level, factorLevel{facts(i)})
                 polygons{end+1} = names{i};
             end
         end
@@ -244,12 +246,12 @@ methods
         names = this.nameList;
 
         % get all the values input factor's column
-        factors = getColumn(this.factorTable, factor);
+        facts = getColumn(this.factors, factor);
 
         % memory allocation
         signatures = cell(length(names), 2);
         for i = 1:length(names)
-            signatures{i, 1} = factors(i);
+            signatures{i, 1} = facts(i);
             signatures{i, 2} = getSignatureFromName(this, names{i});
         end
     end
@@ -262,7 +264,7 @@ methods
         names = this.nameList;
 
         % get all the values input factor's column
-        factors = getColumn(this.factorTable, factor);
+        facts = getColumn(this.factors, factor);
 
         if strcmp(type, 'pcaInfluence')
             x = sqrt(sum(this.pca.scores.data .^ 2, 2));
@@ -276,7 +278,7 @@ methods
         pca = cell(length(names), 3);
         for i = 1:length(names)
             index = find(strcmp(names{i}, this.pca.scores.rowNames));
-            pca{i, 1} = factors(i);
+            pca{i, 1} = facts(i);
             pca{i, 2} = x(index);
             pca{i, 3} = y(index);
         end
@@ -317,11 +319,11 @@ methods
 
         % open the file save prompt and let the user select the name of the file in 
         % which the factor Table will be saved
-        [fileName, dname] = uiputfile('*.txt', 'Save the current factors', this.factorTable.name);
+        [fileName, dname] = uiputfile('*.txt', 'Save the current factors', this.factors.name);
 
         if fileName ~= 0
             % if the user did select a folder
-            write(this.factorTable, fullfile(dname, fileName));
+            write(this.factors, fullfile(dname, fileName));
 
             % display a message to inform the user that the save worked
             msgbox('success');

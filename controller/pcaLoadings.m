@@ -18,16 +18,16 @@ fen = PolygonsManagerMainFrame;
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
 model = duplicate(obj.model);
-
-% prepare the the new PolygonsManagerMainFrame's name
-if isa(obj.model.factors, 'Table')
-    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Loadings'];
-else
-    fenName = 'Polygons Manager | PCA - Loadings';
-end
+% 
+% % prepare the the new PolygonsManagerMainFrame's name
+% if isa(obj.model.factors, 'Table')
+%     fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Loadings'];
+% else
+%     fenName = 'Polygons Manager | PCA - Loadings';
+% end
 
 % prepare the new PolygonsManagerMainFrame and display the graph
-setupNewFrame(fen, model, fenName, ...
+setupNewFrame(fen, model, '', ...
               'pcaLoadings', 'off', ...
               obj.model.pca.loadings(:, cp1).data, ...
               obj.model.pca.loadings(:, cp2).data);

@@ -37,6 +37,8 @@ methods
             model = varargin{1};
             setupNewFrame(this, model)
         end
+        updateFrameTitle(this);
+        
     end
     
     function setupLayout(this, varargin)
@@ -116,20 +118,13 @@ methods
 
         if isempty(varargin)
             % creation of a panel on which the polygons will be drawn
-%             panel1 = Panel(this, 'equal', 'on', ...
-%                                  'title', 'Polygons');
             panel1 = PolygonsDisplayPanel(this, 'title', 'Polygons');
             refreshDisplay(panel1);
 
-%             % draw the polygons on the new PolygonsManagerMainFrame
-%             displayPolygons(panel1, getAllPolygons(this.model.PolygonArray));
-            
+            % draw the polygons on the new PolygonsManagerMainFrame
             if isa(this.model.PolygonArray, 'PolarSignatureArray')
                 % if the polygons are saved as polar signature, display
                 % the polar signatures
-%                 panel2 = Panel(this, 'equal', 'off', ...
-%                                      'title', 'Signature');
-%                 displayPolarSignature(panel2, this.model.PolygonArray.signatures, this.model.PolygonArray.angleList);
                 panel2 = SignatureDisplayPanel(this, 'title', 'Signatures');
                 displayPolarSignature(panel2);
             end
@@ -206,6 +201,7 @@ methods
         end
 
         updateMenus(this);
+        updateFrameTitle(this);
 
         function draw
         %DRAW  draw polygons depending on the current selection
@@ -252,6 +248,21 @@ end
 
 %% Processing methods
 methods
+    function updateFrameTitle(this)
+        name = 'Polygons Manager';
+        
+        if ~isempty(this.model)
+            if ~isempty(this.model.factors)
+                name = [name ' | factors=' this.model.factors.name];
+            end
+            if ~isempty(this.model.pca)
+                name = [name ' | pca'];
+            end
+        end
+        
+        set(this.handles.figure, 'Name', name);
+    end
+    
     function updateMenus(this)
     %UPDATEMENUS update the menus depending on the current state of the datamodel
     %

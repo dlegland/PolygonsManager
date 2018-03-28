@@ -22,14 +22,14 @@ fen = PolygonsManagerMainFrame;
 model = duplicate(obj.model);
 
 % prepare the the new PolygonsManagerMainFrame's name
-if isa(obj.model.factors, 'Table')
-    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Scores'];
-else
-    fenName = 'Polygons Manager | PCA - Scores';
-end
+% if isa(obj.model.factors, 'Table')
+%     fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Scores'];
+% else
+%     fenName = 'Polygons Manager | PCA - Scores';
+% end
 
 % prepare the new PolygonsManagerMainFrame and display the graph
-setupNewFrame(fen, model, fenName, ...
+setupNewFrame(fen, model, '', ...
               'pcaScoresProfiles', equal, ...
               obj.model.pca.scores(:, cp1).data, ...
               obj.model.pca.scores(:, cp2).data);

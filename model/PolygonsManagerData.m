@@ -11,7 +11,6 @@ properties
 
     % Table that contains the factor of the polygon array
     factors;
-%     factors;
 
     % 1-by-N Cell array that contains the names of the polygons
     nameList;

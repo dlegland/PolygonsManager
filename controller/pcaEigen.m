@@ -21,15 +21,15 @@ fen = PolygonsManagerMainFrame;
 
 model = duplicate(obj.model);
 
-% prepare the the new PolygonsManagerMainFrame's name
-if isa(obj.model.factors, 'Table')
-    fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Eigen values'];
-else
-    fenName = 'Polygons Manager | PCA - Eigen values';
-end
+% % prepare the the new PolygonsManagerMainFrame's name
+% if isa(obj.model.factors, 'Table')
+%     fenName = ['Polygons Manager | factors : ' obj.model.factors.name ' | PCA - Eigen values'];
+% else
+%     fenName = 'Polygons Manager | PCA - Eigen values';
+% end
 
 % prepare the new PolygonsManagerMainFrame and display the graph
-setupNewFrame(fen, model, fenName, ...
+setupNewFrame(fen, model, '', ...
               'pcaEigenValues', 'on');
 
 

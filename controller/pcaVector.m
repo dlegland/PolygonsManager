@@ -26,12 +26,12 @@ model = duplicate(obj.model);
 %                              'factorTable', obj.model.factorTable, ...
 %                                      'pca', obj.model.pca);
 
-% prepare the the new PolygonsManagerMainFrame's name
-if isa(obj.model.factorTable, 'Table')
-    fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
-else
-    fenName = 'Polygons Manager | PCA - Vectors';
-end
+% % prepare the the new PolygonsManagerMainFrame's name
+% if isa(obj.model.factorTable, 'Table')
+%     fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
+% else
+%     fenName = 'Polygons Manager | PCA - Vectors';
+% end
 
 % memory allocation
 if isa(obj.model.PolygonArray, 'PolarSignatureArray')
@@ -81,7 +81,7 @@ switch profiles
 end
 
 % prepare the new PolygonsManagerMainFrame and display the graph
-setupNewFrame(fen, model, fenName, ...
+setupNewFrame(fen, model, '', ...
               'pcaVector', ...
               polygons, ...
               selValues, ...

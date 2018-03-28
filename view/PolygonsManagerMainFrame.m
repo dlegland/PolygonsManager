@@ -542,6 +542,7 @@ methods
         
         %update the displayed polygons
         updateSelectionDisplay(getActivePanel(this));
+        updatePolygonInfoPanel(this);
     end
 
     function onSelectedTabChanged(this, varargin)

@@ -121,11 +121,6 @@ methods
         this.eigenValues(:, 1) = evl;                        % eigen values
         this.eigenValues(:, 2) = 100 * evl/ sum(evl);        % inertia
         this.eigenValues(:, 3) = cumsum(this.eigenValues(:,2));   % cumulated inertia
-
-%         this.means = means;
-%         this.eigenVectors = eigenVectors;
-%         this.eigenValues = eigenValues;
-%         this.scores = coords;
     end
     
 end % end constructors
@@ -134,10 +129,20 @@ end % end constructors
 %% Methods specific to PolygonArrayPca
 methods
     function row = reconstruct(this, rowIndex, varargin)
+%         coeffs = this.scores(rowIndex, 1:nComps);
+        
         row = this.means;
         for i = 1:this.nComps
             row = row + this.scores(rowIndex,i) * this.eigenVectors(:,i)';
         end
+    end
+    
+    function poly = computePolygon(this, coeffs)
+        row = this.means;
+        for i = 1:length(coeffs)
+            row = row + coeffs(i) * this.eigenVectors(:,i)';
+        end
+        poly = this.recFun(row);
     end
 end
 
@@ -152,9 +157,9 @@ methods
         polygonSize = size(this.polygons, 2);
     end
 
-    function polygon = getPolygon(this, row)
+    function polygon = getPolygon(this, rowIndex)
         % returns the polygon found at the index row
-        data = reconstruct(this, row);
+        data = reconstruct(this, rowIndex);
         polygon = this.recFun(data);
     end
     

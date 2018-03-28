@@ -15,8 +15,7 @@ properties
     % 1-by-N Cell array that contains the names of the polygons
     nameList;
 
-    % Table that contains the informations concerning the current
-    % polygons
+    % Table containing information about the current polygon
     infoTable;
 
     % 1-by-N Cell array that contains the names of the polygons that have been
@@ -32,11 +31,14 @@ properties
     %   cell 3 : logical that determines if the legend must be
     %   displayed or not
     selectedFactor;
-
-    % PCA containing the results of the PolygonArray's PCA
+    
+    groupFactorName = 'none';
+    
+    % PCA containing the results of the PolygonArray's PCA (to be removed)
     pca;
 
-    % cell array containing the process used in the treatments
+    % cell array containing the process used in the treatments (to be
+    % enhanced)
     usedProcess = {};
 end
 
@@ -88,7 +90,8 @@ methods
             end
         end
         this.infoTable = loadPolygonInfos(this);
-    end
+        
+    end    
 end
 
 %% New methods

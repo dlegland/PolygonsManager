@@ -41,19 +41,19 @@ methods
         title = 'polygons';
 
         % creation of the panel that will contain the axis
-        this.handles.uiPanel = uipanel('parent', frame.handles.tabs, ...
+        this.handles.panel = uipanel('parent', frame.handles.tabs, ...
                           'bordertype', 'none', ...
                        'uicontextmenu', frame.menuBar.contextPanel.handle);
 
         % creation of the axis on which the lines will be drawn
-        this.handles.uiAxis = axes('parent', this.handles.uiPanel, ...
+        this.handles.axis = axes('parent', this.handles.panel, ...
                    'ButtonDownFcn', @(~,~) this.onAxisClicked, ...
                       'colororder', this.colorMap, ...
                              'tag', 'main', ...
                    'uicontextmenu', frame.menuBar.contextPanel.handle);
 
         % setup specific to polygons display panel
-        axis(this.handles.uiAxis, 'equal');
+        axis(this.handles.axis, 'equal');
           
         while length(varargin) > 1
             % get parameter name and value
@@ -65,7 +65,7 @@ methods
                     title = value;
                 case 'colormap'
                     this.colorMap = value;
-                    this.handles.uiAxis.ColorOrder = value;
+                    this.handles.axis.ColorOrder = value;
                 otherwise
                     error('Panel:Panel', ...
                         ['Unknown parameter name: ' varargin{1}]);
@@ -153,7 +153,7 @@ methods
         nPolys = length(names);
                 
         % reset the position of the cursor in the axis colormap
-        axis = this.handles.uiAxis;
+        axis = this.handles.axis;
         set(axis, 'colororderindex', 1);
 
         if length(this.colorMap) > nPolys
@@ -193,7 +193,7 @@ methods
         selected = getSelectedPolygonNames(this.frame.model);
 
         % get all the objects drawn onto the axis
-        allHandleList = findobj(this.handles.uiAxis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes');
+        allHandleList = findobj(this.handles.axis, '-not', 'type', 'text', '-and', '-not', 'type', 'axes');
 
         % get the tags of all these objects
         allTagList = get(allHandleList, 'tag');

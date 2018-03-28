@@ -24,6 +24,9 @@ properties
     % the type of panel (to be removed)
     type;
     
+    % data structure for determining some display options
+    displayOptions;
+    
 end % end properties
 
 
@@ -41,6 +44,20 @@ methods
         else
             error('Unable to understand input argument');
         end
+        
+        
+        this.displayOptions = createDefaultDisplayOptions();
+        
+        function options = createDefaultDisplayOptions()
+            
+            options.grid.visible = false;
+            
+            options.markers.visible = false;
+            
+            options.legend.visible = false;
+            options.legend.location = 'NorthEast';
+        end
+
     end
 
 end % end constructor methods

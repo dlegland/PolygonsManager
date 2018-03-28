@@ -300,18 +300,24 @@ methods
             set(mb.file.savePolygons.handle, 'enable', 'on');
         end
         
+        % get the active panel
+        panel = getActivePanel(this);
+        
         % enables or not menu items depending on the factor table
-        if isa(this.model.factors, 'Table')
-            if ~isempty(this.handles.Panels{1}.type)
-                if ismember(this.handles.Panels{1}.type, {'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
+        if ~isempty(this.model.factors)
+            factorNames = this.model.factors.colNames;
+            
+            if ~isempty(panel.type)
+                if ismember(panel.type, ...
+                        {'polygons', 'signatures', 'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
                     this.handles.options{1}.TabEnables{2} = 'on';
                     this.handles.options{2}.TabEnables{2} = 'on';
-                    set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factors.colNames]);
+                    set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
                 end
             else
                 this.handles.options{1}.TabEnables{2} = 'on';
                 this.handles.options{2}.TabEnables{2} = 'on';
-                set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' this.model.factors.colNames]);
+                set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
             end
             
             % update the 'factors submenus'
@@ -320,7 +326,8 @@ methods
             set(mb.factors.save.handle, 'enable', 'on');
             set(mb.factors.display.handle, 'enable', 'on');
             set(mb.edit.showInfo.handle, 'enable', 'on');
-            set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name]);
+            
+            updateFrameTitle(this);
         end
         
         % enables or not menu items depending on PCA

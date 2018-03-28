@@ -17,18 +17,23 @@ function toggleGridDisplay(frame)
 % Created: 2018-03-20,    using Matlab 9.3.0.713579 (R2017b)
 % Copyright 2018 INRA - Cepia Software Platform.
 
-v1 = frame.menuBar.view.grid.handle;
-cp1 = frame.menuBar.contextPanel.grid.handle;
+% get menu handles
+hMenuItem = frame.menuBar.view.grid.handle;
+hContextMenu = frame.menuBar.contextPanel.grid.handle;
 
 panel = getActivePanel(frame);
-if strcmp(v1.Checked, 'off')
-    set(v1, 'checked', 'on');
-    set(cp1, 'checked', 'on');
-    set(panel.uiAxis, 'xgrid', 'on');
-    set(panel.uiAxis, 'ygrid', 'on');
+if strcmp(hMenuItem.Checked, 'off')
+    set(hMenuItem, 'checked', 'on');
+    set(hContextMenu, 'checked', 'on');
+    panel.displayOptions.grid.visible = true;
+    
+    set(panel.handles.axis, 'xgrid', 'on');
+    set(panel.handles.axis, 'ygrid', 'on');
 else
-    set(v1, 'checked', 'off');
-    set(cp1, 'checked', 'off');
-    set(panel.uiAxis, 'xgrid', 'off');
-    set(panel.uiAxis, 'ygrid', 'off');
+    set(hMenuItem, 'checked', 'off');
+    set(hContextMenu, 'checked', 'off');
+    panel.displayOptions.grid.visible = false;
+
+    set(panel.handles.axis, 'xgrid', 'off');
+    set(panel.handles.axis, 'ygrid', 'off');
 end

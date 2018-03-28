@@ -17,16 +17,22 @@ function toggleMarkerDisplay(frame)
 % Created: 2018-03-20,    using Matlab 9.3.0.713579 (R2017b)
 % Copyright 2018 INRA - Cepia Software Platform.
 
-v2 = frame.menuBar.view.markers.handle;
-cp2 = frame.menuBar.contextPanel.markers.handle;
+hMenuItem = frame.menuBar.view.markers.handle;
+hContextMenu = frame.menuBar.contextPanel.markers.handle;
 
 panel = getActivePanel(frame);
-if strcmp(v2.Checked, 'off')
-    set(v2, 'checked', 'on');
-    set(cp2, 'checked', 'on');
-    set(panel.uiAxis.Children, 'Marker', '+');
+if strcmp(hMenuItem.Checked, 'off')
+    set(hMenuItem, 'checked', 'on');
+    set(hContextMenu, 'checked', 'on');
+    
+    panel.displayOptions.markers.visible = true;
+    
+    set(panel.handles.axis.Children, 'Marker', '+');
 else
-    set(v2, 'checked', 'off');
-    set(cp2, 'checked', 'off');
-    set(panel.uiAxis.Children, 'Marker', 'none');
+    set(hMenuItem, 'checked', 'off');
+    set(hContextMenu, 'checked', 'off');
+    
+    panel.displayOptions.markers.visible = false;
+
+    set(panel.handles.axis.Children, 'Marker', 'none');
 end

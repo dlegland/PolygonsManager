@@ -1,4 +1,4 @@
-function createFactors(obj)
+function createFactors(frame)
 %CREATEFACTORS  Creates a factor Table using the current polygons
 %
 %   Inputs :
@@ -6,51 +6,43 @@ function createFactors(obj)
 %   Outputs : none
 
 % enter the name that will be used for the factor Table and the nb of factors
-% that it'll contain
-[factorName, nbFactors] = createFactorPrompt1;
+% it will contain
+[factorName, nFactors] = createFactorPrompt1;
 
-if strcmp(nbFactors, '?') || nbFactors == 0
+if strcmp(nFactors, '?') || nFactors == 0
     return;
 end
 
+rowNames = getPolygonNames(frame.model);
+nPolys = length(rowNames);
+
 % get the name of the first polygon to use it as an exemple
-sampleName = obj.model.nameList{1};
+sampleName = frame.model.nameList{1};
 
 % memory allocation
-rowNames = Table.create(zeros(length(obj.model.nameList), 1), 'rowNames', obj.model.nameList(:));
+factors = Table.create(zeros(nPolys, 0), 'rowNames', rowNames);
 
-% for the 1st factor, enter it's name, index of its first character, and
-% number of characters
-[start, number, name] = createFactorPrompt2(1, sampleName);
+for iFact = 1:nFactors
+    [start, number, name] = createFactorPrompt2(iFact, sampleName);
 
-if ~strcmp(name, '?')
-    % create the ouput Table
-    factorTbl = parseFactorFromRowNames(rowNames, start, number, name);
-    
-    if nbFactors > 1
-        % if there's more than 1 factor
-        for i = 2:nbFactors
-            % for each factor, enter it's name, index of its first character, and
-            % number of characters
-            [start, number, name] = createFactorPrompt2(i, sampleName);
-            
-            if strcmp(name, '?')
-                return;
-            end
-            % add the new factor to the factor table
-            factorTbl = horzcat(factorTbl, parseFactorFromRowNames(rowNames, start, number, name));
-        end
+    if strcmp(name, '?')
+        return;
     end
-    
-    % set the factor Table name
-    factorTbl.name = factorName;
-    
-    % set the new factor Table as the current factor Table
-    obj.model.factors = factorTbl;
-    
-    %update the menus
-    updateMenus(obj);
+
+    % add the new factor to the factor table
+    fact = parseFactorFromRowNames(factors, start, number, name);
+    factors = [factors fact]; %#ok<AGROW>
 end
+
+% set the factor Table name
+factors.name = factorName;
+
+% set the new factor Table as the current factor Table
+frame.model.factors = factors;
+
+%update the menus
+updateMenus(frame);
+updatePolygonInfoPanel(frame);
 
 
 function [factorName, nbFactors] = createFactorPrompt1
@@ -68,7 +60,7 @@ function [factorName, nbFactors] = createFactorPrompt1
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(obj, 250, 165);
+    pos = getMiddle(frame, 250, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...
@@ -155,7 +147,7 @@ function [start, number, name] = createFactorPrompt2(index, sample)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(obj, 250, 235);
+    pos = getMiddle(frame, 250, 235);
 
     % create the dialog box
     d = dialog('position', pos, ...

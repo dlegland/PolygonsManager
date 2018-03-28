@@ -34,12 +34,12 @@ model = duplicate(obj.model);
 % end
 
 % memory allocation
-if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-    values = zeros(3, length(obj.model.PolygonArray.angleList));
-else
-    values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
-end
-poly = {};
+values = zeros(3, size(obj.model.pca.loadings, 2));
+% if isa(obj.model.PolygonArray, 'PolarSignatureArray')
+%     values = zeros(3, length(obj.model.PolygonArray.angleList));
+% else
+%     values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
+% end
 
 % compute eigen vector with appropriate coeff
 ld = obj.model.pca.loadings(:, index).data';
@@ -48,7 +48,14 @@ values(1, :) = obj.model.pca.means;
 values(2, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
 values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
 
+% % compute reconstructed polygons
+% poly = cell(1, 3);
+% poly{1} = computePolygon(obj.model.pca, values(1,:));
+% poly{2} = computePolygon(obj.model.pca, values(2,:));
+% poly{3} = computePolygon(obj.model.pca, values(3,:));
+
 % resulting polygon
+poly = cell(1, 3);
 if isa(obj.model.PolygonArray, 'PolarSignatureArray')
     poly{1} = signatureToPolygon(values(1, :), obj.model.PolygonArray.angleList);
     poly{2} = signatureToPolygon(values(2, :), obj.model.PolygonArray.angleList);

@@ -11,8 +11,9 @@ dname = uigetdir;
 files = dir(fullfile(dname, '*.txt'));
 
 % memory allocation
-polygonArray = cell(1,length(files));
-nameArray = cell(1, length(files));
+nFiles = length(files);
+polygonArray = cell(1, nFiles);
+nameArray = cell(1, nFiles);
 
 if dname == 0
     return
@@ -28,6 +29,9 @@ if ~isempty(obj.handles.Panels)
     obj = PolygonsManagerMainFrame;
 end
 
+% create waitbar
+h = waitbar(0, 'Please wait...', 'name', 'Reading polygons');
+
 for i = 1:length(files)
     % get the name of the polygon without the '.txt' at the end
     name = files(i).name(1:end-4);
@@ -35,6 +39,7 @@ for i = 1:length(files)
     if size(Table.read(fullfile(dname, files(i).name)).data,2) ~= 2
         continue
     end
+    waitbar(i / (nFiles+1), h, ['process : ' name]);
     
     % save the name
     nameArray{i} = name;
@@ -43,8 +48,13 @@ for i = 1:length(files)
     polygonArray{i} = Table.read(fullfile(dname, files(i).name)).data;
 end
 
+% cleanup polygon array
 polygonArray = polygonArray(~cellfun('isempty', polygonArray));
 nameArray = nameArray(~cellfun('isempty', nameArray));
+
+% close waitbar
+waitbar(1, h);
+close(h) 
 
 % set the new polygon array as the current polygon array
 model = PolygonsManagerData(...

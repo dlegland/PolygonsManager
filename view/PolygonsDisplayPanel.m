@@ -137,7 +137,7 @@ end
 
 %% Methods
 methods
-    function displayPolygons(this, polygonArray)
+    function displayPolygons(this)
         %DISPLAYPOLYGONS  Display polygons
         %
         %   Inputs :
@@ -145,40 +145,81 @@ methods
         %       - polygonArray : a N-by-1 cell array containing the polygons
         %   Outputs : none
 
-        polygonArray = this.frame.model.PolygonArray;
+        model = this.frame.model;
+        polygonArray = model.PolygonArray;
         
         % get the names of all the polygons loaded and prepare the
         % panel/axis that'll be used to draw
         names = getPolygonNames(this.frame.model);
         nPolys = length(names);
                 
+        % check if a factor is used for display
+        useFactor = ~(isempty(model.groupingFactorName) || strcmp(model.groupingFactorName, 'none'));
+
+        if useFactor
+            levels = factorLevels(model.factors, model.groupingFactorName);
+            nLevels = length(levels);
+        else
+            nLevels = nPolys;
+        end
+
+%         set(axis, 'colororder', this.colorMap(floor(1:nColors/nPolys:nColors), :));
+        
         % reset the position of the cursor in the axis colormap
         axis = this.handles.axis;
         set(axis, 'colororderindex', 1);
 
-        if length(this.colorMap) > nPolys
-            % if there's less polygons than colors in the colormap
-            % change the axis' colormap to get colors that are as different as
-            % possible from each other
-            nColors = length(this.colorMap);
-            set(axis, 'colororder', this.colorMap(floor(1:nColors/nPolys:nColors), :));
-        else
-            set(axis, 'colororder', this.colorMap);
-        end
-        
+        % resample the color map
+        nColors = length(this.colorMap);
+        inds = floor(1:nColors/nLevels:nColors);
+        set(axis, 'colororder', this.colorMap(inds, :));
+
         % delete all the lines already drawn on the axis and the legends
         delete(axis.Children(:));
         this.handles.uiLegend = [];
 
         hold(axis, 'on');
-        for i = 1:getPolygonNumber(polygonArray)
-            % draw the polygon on the axis
-            poly = getPolygon(polygonArray, i);
-            line = drawPolygon(poly, 'parent', axis);
+        
+        if ~useFactor
+            % display polygons with one color per polygon
+            for i = 1:nPolys
+                % draw the polygon on the axis
+                poly = getPolygon(polygonArray, i);
+                line = drawPolygon(poly, 'parent', axis);
 
-            set(line, 'tag', names{i}, ...
-                'ButtonDownFcn', @this.onPolygonObjectClicked);
+                set(line, 'tag', names{i}, ...
+                    'ButtonDownFcn', @this.onPolygonObjectClicked);
+            end
+        else
+            % display polygons with one color per factor
+
+            % memory allocation for the array that'll contain the legend's lines
+            levels = factorLevels(model.factors, model.groupingFactorName);
+            nLevels = length(levels);
+            
+            lines = cell(1, nLevels);
+            levelHandles = cell(1, nLevels);
+
+            for i = 1:nPolys
+                % draw the polygon on the axis
+                poly = getPolygon(polygonArray, i);
+                levelIndex = model.factors(i, model.groupingFactorName).data;
+                color = axis.ColorOrder(levelIndex, :);
+                
+                lines{i} = drawPolygon(poly, 'parent', axis, ...
+                    'ButtonDownFcn', @this.onPolygonObjectClicked, ...
+                    'tag', names{i}, ...
+                    'color', color);
+                
+                levelHandles{levelIndex} = lines{i};
+            end
+            
+            % if the legend must be displayed, display it
+            this.handles.legend = legend(axis, [levelHandles{:}], levels, ...
+                'location', 'best', ...
+                'uicontextmenu', []);
         end
+        
         hold(axis, 'off');
     end
 

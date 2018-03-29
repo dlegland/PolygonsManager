@@ -301,24 +301,24 @@ methods
         end
         
         % get the active panel
-        panel = getActivePanel(this);
+%         panel = getActivePanel(this);
         
         % enables or not menu items depending on the factor table
         if ~isempty(this.model.factors)
             factorNames = this.model.factors.colNames;
             
-            if ~isempty(panel.type)
-                if ismember(panel.type, ...
-                        {'polygons', 'signatures', 'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
-                    this.handles.options{1}.TabEnables{2} = 'on';
-                    this.handles.options{2}.TabEnables{2} = 'on';
-                    set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
-                end
-            else
-                this.handles.options{1}.TabEnables{2} = 'on';
-                this.handles.options{2}.TabEnables{2} = 'on';
-                set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
-            end
+%             if ~isempty(panel.type)
+%                 if ismember(panel.type, ...
+%                         {'polygons', 'signatures', 'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
+            this.handles.options{1}.TabEnables{2} = 'on';
+            this.handles.options{2}.TabEnables{2} = 'on';
+            set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
+%                 end
+%             else
+%                 this.handles.options{1}.TabEnables{2} = 'on';
+%                 this.handles.options{2}.TabEnables{2} = 'on';
+%                 set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
+%             end
             
             % update the 'factors submenus'
             set(mb.factors.import.handle, 'checked', 'on');
@@ -326,8 +326,8 @@ methods
             set(mb.factors.save.handle, 'enable', 'on');
             set(mb.factors.display.handle, 'enable', 'on');
             set(mb.edit.showInfo.handle, 'enable', 'on');
+            set(mb.view.chooseGroupingFactor.handle, 'enable', 'on');
             
-            updateFrameTitle(this);
         end
         
         % enables or not menu items depending on PCA
@@ -355,12 +355,15 @@ methods
                 end
             end
             
-            if isa(this.model.factors, 'Table')
-                set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name ' | PCA']);
-            else
-                set(this.handles.figure, 'name', 'Polygons Manager | PCA');
-            end
+%             if isa(this.model.factors, 'Table')
+%                 set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name ' | PCA']);
+%             else
+%                 set(this.handles.figure, 'name', 'Polygons Manager | PCA');
+%             end
         end
+        
+        updateFrameTitle(this);
+        
     end
 
     function names = setupDisplay(this, varargin)
@@ -465,6 +468,10 @@ end
 methods
     function nPanels = getPanelNumber(this)
         nPanels = length(this.handles.Panels);
+    end
+    
+    function panel = getPanel(this, index)
+        panel = this.handles.Panels{index};
     end
     
     function setActivePanelIndex(this, index)

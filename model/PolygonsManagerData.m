@@ -32,7 +32,7 @@ properties
     %   displayed or not
     selectedFactor;
     
-    groupFactorName = 'none';
+    groupingFactorName = 'none';
     
     % PCA containing the results of the PolygonArray's PCA (to be removed)
     pca;

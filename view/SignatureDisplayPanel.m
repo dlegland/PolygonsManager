@@ -144,7 +144,7 @@ end
 
 %% Methods
 methods
-    function displayPolarSignature(this)
+    function displayPolarSignatures(this)
     %DISPLAYPOLARSIGNATURE  Display polar signatures
     %
     %   Inputs :
@@ -161,21 +161,27 @@ methods
         % panel/axis that'll be used to draw
         names = getPolygonNames(this.frame.model);
         nPolys = length(names);
-                
+        
+        % check if a factor is used for display
+        model = this.frame.model;
+        useFactor = ~(isempty(model.groupingFactorName) || strcmp(model.groupingFactorName, 'none'));
+
+        if useFactor
+            levels = factorLevels(model.factors, model.groupingFactorName);
+            nLevels = length(levels);
+        else
+            nLevels = nPolys;
+        end
+
         % reset the position of the cursor in the axis colormap
         axis = this.handles.axis;
         set(axis, 'colororderindex', 1);
+                
+        % resample the color map
+        nColors = length(this.colorMap);
+        inds = floor(1:nColors/nLevels:nColors);
+        set(axis, 'colororder', this.colorMap(inds, :));
 
-        if length(this.colorMap) > nPolys
-            % if there's less polygons than colors in the colormap
-            % change the axis' colormap to get colors that are as different as
-            % possible from each other
-            nColors = length(this.colorMap);
-            set(axis, 'colororder', this.colorMap(floor(1:nColors/nPolys:nColors), :));
-        else
-            set(axis, 'colororder', this.colorMap);
-        end
-        
         % determine max signature value
         maxValue = 0;
         for i = 1:nPolys
@@ -191,17 +197,52 @@ methods
         this.handles.uiLegend = [];
         
         hold(axis, 'on');
-        for i = 1:nPolys
-            % get the signature that will be drawn
-            signature = getPolarSignature(this.signatureArray, i);
-            signature = signature([1:end 1]);
+        
+        if ~useFactor
+            % display polygons with one color per polygon
+            for i = 1:nPolys
+                % get the signature that will be drawn
+                signature = getPolarSignature(this.signatureArray, i);
+                signature = signature([1:end 1]);
+                
+                % draw the line
+                line = plot(angles, signature, 'parent', axis);
+                
+                set(line, 'tag', names{i}, ...
+                    'ButtonDownFcn', @this.onSignatureObjectClicked);
+            end
+        else
+            % display polygons with one color per factor
+
+            % memory allocation for the array that'll contain the legend's lines
+            levels = factorLevels(model.factors, model.groupingFactorName);
+            nLevels = length(levels);
             
-            % draw the line
-            line = plot(angles, signature, 'parent', axis);
+            lines = cell(1, nLevels);
+            levelHandles = cell(1, nLevels);
+
+            for i = 1:nPolys
+                % get the signature that will be drawn
+                signature = getPolarSignature(this.signatureArray, i);
+                signature = signature([1:end 1]);
+                
+                % draw the polygon on the axis
+                levelIndex = model.factors(i, model.groupingFactorName).data;
+                color = axis.ColorOrder(levelIndex, :);
+                
+                lines{i} = plot(angles, signature, ...
+                    'parent', axis, ...
+                    'ButtonDownFcn', @this.onSignatureObjectClicked, ...
+                    'tag', names{i}, ...
+                    'color', color);
+                
+                levelHandles{levelIndex} = lines{i};
+            end
             
-            set(line, 'tag', names{i}, ...
-                'ButtonDownFcn', @this.onSignatureObjectClicked);
-            uistack(line,'bottom');
+            % if the legend must be displayed, display it
+            this.handles.legend = legend(axis, [levelHandles{:}], levels, ...
+                'location', 'best', ...
+                'uicontextmenu', []);
         end
         
         uistack(axis.Children(:), 'bottom');

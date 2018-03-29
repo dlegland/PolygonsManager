@@ -163,8 +163,6 @@ methods
             nLevels = nPolys;
         end
 
-%         set(axis, 'colororder', this.colorMap(floor(1:nColors/nPolys:nColors), :));
-        
         % reset the position of the cursor in the axis colormap
         axis = this.handles.axis;
         set(axis, 'colororderindex', 1);

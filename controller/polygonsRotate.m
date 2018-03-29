@@ -1,4 +1,4 @@
-function polygonsRotate(obj, angle, type)
+function polygonsRotate(frame, angle, type)
 %POLYGONSROTATE  Rotate the contour 
 %
 %   Inputs :
@@ -27,14 +27,14 @@ end
 switch type
     case 'all'
         % all the polygons
-        polygonArray = obj.model.nameList;
+        polygonArray = frame.model.nameList;
         
         % save the name of the function and the parameters used during
         % its call in the log variable
-        obj.model.usedProcess{end+1} = ['polygonsRotate : angle = ' num2str(angle) ' ; type = ' type];
+        frame.model.usedProcess{end+1} = ['polygonsRotate : angle = ' num2str(angle) ' ; type = ' type];
     case 'selected'
         % only the polygons selected by the user
-        polygonArray = obj.model.selectedPolygons;
+        polygonArray = frame.model.selectedPolygons;
 end 
 
 if isempty(polygonArray)
@@ -46,7 +46,7 @@ for i = 1:length(polygonArray)
     name = polygonArray{i};
 
     % get the polygon from its name
-    poly = getPolygonFromName(obj.model, name);
+    poly = getPolygonFromName(frame.model, name);
 
     % rotate the polygon
     switch angle
@@ -64,24 +64,12 @@ for i = 1:length(polygonArray)
     end
 
     %update the polygon
-    updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyRot);
-    updatePolygonInfos(obj.model, name)
+    updatePolygon(frame.model.PolygonArray, getPolygonIndexFromName(frame.model, name), polyRot);
+    updatePolygonInfos(frame.model, name)
 end
 
-% get the selected factor
-sf = obj.model.selectedFactor;
-
-% if a factor was selected prior to the conversion
-if iscell(sf)
-    % display the contours colored depending on the selected factor
-    polygonList = getPolygonsFromFactor(obj.model, sf{1});
-    displayPolygonsFactor(obj.handles.Panels{1}, polygonList);
-else
-    % display the contours without special coloration
-    displayPolygons(obj.handles.Panels{1}, getAllPolygons(obj.model.PolygonArray));
-end
-
-updateMenus(obj);
+refreshDisplay(getActivePanel(frame));
+updateMenus(frame);
 
 
 function angle = polygonsRotatePrompt(direction)
@@ -96,7 +84,7 @@ function angle = polygonsRotatePrompt(direction)
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(obj, 250, 130);
+    pos = getMiddle(frame, 250, 130);
 
     % create the dialog
     d = dialog('position', pos, ...

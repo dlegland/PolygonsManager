@@ -576,7 +576,7 @@ methods
         
         % get handle to panel axis
         if  isprop(panel, 'handles')
-            axis = panel.handles.uiAxis;
+            axis = panel.handles.axis;
         else
             axis = panel.uiAxis;
         end

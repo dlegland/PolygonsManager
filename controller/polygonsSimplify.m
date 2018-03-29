@@ -1,4 +1,4 @@
-function varargout = polygonsSimplify(obj, display,  varargin)
+function varargout = polygonsSimplify(frame, display,  varargin)
 %POLYGONSSIMPLIFY Simplify the current polygons using the Douglas-Peucker algorithm
 %
 %   Inputs :
@@ -32,17 +32,26 @@ end
 
 % save the name of the function and the parameters used during
 % its call in the log variable
-obj.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerance = ' num2str(tolerance)];
+frame.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerance = ' num2str(tolerance)];
 
 % memory allocation
-polygonList = cell(1, length(obj.model.nameList));
+polygonList = cell(1, length(frame.model.nameList));
+
+% create waitbar
+h = waitbar(0, 'Start simplification...', 'name', 'Simplify polygons');
 
 for i = 1:length(polygonList)
     % get the name of the polygon that will be converted
-    name = obj.model.nameList{i};
+    name = frame.model.nameList{i};
     
-    % get the polygon from its name
-    poly = getPolygonFromName(obj.model, name);
+    % update display of current polygon
+    setSelectedPolygonIndices(frame.model, i);
+    updateSelectedPolygonsDisplay(getActivePanel(frame));
+    set(frame.handles.list, 'value', i);
+    waitbar(i / (length(frame.model.nameList)+1), h, ['process : ' name]);
+
+    % get the data for the current polygon
+    poly = getPolygon(frame.model.PolygonArray, i);
     
     % simplify the polygon
     polyS = simplifyPolygon(poly, tolerance);
@@ -50,13 +59,19 @@ for i = 1:length(polygonList)
     polygonList{i} = polyS;
 end
 
+% close waitbar
+waitbar(1, h);
+close(h);
+
+% create new frame with the resulting polygons
 newArray = BasicPolygonArray(polygonList);
-data = PolygonsManagerData(newArray, 'parent', obj.model);
+model = PolygonsManagerData(newArray, 'parent', frame.model);
+PolygonsManagerMainFrame(model);
 
 if nargout == 1
-    varargout = {data};
+    varargout = {model};
 elseif nargout == 2
-    varargout = {data, tolerance};
+    varargout = {model, tolerance};
 end
     
 % if strcmp(display, 'off')
@@ -97,7 +112,7 @@ function tol = polygonsSimplifyPrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(obj, 250, 130);
+    pos = getMiddle(frame, 250, 130);
 
     % create the dialog
     d = dialog('position', pos, ...

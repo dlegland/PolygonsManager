@@ -1,4 +1,4 @@
-function polygonsToSignature(obj, varargin)
+function polygonsToSignature(frame, varargin)
 %POLYGONSTOSIGNATURE  Converts contour in polar signatures
 %
 %   Inputs :
@@ -31,45 +31,45 @@ end
 
 % save the name of the function and the parameters used during
 % its call in the log variable
-obj.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
+frame.model.usedProcess{end+1} = ['polygonsToSignature : startAngle = ' num2str(startAngle) ' ; angleNumber = ' num2str(angleNumber)];
 
 % determine the angles that will be used for the transformation
 pas = 360/angleNumber;
 angles = startAngle:pas:360+startAngle-pas;
 
 % preallocating memory
-dat = zeros(length(obj.model.nameList), angleNumber);
+nPolys = length(frame.model.nameList);
+dat = zeros(nPolys, angleNumber);
 
-%create waitbar
+% create waitbar
 h = waitbar(0,'Conversion starting ...', 'name', 'Conversion to signature');
 
-for i = 1:length(obj.model.nameList)
-    
+for i = 1:nPolys
     % get the name of the polygon that will be transformed
-    name = obj.model.nameList{i};
+    name = getPolygonName(frame.model, i);
     
     % update the waitbar and the contours selection (purely cosmetic)
-    obj.model.selectedPolygons = {name};
-    updateSelectedPolygonsDisplay(getActivePanel(obj));
-    set(obj.handles.list, 'value', find(strcmp(name, obj.model.nameList)));
+    setSelectedPolygonIndices(frame.model, i);
+    updateSelectedPolygonsDisplay(getActivePanel(frame));
+    set(frame.handles.list, 'value', i);
     
-    waitbar(i / (length(obj.model.nameList)+1), h, ['process : ' name]);
+    waitbar(i / (length(frame.model.nameList)+1), h, ['process : ' name]);
     
     % get the polygon from its name
-    poly = getPolygonFromName(obj.model, name);
+    poly = getPolygon(frame.model.PolygonArray, i);
     
     % save all the polar signatures in a numeric array
     dat(i, :) = polygonSignature(poly, angles);
 end
-waitbar(1, h);
 
 % close waitbar
+waitbar(1, h);
 close(h);
 
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
 newArray = PolarSignatureArray(dat, angles);
-model = PolygonsManagerData(newArray, 'parent', obj.model);
+model = PolygonsManagerData(newArray, 'parent', frame.model);
 
 % create a new PolygonsManagerMainFrame
 PolygonsManagerMainFrame(model);
@@ -89,7 +89,7 @@ function [start, number] = contoursToSignaturePrompt
 
     % get the position where the prompt will at the center of the
     % current figure
-    pos = getMiddle(obj, 250, 165);
+    pos = getMiddle(frame, 250, 165);
 
     % create the dialog box
     d = dialog('position', pos, ...

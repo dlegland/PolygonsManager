@@ -94,15 +94,21 @@ methods
     end    
 end
 
-%% New methods
-% (Methods after refactoring by D. Legland)
+%% Management of polygon names
 methods
     function names = getPolygonNames(this)
         % Returns the names of the polygons stored in this frame
         names = this.nameList;
     end
     
-   
+    function name = getPolygonName(this, index)
+        % Returns the name of the polygon specified by its index
+        name = this.nameList{index};
+    end
+end
+
+%% Management of polygon selection
+methods   
     function nameList = getSelectedPolygonNames(this)
         nameList = this.selectedPolygons;
     end
@@ -117,6 +123,10 @@ methods
     
     function b = isSelectedPolygon(this, names)
         b = strcmp(names, this.selectedPolygons);
+    end
+    
+    function setSelectedPolygonIndices(this, indList)
+        this.selectedPolygons = this.nameList(indList);
     end
     
     function addPolygonsToSelection(this, names)
@@ -165,7 +175,9 @@ methods
         this.nameList = this.nameList(keepInds);
         this.selectedPolygons = {};
     end
-    
+end
+
+methods
     function res = duplicate(this)
         % duplicates the polygons and the associated data
         polys = duplicate(this.PolygonArray);

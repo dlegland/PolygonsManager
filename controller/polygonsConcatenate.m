@@ -14,10 +14,22 @@ function polygonsConcatenate(frame, varargin)
 
 % select the number of vertices that the new polygons will have
 if nargin == 1
-     number = promptVertexNumber(frame);
-     if isempty(number)
-         return;
-     end
+    
+    gd = GenericDialog('Concatenate Polygons');
+    gd.addNumericField('Vertex number', 200, 0);
+    gd.addChoice('Start from:', {'top', 'bottom', 'right', 'left'}, 'top');
+    gd.showDialog();
+    if gd.wasCanceled()
+        return;
+    end
+    
+    number = gd.getNextNumber();
+    start = gd.getNextString();
+    
+%     number = promptVertexNumber(frame);
+%     if isempty(number)
+%         return;
+%     end
 else
     if ~isa(varargin{1}, 'double')
         number = str2double(varargin{1});
@@ -55,15 +67,32 @@ for i = 1:nPolys
 
     np = size(poly, 1);
 
-    % index of points above x-axis
-    indSup = find(poly(:,2) > 0);
-
-    % among the points above the x-axis, find the one closer to the y-axis
-    [tmp, ind] = min(abs(poly(indSup,1))); %#ok<ASGLU>
-
-    % get point's index iwt the polygons numerotation
+    % choose the coordinate to work with
+    if ismember(start, {'top', 'bottom'})
+        coords = poly(:,2);
+    else
+        coords = poly(:,1);
+    end
+    
+    % keep only coordinates on one side
+    if ismember(start, {'top', 'right'})
+        indSup = find(coords > 0);
+    else
+        indSup = find(coords < 0);
+    end
+    
+    % find the point the closest to the start axis
+    if ismember(start, {'top', 'bottom'})
+        % among the selected points find the one closer to the y-axis
+        [tmp, ind] = min(abs(poly(indSup,1))); %#ok<ASGLU>
+    else
+        % among the selected points find the one closer to the y-axis
+        [tmp, ind] = min(abs(poly(indSup,2))); %#ok<ASGLU>
+    end
+    
+    % convert index of selection to index of polygon
     ind = indSup(ind);
-
+    
     % shift the vertex to start from from the highest one
     poly = circshift(poly, [1-ind 0]);
 
@@ -93,9 +122,9 @@ for i = 1:nPolys
     % fill the data table
     dat(i, :) = polygonToRow(poly2, 'packed');
 end
-waitbar(1, h);
 
 % close waitbar
+waitbar(1, h);
 close(h) 
 
 % create the PolygonsManagerData that'll be used as the new
@@ -104,30 +133,3 @@ model = PolygonsManagerData(CoordsPolygonArray(dat), 'parent', frame.model);
 
 % create a new PolygonsManagerMainFrame
 PolygonsManagerMainFrame(model);  
-
-
-function number = promptVertexNumber(frame)
-    
-prompt = {'New number of vertices:'};
-title = 'Input vertex number';
-defaultanswer = {'200'};
-options.Resize = 'on';
-
-while true
-    answer = inputdlg(prompt, title, [1 40], defaultanswer, options);
-
-    % cancel
-    if isempty(answer)
-        number = [];
-        return;
-    end
-
-    % try to convert to numeric
-    number = str2double(answer{1});
-
-    % if fails, re-iterate
-    if isfinite(number)
-        break;
-    end
-end
-

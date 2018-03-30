@@ -57,7 +57,7 @@ methods
         b = true;
     end
     
-    function updatePolygon(obj, row, polygon)
+    function setPolygon(obj, row, polygon)
         % replace the polygon found at the index row by a new polygon
         obj.polygons(row, :) = polygonToRow(polygon, 'packed');
     end

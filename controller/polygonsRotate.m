@@ -64,7 +64,7 @@ for i = 1:length(polygonArray)
     end
 
     %update the polygon
-    updatePolygon(frame.model.PolygonArray, getPolygonIndexFromName(frame.model, name), polyRot);
+    setPolygon(frame.model.PolygonArray, i, polyRot);
     updatePolygonInfos(frame.model, name)
 end
 

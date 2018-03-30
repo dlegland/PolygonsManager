@@ -122,7 +122,6 @@ if strcmp(type, 'fast')
 else
     % create the PolygonsManagerData that'll be used as the new
     % PolygonsManagerMainFrame's model
-%     model = PolygonsManagerData('PolygonArray', BasicPolygonArray(polygonArray), 'nameList', obj.model.nameList, 'factorTable', obj.model.factorTable, 'pca', obj.model.pca, 'usedProcess', obj.model.usedProcess);
     array = BasicPolygonArray(polygonArray);
     model = PolygonsManagerData(array, 'parent', obj.model);
 

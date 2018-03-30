@@ -44,7 +44,7 @@ methods
         b = false;
     end
     
-    function updatePolygon(this, index, polygon)
+    function setPolygon(this, index, polygon)
         % replaces the polygon found at the given index by a new polygon
         this.polygons{index} = polygon;
     end

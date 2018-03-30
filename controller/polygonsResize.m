@@ -40,7 +40,7 @@ for i = 1:length(polygonList)
     polyMm = poly * coef;
 
     %update the polygon
-    updatePolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
+    setPolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
     updatePolygonInfos(obj.model, name)
 end
 

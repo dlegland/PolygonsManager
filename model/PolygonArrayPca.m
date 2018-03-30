@@ -176,7 +176,7 @@ methods
         b = true;
     end
     
-    function updatePolygon(obj, row, polygon) %#ok<INUSD>
+    function setPolygon(obj, row, polygon) %#ok<INUSD>
         error('Unimplemented method');
     end
     

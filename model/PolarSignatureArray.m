@@ -40,6 +40,10 @@ methods
         polygon = signatureToPolygon(getSignature(obj, row), obj.angleList);
     end
 
+    function setPolygon(obj, row, polygon) %#ok<INUSD>
+        error('Unsupported operation');
+    end
+
     function polygons = getAllPolygons(obj)
         % computes all the polygons
         polygons = cell(1, getPolygonNumber(obj));
@@ -53,11 +57,6 @@ methods
         b = true;
     end
     
-    function updatePolygon(obj, row, polygon)
-        % returns all the signatures
-        obj.signatures(row, :) = polygonSignature(polygon, obj.angleList);
-    end
-
     
     function removeAll(obj, inds)
         % removes from the array all the polygons specified by index list

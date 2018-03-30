@@ -2,7 +2,7 @@ classdef PolygonsManagerData < handle
 %POLYGONSMANAGERDATA Class that contains the data used by the PolygonsManager application
 %
 %   Creation: 
-%   polygonArray = BasicPolygonArray(polygons, names);
+%   polygonArray = PolygonsManagerData(polygons, names);
 
 %% Properties
 properties

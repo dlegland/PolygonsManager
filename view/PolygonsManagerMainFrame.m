@@ -126,7 +126,7 @@ methods
                 % if the polygons are saved as polar signature, display
                 % the polar signatures
                 panel2 = SignatureDisplayPanel(this, 'title', 'Signatures');
-                displayPolarSignature(panel2);
+                displayPolarSignatures(panel2);
             end
         else
             % if the mainframe must display one of the results of a PCA
@@ -230,7 +230,7 @@ methods
             % display the polygons
             displayPolygons(this.handles.Panels{1}, polygons);
             if isa(this.model.PolygonArray, 'PolarSignatureArray')
-                displayPolarSignature(this.handles.Panels{2}, signatures, this.model.PolygonArray.angleList);
+                displayPolarSignatures(this.handles.Panels{2}, signatures, this.model.PolygonArray.angleList);
             end
 
             %update the infos
@@ -300,25 +300,13 @@ methods
             set(mb.file.savePolygons.handle, 'enable', 'on');
         end
         
-        % get the active panel
-%         panel = getActivePanel(this);
-        
         % enables or not menu items depending on the factor table
         if ~isempty(this.model.factors)
             factorNames = this.model.factors.colNames;
             
-%             if ~isempty(panel.type)
-%                 if ismember(panel.type, ...
-%                         {'polygons', 'signatures', 'pcaScores', 'pcaInfluence', 'pcaScoresProfiles'})
             this.handles.options{1}.TabEnables{2} = 'on';
             this.handles.options{2}.TabEnables{2} = 'on';
             set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
-%                 end
-%             else
-%                 this.handles.options{1}.TabEnables{2} = 'on';
-%                 this.handles.options{2}.TabEnables{2} = 'on';
-%                 set(findobj(this.handles.options{1}, 'tag', 'factor'), 'string', ['none' factorNames]);
-%             end
             
             % update the 'factors submenus'
             set(mb.factors.import.handle, 'checked', 'on');
@@ -354,12 +342,6 @@ methods
                     end
                 end
             end
-            
-%             if isa(this.model.factors, 'Table')
-%                 set(this.handles.figure, 'name', ['Polygons Manager | factors : ' this.model.factors.name ' | PCA']);
-%             else
-%                 set(this.handles.figure, 'name', 'Polygons Manager | PCA');
-%             end
         end
         
         updateFrameTitle(this);

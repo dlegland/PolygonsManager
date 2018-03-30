@@ -62,7 +62,7 @@ menubar.file.loadMacro.handle = uimenu(fileMenu, 'label', '&Load macro', ...
                      'enable', 'off');
 
 menubar.file.exportToWorkspace.handle = uimenu(fileMenu, 'label', '&Export datas to workspace', ...
-                   'callback', @(~,~) exportToWS, ...
+                   'callback', @(~,~) exportToWorkspace(frame), ...
                      'enable', 'off', ...
                   'separator', 'on');
 
@@ -129,7 +129,7 @@ fc1 = uimenu(foncMenu, 'label', 'Rotate &all');
                     'callback', @(~,~) polygonsRotate(frame, 180, 'all'));
 menubar.process.rotateAll.handle = fc1;
 
-fc2 = uimenu(foncMenu, 'label', 'Rotate &selected');
+fc2 = uimenu(foncMenu, 'label', 'Rotate &selection');
            uimenu(fc2, 'label', '90° &right', ...
                     'callback', @(~,~) polygonsRotate(frame, 90, 'selected'));
            uimenu(fc2, 'label', '90° &left', ...
@@ -333,44 +333,6 @@ function swapSelection
     %update the view
     
     updateSelectedPolygonsDisplay(getActivePanel(frame));
-end
-
-function exportToWS
-%EXPORTTOWS export the gathered datas to matlab's workspace
-
-    if isa(frame.model.PolygonArray, 'BasicPolygonArray')
-        % export the polygons as a cell array of cell arrays 
-        assignin('base', 'polygons', frame.model.PolygonArray.polygons);
-        
-    elseif isa(frame.model.PolygonArray, 'CoordsPolygonArray')
-        % export the polygons as a Table
-        nCols = size(frame.model.PolygonArray.polygons, 2)/2;
-        colnames = [cellstr(num2str((1:nCols)', 'x%d'))' cellstr(num2str((1:nCols)', 'y%d'))'];
-
-        assignin('base', 'polygons', Table.create(frame.model.PolygonArray.polygons, ...
-                                                  'rowNames', frame.model.nameList, ...
-                                                  'colNames', colnames));
-    else
-        % export the polar signatures as a table
-        colnames = cellstr(num2str(frame.model.PolygonArray.angleList'));
-
-        assignin('base', 'signatures', Table.create(frame.model.PolygonArray.signatures, ...
-                                                  'rowNames', frame.model.nameList, ...
-                                                  'colNames', colnames'));
-    end
-    
-    if isa(frame.model.factors, 'Table')
-        % if there's one, export the factor Table
-        assignin('base', 'factors', frame.model.factors);
-    end
-    
-    if isa(frame.model.pca, 'Pca')
-        % if that PCA has been computed, export it
-        assignin('base', 'pca', frame.model.pca);
-    end
-    
-    % export the informations concerning the polygons
-    assignin('base', 'informations', frame.model.infoTable);
 end
 
 end

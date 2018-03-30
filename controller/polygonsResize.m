@@ -26,21 +26,20 @@ end
 % its call in the log variable
 obj.model.usedProcess{end+1} = ['polygonsResize : resol = ' num2str(coef)];
 
-% memory allocation
-polygonList = cell(1, length(obj.model.nameList));
-
-for i = 1:length(polygonList)
+% iterate over polygons
+nPolys = length(obj.model.nameList);
+for i = 1:nPolys
     % get the name of the polygon that will be converted
     name = obj.model.nameList{i};
 
     % get the polygon from its name
-    poly = getPolygonFromName(obj.model, name);
+    poly = getPolygon(obj.model.polygonList, i);
 
-    % convert the polygon
-    polyMm = poly * coef;
+    % rescale thepolygon
+    polyS = poly * coef;
 
     %update the polygon
-    setPolygon(obj.model.PolygonArray, getPolygonIndexFromName(obj.model, name), polyMm);
+    setPolygon(obj.model.polygonList, i, polyS);
     updatePolygonInfos(obj.model, name)
 end
 

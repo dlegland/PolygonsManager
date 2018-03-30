@@ -70,14 +70,14 @@ methods
     
     function dup = duplicate(obj)
         % duplicates this array
-        dup = PolarSignatureArray(obj.polygons);
+        dup = PolarSignatureArray(obj.signatures, obj.angleList);
     end
     
 
     function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new PolarSignatureArray
         newSignatures = obj.signatures(polygonIndices, :);
-        newPolygonArray = PolarSignatureArray(newSignatures, obj.angles);
+        newPolygonArray = PolarSignatureArray(newSignatures, obj.angleList);
     end
 end
 

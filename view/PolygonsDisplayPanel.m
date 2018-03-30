@@ -11,7 +11,7 @@ classdef PolygonsDisplayPanel < DisplayPanel
 
 % ------
 % Author: David Legland
-% e-mail: david.legland@nantes.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2018-03-20,    using Matlab 9.3.0.713579 (R2017b)
 % Copyright 2018 INRA - BIA-BIBS.
 
@@ -146,7 +146,7 @@ methods
         %   Outputs : none
 
         model = this.frame.model;
-        polygonArray = model.PolygonArray;
+        polygonArray = model.polygonList;
         
         % get the names of all the polygons loaded and prepare the
         % panel/axis that'll be used to draw

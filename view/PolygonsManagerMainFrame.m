@@ -122,7 +122,7 @@ methods
             refreshDisplay(panel1);
 
             % draw the polygons on the new PolygonsManagerMainFrame
-            if isa(this.model.PolygonArray, 'PolarSignatureArray')
+            if isa(this.model.polygonList, 'PolarSignatureArray')
                 % if the polygons are saved as polar signature, display
                 % the polar signatures
                 panel2 = SignatureDisplayPanel(this, 'title', 'Signatures');
@@ -152,13 +152,13 @@ methods
                                                      'linewidth', 2, ...
                                                  'ButtonDownFcn', @panel1.detectVectorClick);
 
-                if isa(this.model.PolygonArray, 'PolarSignatureArray')
+                if isa(this.model.polygonList, 'PolarSignatureArray')
                     panel2 = Panel(this, 'equal', 'off', ...
                                          'title',  'Signature', ...
                                           'type', varargin{1}, ...
                                       'colormap', varargin{4});
 
-                    displayPolarSignature(panel2, varargin{3}, this.model.PolygonArray.angleList);
+                    displayPolarSignature(panel2, varargin{3}, this.model.polygonList.angleList);
                     panel2.colorMap = panel2.default_colorMap;
 
                     for j = 1:length(panel2.uiAxis.Children)
@@ -215,22 +215,22 @@ methods
 
             % memory allocation
             polygons = cell(length(this.model.selectedPolygons), 1);
-            if isa(this.model.PolygonArray, 'PolarSignatureArray')
-                signatures = zeros(length(this.model.selectedPolygons), length(this.model.PolygonArray.angleList));
+            if isa(this.model.polygonList, 'PolarSignatureArray')
+                signatures = zeros(length(this.model.selectedPolygons), length(this.model.polygonList.angleList));
             end
 
             % get the polygons using the names got earlier
             for i = 1:length(this.model.selectedPolygons)
                 polygons{i} = getPolygonFromName(this.model, this.model.selectedPolygons{i});
-                if isa(this.model.PolygonArray, 'PolarSignatureArray')
+                if isa(this.model.polygonList, 'PolarSignatureArray')
                     signatures(i, :) = getSignatureFromName(this.model, this.model.selectedPolygons{i});
                 end
             end
 
             % display the polygons
             displayPolygons(this.handles.Panels{1}, polygons);
-            if isa(this.model.PolygonArray, 'PolarSignatureArray')
-                displayPolarSignatures(this.handles.Panels{2}, signatures, this.model.PolygonArray.angleList);
+            if isa(this.model.polygonList, 'PolarSignatureArray')
+                displayPolarSignatures(this.handles.Panels{2}, signatures, this.model.polygonList.angleList);
             end
 
             %update the infos
@@ -292,7 +292,7 @@ methods
         set(mb.process.handle, 'enable', 'on');
         
         % some features are not available if polygons are not normalized
-        if ~isNormalized(this.model.PolygonArray)
+        if ~isa(this.model.polygonList, 'PolygonArray')
             set(mb.file.savePolygons.handle, 'enable', 'off');
         else
             set(mb.process.handle, 'visible', 'on');

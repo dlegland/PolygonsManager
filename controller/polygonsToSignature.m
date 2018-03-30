@@ -56,7 +56,7 @@ for i = 1:nPolys
     waitbar(i / (length(frame.model.nameList)+1), h, ['process : ' name]);
     
     % get the polygon from its name
-    poly = getPolygon(frame.model.PolygonArray, i);
+    poly = getPolygon(frame.model.polygonList, i);
     
     % save all the polar signatures in a numeric array
     dat(i, :) = polygonSignature(poly, angles);

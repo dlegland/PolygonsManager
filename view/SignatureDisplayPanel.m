@@ -35,7 +35,7 @@ methods
         % call constructor of parent class
         this = this@DisplayPanel(frame);
     
-        polygonArray = frame.model.PolygonArray;
+        polygonArray = frame.model.polygonList;
         if ~isa(polygonArray, 'PolarSignatureArray')
             error('Requires the main frame to contains a polar signature array');
         end

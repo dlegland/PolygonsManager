@@ -35,12 +35,13 @@ end
 frame.model.usedProcess{end+1} = ['polygonsSimplify : display = ' display ' ; tolerance = ' num2str(tolerance)];
 
 % memory allocation
-polygonList = cell(1, length(frame.model.nameList));
+nPolys = length(frame.model.nameList);
+polygonList = cell(1, nPolys);
 
 % create waitbar
 h = waitbar(0, 'Start simplification...', 'name', 'Simplify polygons');
 
-for i = 1:length(polygonList)
+for i = 1:nPolys
     % get the name of the polygon that will be converted
     name = frame.model.nameList{i};
     
@@ -51,7 +52,7 @@ for i = 1:length(polygonList)
     waitbar(i / (length(frame.model.nameList)+1), h, ['process : ' name]);
 
     % get the data for the current polygon
-    poly = getPolygon(frame.model.PolygonArray, i);
+    poly = getPolygon(frame.model.polygonList, i);
     
     % simplify the polygon
     polyS = simplifyPolygon(poly, tolerance);

@@ -46,7 +46,7 @@ for i = 1:length(polygonArray)
     name = polygonArray{i};
 
     % get the polygon from its name
-    poly = getPolygonFromName(frame.model, name);
+    poly = getPolygon(frame.model.polygonList, i);
 
     % rotate the polygon
     switch angle
@@ -64,7 +64,7 @@ for i = 1:length(polygonArray)
     end
 
     %update the polygon
-    setPolygon(frame.model.PolygonArray, i, polyRot);
+    setPolygon(frame.model.polygonList, i, polyRot);
     updatePolygonInfos(frame.model, name)
 end
 

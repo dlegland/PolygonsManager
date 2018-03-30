@@ -14,8 +14,8 @@ path = fullfile(path, '..', 'demoData', 'pone_small');
 files = dir(fullfile(path, '*.txt'));
 
 % memory allocation
-polygonArray = cell(1, length(files));
-nameArray = cell(1, length(files));
+polygons = cell(1, length(files));
+nameList = cell(1, length(files));
 
 % if dname == 0
 %     return
@@ -24,11 +24,6 @@ nameArray = cell(1, length(files));
 if isempty(files)
     msgbox('The selected folder is empty');
     return;
-end
-
-if ~isempty(obj.handles.Panels)
-    % if the figure already contains a polygon array
-    obj = PolygonsManagerMainFrame;
 end
 
 for i = 1:length(files)
@@ -40,19 +35,22 @@ for i = 1:length(files)
     end
     
     % save the name
-    nameArray{i} = name;
+    nameList{i} = name;
     
     % save the polygon
-    polygonArray{i} = Table.read(fullfile(path, files(i).name)).data;
+    polygons{i} = Table.read(fullfile(path, files(i).name)).data;
 end
 
-polygonArray = polygonArray(~cellfun('isempty', polygonArray));
-nameArray = nameArray(~cellfun('isempty', nameArray));
+polygons = polygons(~cellfun('isempty', polygons));
+nameList = nameList(~cellfun('isempty', nameList));
 
 % set the new polygon array as the current polygon array
-model = PolygonsManagerData(...
-    'polygonarray', BasicPolygonArray(polygonArray), ...
-    'namelist', nameArray);
+model = PolygonsManagerData(BasicPolygonArray(polygons), nameList);
+
+if ~isempty(obj.handles.Panels)
+    % if the figure already contains a polygon array
+    obj = PolygonsManagerMainFrame;
+end
 
 %setup the frame
 setupNewFrame(obj, model);

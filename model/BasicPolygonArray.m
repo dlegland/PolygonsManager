@@ -1,4 +1,4 @@
-classdef BasicPolygonArray < PolygonArray
+classdef BasicPolygonArray < PolygonList
 %BASICPOLYGONARRAY Class for polygon array of non altered polygons 
 %
 %   Creation : 
@@ -22,11 +22,11 @@ methods
     end
 end
 
-%% Implementation of PolygonArray interface
+%% Implementation of the PolygonList interface
 methods
-    function arraySize = getPolygonNumber(this)
+    function number = getPolygonNumber(this)
         % returns the number of polygons contained in the polygon array
-        arraySize = length(this.polygons);
+        number = length(this.polygons);
     end
 
     function polygon = getPolygon(this, index)
@@ -39,11 +39,6 @@ methods
         polygons = this.polygons;
     end
 
-    function b = isNormalized(obj) %#ok<MANU>
-        % returns false
-        b = false;
-    end
-    
     function setPolygon(this, index, polygon)
         % replaces the polygon found at the given index by a new polygon
         this.polygons{index} = polygon;

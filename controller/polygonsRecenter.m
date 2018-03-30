@@ -23,7 +23,7 @@ for i = 1:length(polygonList)
     poly = bsxfun(@minus, poly, center);
     
     % update the polygon
-    setPolygon(frame.model.PolygonArray, getPolygonIndexFromName(frame.model, name), poly);
+    setPolygon(frame.model.polygonList, i, poly);
     updatePolygonInfos(frame.model, name)
 end
 

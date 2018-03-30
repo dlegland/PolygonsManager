@@ -2,18 +2,18 @@ classdef PolygonsManagerData < handle
 %POLYGONSMANAGERDATA Class that contains the data used by the PolygonsManager application
 %
 %   Creation: 
-%   polygonArray = PolygonsManagerData(polygons, names);
+%   polygonList = PolygonsManagerData(polygons, names);
 
 %% Properties
 properties
-    % PolygonArray that contains the polygons in various forms
-    PolygonArray;
-
-    % Table that contains the factor of the polygon array
-    factors;
+    % instance of PolygonList that contains the polygons in various forms
+    polygonList;
 
     % 1-by-N Cell array that contains the names of the polygons
     nameList;
+
+    % Table that contains the factor of the polygon array
+    factors;
 
     % Table containing information about the current polygon
     infoTable;
@@ -34,7 +34,7 @@ properties
     
     groupingFactorName = 'none';
     
-    % PCA containing the results of the PolygonArray's PCA (to be removed)
+    % PCA containing the results of the polygonList's PCA (to be removed)
     pca;
 
     % cell array containing the process used in the treatments (to be
@@ -48,26 +48,32 @@ methods
     function this = PolygonsManagerData(varargin)
     %Constructor for PolygonsManagerData class
     %
-    %   polygonArray = PolygonsManagerData(polygonArray, nameArray)
-    %   where polygonArray is a PolygonArray and nameArray is a 1-by-N
+    %   polygonList = PolygonsManagerData(polygonList, nameArray)
+    %   where polygonList is a polygonList and nameArray is a 1-by-N
     %   cell array
 
-        % first try to initialize from a PolygonArray
+        % first try to initialize from a polygonList
         if nargin < 1
             error('Requires at least one input');
         end
         
-        if isa(varargin{1}, 'PolygonArray')
-            this.PolygonArray = varargin{1};
+        if isa(varargin{1}, 'PolygonList')
+            this.polygonList = varargin{1};
             varargin(1) = [];
         end
+
+        if ~isempty(varargin) && iscell(varargin{1})
+            this.nameList = varargin{1};
+            varargin(1) = [];
+        end
+
 
         % if one of the options is 'parent', it is used to initialize all
         % fields 
         ind = find(strcmpi('parent', varargin), 1, 'first');
         if ~isempty(ind)
             that = varargin{ind+1};
-            if getPolygonNumber(this.PolygonArray) == getPolygonNumber(that.PolygonArray)
+            if getPolygonNumber(this.polygonList) == getPolygonNumber(that.polygonList)
                 this.factors = that.factors;
                 this.nameList = that.nameList;
                 this.infoTable = that.infoTable;
@@ -162,11 +168,11 @@ methods
     function removeSelectedPolygons(this)
         % remove the selected polygons from this data object
 
-        keepInds = 1:getPolygonNumber(this.PolygonArray);
+        keepInds = 1:getPolygonNumber(this.polygonList);
         inds = getSelectedPolygonIndices(this);
         keepInds(inds) = [];
 
-        removeAll(this.PolygonArray, inds);
+        removeAll(this.polygonList, inds);
         
         if ~isempty(this.factors)
             this.factors = this.factors(keepInds, :);
@@ -180,7 +186,7 @@ end
 methods
     function res = duplicate(this)
         % duplicates the polygons and the associated data
-        polys = duplicate(this.PolygonArray);
+        polys = duplicate(this.polygonList);
         
         res = PolygonsManagerData(polys, 'nameList', this.nameList);
         res.factors = this.factors;
@@ -201,12 +207,12 @@ methods
     function polygon = getPolygonFromName(this, name)
         % returns the polygon that corresponds to the input name
         index = find(strcmp(name, this.nameList));
-        polygon = getPolygon(this.PolygonArray, index);
+        polygon = getPolygon(this.polygonList, index);
     end
 
     function polygon = getPolygonRowFromName(this, name)
         index = find(strcmp(name, this.nameList));
-        polygon = getPolygonRow(this.PolygonArray, index);
+        polygon = getPolygonRow(this.polygonList, index);
     end
 
     function polygons = getPolygonsFromFactor(this, factor)
@@ -249,7 +255,7 @@ methods
     function signature = getSignatureFromName(this, name)
         % returns the signature that corresponds to the input name
         index = find(strcmp(name, this.nameList));
-        signature = getSignature(this.PolygonArray, index);
+        signature = getSignature(this.polygonList, index);
     end
 
     function signatures = getSignatureFromFactor(this, factor)
@@ -299,9 +305,9 @@ methods
     end
 
     function infoTable = loadPolygonInfos(this)
-        infos = zeros(getPolygonNumber(this.PolygonArray), 3);
-        for i = 1:getPolygonNumber(this.PolygonArray)
-            poly = getPolygon(this.PolygonArray, i);
+        infos = zeros(getPolygonNumber(this.polygonList), 3);
+        for i = 1:getPolygonNumber(this.polygonList)
+            poly = getPolygon(this.polygonList, i);
             infos(i, 1) = abs(polygonArea(poly));
             infos(i, 2) = polygonLength(poly);
             infos(i, 3) = length(poly);
@@ -313,7 +319,7 @@ methods
 
     function updatePolygonInfos(this, name)
         index = getPolygonIndexFromName(this, name);
-        poly = getPolygon(this.PolygonArray, index);
+        poly = getPolygon(this.polygonList, index);
         this.infoTable.data(index, 1) = abs(polygonArea(poly));
         this.infoTable.data(index, 2) = polygonLength(poly);
         this.infoTable.data(index, 3) = length(poly);

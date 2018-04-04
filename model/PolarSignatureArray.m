@@ -52,12 +52,6 @@ methods
         end
     end
 
-    function b = isNormalized(obj) %#ok<MANU>
-        % return true
-        b = true;
-    end
-    
-    
     function removeAll(obj, inds)
         % removes from the array all the polygons specified by index list
         obj.signatures(inds, :) = [];
@@ -72,8 +66,7 @@ methods
         % duplicates this array
         dup = PolarSignatureArray(obj.signatures, obj.angleList);
     end
-    
-
+   
     function newPolygonArray = selectPolygons(obj, polygonIndices)
         % extract the selected polygons and returns a new PolarSignatureArray
         newSignatures = obj.signatures(polygonIndices, :);

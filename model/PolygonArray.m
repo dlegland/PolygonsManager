@@ -6,8 +6,11 @@ methods (Abstract)
     nCols = getRowLength(obj);
     
     % convert row to polygon
+    poly = rowToPolygon(this, row)
+    
     % convert polygon to row
-    row = polygonToRow(this, index)
+    row = polygonToRow(this, poly)
+    
     % returns the N-by-P data array
     data = getDataArray(this);
 end

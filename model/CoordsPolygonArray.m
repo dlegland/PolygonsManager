@@ -7,7 +7,8 @@ classdef CoordsPolygonArray < PolygonArray
 
     
 properties
-    % the list of all the polygons
+    % the vertex coordinates of all polygons, as a N-by-P array
+    % with N: number of polygons and P = twice the vertex number    
     polygons;
 end
 
@@ -24,7 +25,7 @@ methods
 
 end
 
-%% Implementation of PolygonArray interface
+%% Implementation of PolygonList interface
 methods
     function arraySize = getPolygonNumber(obj)
         % returns the number of polygons contained in the polygon array
@@ -86,16 +87,31 @@ methods
     
 end
 
-%% Methods specific to this class
+%% Implementation of the PolygonArray interface
 methods
-    function array = getDataArray(obj)
-        array = obj.polygons;
+    function nCols = getRowLength(this)
+        % returns the length of each row in the data array
+        nCols = size(this.polygons, 2);
     end
     
-    function array = getDatas(obj)
-        warning('deprecated, use getDataArray instead');
-        array = obj.polygons;
+    function poly = rowToPolygon(this, row) %#ok<INUSL>
+        % convert row to polygon
+        poly = rowToPolygon(row, 'packed');
     end
+    
+    function row = polygonToRow(this, poly) %#ok<INUSL>
+        % convert polygon to row
+        row = polygonToRow(poly, 'packed');
+    end
+    
+    function data = getDataArray(this)
+        % returns the N-by-P data array
+        data = this.polygons;
+    end
+end
+
+%% Methods specific to this class
+methods
 end
 
 end

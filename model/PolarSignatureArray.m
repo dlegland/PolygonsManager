@@ -28,7 +28,7 @@ methods
     end
 end
 
-%% Implementation of PolygonArray interface
+%% Implementation of PolygonList interface
 methods
     function arraySize = getPolygonNumber(obj)
         % returns the number of polygons contained in the polygon array
@@ -81,6 +81,31 @@ methods
     end
 end
 
+
+%% Implementation of the PolygonArray interface
+methods
+    function nCols = getRowLength(this)
+        % returns the length of each row in the data array
+        nCols = size(this.signatures, 2);
+    end
+    
+    function poly = rowToPolygon(this, row)
+        % convert row to polygon
+        poly = signatureToPolygon(row, this.angleList);
+    end
+    
+    function row = polygonToRow(this, poly)
+        % convert polygon to row
+        row = polygonToSignature(poly, this.angleList);
+    end
+    
+    function data = getDataArray(this)
+        % returns the N-by-P data array
+        data = this.signatures;
+    end
+end
+
+
 %% Methods specific to PolarSignatureArray
 methods
     function polygonSize = getPolygonSize(obj)
@@ -95,15 +120,6 @@ methods
     function angles = getSignatureAngles(obj)
         % returns the signature found at the index row
         angles = obj.angleList;
-    end
-
-    function array = getDataArray(obj)
-        array = obj.signatures;
-    end
-
-    function array = getDatas(obj)
-        warning('deprecated, use getDataArray instead');
-        array = obj.signatures;
     end
     
     function signature = getSignature(obj, row)

@@ -9,7 +9,7 @@ function [poly, values] = pcaVector(obj)
 
 % get ths column that will be displayed index, and the coefficient of the
 % the calculus
-[index, coef, profiles] = pcaVectorPrompt(length(obj.model.pca.loadings.rowNames));
+[index, coef, profiles] = pcaVectorPrompt(obj, length(obj.model.pca.loadings.rowNames));
 
 if strcmp(index, '?')
     return;
@@ -21,25 +21,9 @@ fen = PolygonsManagerMainFrame;
 % create the PolygonsManagerData that'll be used as the new
 % PolygonsManagerMainFrame's model
 model = duplicate(obj.model); 
-% PolygonsManagerData(obj.model.PolygonArray, ...
-%                                 'nameList', obj.model.nameList, ...
-%                              'factorTable', obj.model.factorTable, ...
-%                                      'pca', obj.model.pca);
-
-% % prepare the the new PolygonsManagerMainFrame's name
-% if isa(obj.model.factorTable, 'Table')
-%     fenName = ['Polygons Manager | factors : ' obj.model.factorTable.name ' | PCA - Vectors'];
-% else
-%     fenName = 'Polygons Manager | PCA - Vectors';
-% end
 
 % memory allocation
-values = zeros(3, size(obj.model.pca.loadings, 2));
-% if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-%     values = zeros(3, length(obj.model.PolygonArray.angleList));
-% else
-%     values = zeros(3, size(obj.model.PolygonArray.polygons, 2));
-% end
+values = zeros(3, size(obj.model.pca.loadings, 1));
 
 % compute eigen vector with appropriate coeff
 ld = obj.model.pca.loadings(:, index).data';
@@ -48,25 +32,16 @@ values(1, :) = obj.model.pca.means;
 values(2, :) = obj.model.pca.means + coef * sqrt(lambda) * ld;
 values(3, :) = obj.model.pca.means - coef * sqrt(lambda) * ld;
 
-% % compute reconstructed polygons
-% poly = cell(1, 3);
-% poly{1} = computePolygon(obj.model.pca, values(1,:));
-% poly{2} = computePolygon(obj.model.pca, values(2,:));
-% poly{3} = computePolygon(obj.model.pca, values(3,:));
-
-% resulting polygon
+% compute reconstructed polygons
 poly = cell(1, 3);
-if isa(obj.model.PolygonArray, 'PolarSignatureArray')
-    poly{1} = signatureToPolygon(values(1, :), obj.model.PolygonArray.angleList);
-    poly{2} = signatureToPolygon(values(2, :), obj.model.PolygonArray.angleList);
-    poly{3} = signatureToPolygon(values(3, :), obj.model.PolygonArray.angleList);
-else
-    poly{1} = rowToPolygon(values(1, :), 'packed');
-    poly{2} = rowToPolygon(values(2, :), 'packed');
-    poly{3} = rowToPolygon(values(3, :), 'packed');
-end
+poly{1} = rowToPolygon(obj.model.polygonList, values(1,:));
+poly{2} = rowToPolygon(obj.model.polygonList, values(2,:));
+poly{3} = rowToPolygon(obj.model.polygonList, values(3,:));
 
+% choose colors
 color = [0, 0, 0; 255, 60, 60 ; 60, 60, 255]/255;
+
+% setup display depending on number of curves
 switch profiles
     case 1
         polygons = poly;
@@ -97,7 +72,7 @@ setupNewFrame(fen, model, '', ...
 end
 
 
-function [index, coef, profiles] = pcaVectorPrompt(maxPC)
+function [index, coef, profiles] = pcaVectorPrompt(obj, maxPC)
 %PCAVECTORPROMPT  A dialog figure on which the user can select
 %which principal component's vector he wants to display and the coefficient of the
 %calculus

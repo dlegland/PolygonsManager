@@ -24,7 +24,10 @@ classdef PolygonArrayPca < PolygonArray
 %% Properties
 properties
     % the method used to reconstruct polygons
-    recFun;
+    rowToPolyFun;
+
+    % the method use
+    polyToRowFun;
     
     % the average value of the initial data array, for reconstruction
     means;
@@ -55,10 +58,12 @@ methods
         
         var1 = varargin{1};
         if isa(var1, 'CoordsPolygonArray')
-            this.recFun = @(x) rowToPolygon(x, 'packed');
+            this.rowToPolyFun = @(x) rowToPolygon(x, 'packed');
+            this.polyToRowFun = @(x) polygonToRow(x, 'packed');
         elseif isa(var1, 'PolarSignatureArray')
             angles = var1.angleList;
-            this.recFun = @(x) signatureToPolygon(x, angles);
+            this.rowToPolyFun = @(x) signatureToPolygon(x, angles);
+            this.polyToRowFun = @(x) polygonSignature(x, angles);
         else
             error('First argument must be a normalized polygon array');
         end
@@ -129,8 +134,7 @@ end % end constructors
 %% Methods specific to PolygonArrayPca
 methods
     function row = reconstruct(this, rowIndex, varargin)
-%         coeffs = this.scores(rowIndex, 1:nComps);
-        
+        % reconstruct the row vector for a given row index, using nComps.
         row = this.means;
         for i = 1:this.nComps
             row = row + this.scores(rowIndex,i) * this.eigenVectors(:,i)';
@@ -138,15 +142,39 @@ methods
     end
     
     function poly = computePolygon(this, coeffs)
+        % reconstruct a polygon using the specified coefficients
         row = this.means;
         for i = 1:length(coeffs)
             row = row + coeffs(i) * this.eigenVectors(:,i)';
         end
-        poly = this.recFun(row);
+        poly = this.rowToPolyFun(row);
     end
 end
 
-%% Methods implementing PolygonArray
+%% methods implementing PolygonArray
+methods
+    function nCols = getRowLength(this)
+        % returns the length of each row in the data array
+        nCols = size(this.eigenVectors, 1);
+    end
+    
+    function poly = rowToPolygon(this, row)
+        % convert row to polygon
+        poly = this.rowToPolyFun(row);
+    end
+    
+    function row = polygonToRow(this, poly)
+        % convert polygon to row
+        row = this.polyToRowFun(poly);
+    end
+    
+    function data = getDataArray(this)
+        % returns the N-by-P data array
+        data = this.scores;
+    end
+end
+
+%% Methods implementing PolygonList
 methods
     function nPolys = getPolygonNumber(this)
         % returns the number of polygons contained in the polygon array
@@ -154,13 +182,14 @@ methods
     end
 
     function polygonSize = getPolygonSize(this)
-        polygonSize = size(this.polygons, 2);
+        poly = getPolygon(this, 1);
+        polygonSize = size(poly, 1);
     end
 
     function polygon = getPolygon(this, rowIndex)
         % returns the polygon found at the index row
         data = reconstruct(this, rowIndex);
-        polygon = this.recFun(data);
+        polygon = this.rowToPolyFun(data);
     end
     
     function polygons = getAllPolygons(obj)
@@ -171,11 +200,6 @@ methods
         end
     end
 
-    function b = isNormalized(obj) %#ok<MANU>
-        % return true
-        b = true;
-    end
-    
     function setPolygon(obj, row, polygon) %#ok<INUSD>
         error('Unimplemented method');
     end
@@ -192,7 +216,6 @@ methods
         % duplicates this array
         dup = PolygonArrayPca(this);
     end
-    
     
     function newPolygonArray = selectPolygons(obj, polygonIndices) %#ok<INUSD,STOUT>
         error('Unimplemented method');

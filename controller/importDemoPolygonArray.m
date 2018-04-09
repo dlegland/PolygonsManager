@@ -19,7 +19,7 @@ frame = PolygonsManagerMainFrame;
 import = Table.read(fFile);
 
 % set the new polygon array as the current polygon array
-model = PolygonsManagerData('PolygonArray', CoordsPolygonArray(import.data), 'nameList', import.rowNames');
+model = PolygonsManagerData(CoordsPolygonArray(import.data), import.rowNames');
 
 %setup the frame
 setupNewFrame(frame, model);
